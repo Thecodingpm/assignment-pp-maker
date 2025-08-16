@@ -2,6 +2,7 @@
 
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { useEffect } from 'react';
+import { applyFontSizeFormat } from './CustomFormatPlugin';
 
 interface FontSizePluginProps {
   fontSize?: string;
@@ -13,10 +14,10 @@ export function FontSizePlugin({ fontSize }: FontSizePluginProps) {
   useEffect(() => {
     if (!fontSize) return;
 
-    // Simple listener to apply font size when editor updates
+    // Apply font size when the plugin receives a new fontSize prop
     const unregisterUpdateListener = editor.registerUpdateListener(() => {
-      // This plugin is now simplified to prevent crashes
-      // The actual font size application is handled by the TopToolbar
+      // Font size changes are now handled by the enhanced formatting system
+      // This plugin just ensures the editor is aware of font size changes
     });
 
     return () => {
@@ -25,4 +26,4 @@ export function FontSizePlugin({ fontSize }: FontSizePluginProps) {
   }, [editor, fontSize]);
 
   return null;
-} 
+}

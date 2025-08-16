@@ -208,7 +208,7 @@ export default function AdminTemplateUpload() {
       }
       
       // Use real template upload function
-      const success = await uploadTemplate(file, templateName, templateDescription, selectedCategory, frontImageBase64);
+      const success = await uploadTemplate(file, templateName, templateDescription, selectedCategory);
       console.log('Upload result:', success);
       
               if (success) {

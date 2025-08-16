@@ -5,8 +5,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $getSelection, $isRangeSelection, $createParagraphNode, $createTextNode } from 'lexical';
 import { $createImageNode } from './ImageNode';
 import { $createVideoNode } from './VideoNode';
-import { INSERT_IMAGE_COMMAND } from 'lexical';
-import { INSERT_VIDEO_COMMAND } from './MediaCommands';
+import { INSERT_IMAGE_COMMAND, INSERT_VIDEO_COMMAND } from './MediaCommands';
 
 export default function MediaInsertionPlugin() {
   const [editor] = useLexicalComposerContext();
@@ -117,13 +116,17 @@ export default function MediaInsertionPlugin() {
         1
       );
 
+      console.log('🎯 MediaInsertionPlugin: Commands registered successfully');
+      
       return () => {
+        console.log('🎯 MediaInsertionPlugin: Cleaning up commands...');
         removeImageCommand();
         removeVideoCommand();
       };
     }, 500); // 500ms delay
 
     return () => {
+      console.log('🎯 MediaInsertionPlugin: Component unmounting, clearing timer...');
       clearTimeout(timer);
     };
   }, [editor]); // Add missing dependency array and closing brace

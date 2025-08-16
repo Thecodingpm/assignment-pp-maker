@@ -4,8 +4,8 @@ import React, { useState, useEffect } from 'react';
 import { getCurrentEditor } from './EditorRegistry';
 import { $getSelection, $isRangeSelection, $createParagraphNode, $createTextNode, $createListNode, $createListItemNode } from 'lexical';
 import { HeadingNode } from '@lexical/rich-text';
-import { INSERT_IMAGE_COMMAND, INSERT_TABLE_COMMAND } from 'lexical';
-import { INSERT_VIDEO_COMMAND } from './MediaCommands';
+import { INSERT_TABLE_COMMAND } from 'lexical';
+import { INSERT_IMAGE_COMMAND, INSERT_VIDEO_COMMAND } from './MediaCommands';
 import { $createImageNode } from './ImageNode';
 
 interface LeftToolbarProps {

@@ -31,10 +31,13 @@ class GlobalTemplateStore {
 
   private loadFromStorage(): void {
     try {
-      const stored = localStorage.getItem('globalTemplates');
-      if (stored) {
-        this.templates = JSON.parse(stored);
-        console.log('GlobalTemplateStore: Loaded templates from storage:', this.templates.length);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        const stored = localStorage.getItem('globalTemplates');
+        if (stored) {
+          this.templates = JSON.parse(stored);
+          console.log('GlobalTemplateStore: Loaded templates from storage:', this.templates.length);
+        }
       }
     } catch (error) {
       console.error('GlobalTemplateStore: Error loading from storage:', error);
@@ -44,8 +47,11 @@ class GlobalTemplateStore {
 
   private saveToStorage(): void {
     try {
-      localStorage.setItem('globalTemplates', JSON.stringify(this.templates));
-      console.log('GlobalTemplateStore: Saved templates to storage:', this.templates.length);
+      // Check if we're in a browser environment
+      if (typeof window !== 'undefined' && window.localStorage) {
+        localStorage.setItem('globalTemplates', JSON.stringify(this.templates));
+        console.log('GlobalTemplateStore: Saved templates to storage:', this.templates.length);
+      }
     } catch (error) {
       console.error('GlobalTemplateStore: Error saving to storage:', error);
     }

@@ -145,21 +145,162 @@ export default function LeftToolbar({}: LeftToolbarProps) {
     'p ∧ q', 'p ∨ q', 'p → q', 'p ↔ q', '¬p', '∀x P(x)', '∃x P(x)', 'p ⊢ q', 'p ⊨ q'
   ];
 
-  const templates = [
-    'Meeting Agenda:\n1. Introduction\n2. Discussion Points\n3. Action Items\n4. Next Steps',
-    'Project Plan:\n1. Project Overview\n2. Objectives\n3. Timeline\n4. Resources\n5. Risk Assessment',
-    'Research Paper:\n1. Abstract\n2. Introduction\n3. Literature Review\n4. Methodology\n5. Results\n6. Discussion\n7. Conclusion',
-    'Business Proposal:\n1. Executive Summary\n2. Problem Statement\n3. Solution\n4. Market Analysis\n5. Financial Projections',
-    'Lesson Plan:\n1. Learning Objectives\n2. Materials\n3. Activities\n4. Assessment\n5. Homework'
-  ];
+
 
   const shapes = ['rectangle', 'circle', 'triangle', 'star', 'diamond', 'hexagon', 'oval', 'polygon'];
+
+  // Tables data
+  const tableCategories = {
+    basic: {
+      name: 'Basic',
+      tables: [
+        { id: '3x3-header-row-col', name: '3x3 Header Row & Col', description: 'Table with header row and first column highlighted', preview: '3x3' },
+        { id: '3x3-header-row', name: '3x3 Header Row', description: 'Table with header row highlighted', preview: '3x3' },
+        { id: '3x3-plain', name: '3x3 Plain', description: 'Basic table with no highlights', preview: '3x3' },
+        { id: '3x3-header-col', name: '3x3 Header Column', description: 'Table with first column highlighted', preview: '3x3' }
+      ]
+    },
+    structured: {
+      name: 'Structured',
+      tables: [
+        { id: '4x4-header', name: '4x4 Header', description: '4x4 table with header row', preview: '4x4' },
+        { id: '5x5-header', name: '5x5 Header', description: '5x5 table with header row', preview: '5x5' },
+        { id: '3x5-header', name: '3x5 Header', description: '3 columns, 5 rows with header', preview: '3x5' },
+        { id: '5x3-header', name: '5x3 Header', description: '5 columns, 3 rows with header', preview: '5x3' }
+      ]
+    },
+    data: {
+      name: 'Data Tables',
+      tables: [
+        { id: 'data-table', name: 'Data Table', description: 'Table optimized for data display', preview: 'Data' },
+        { id: 'comparison-table', name: 'Comparison', description: 'Table for comparing items', preview: 'Comp' },
+        { id: 'pricing-table', name: 'Pricing', description: 'Table for pricing information', preview: 'Price' },
+        { id: 'schedule-table', name: 'Schedule', description: 'Table for scheduling', preview: 'Sched' }
+      ]
+    }
+  };
+
+  // Charts data
+  const chartCategories = {
+    '2d': {
+      name: '2D',
+      charts: [
+        { id: 'bar-vertical', name: 'Vertical Bar', icon: '📊', description: 'Vertical bar chart' },
+        { id: 'bar-stacked-vertical', name: 'Stacked Bar', icon: '📈', description: 'Stacked vertical bar chart' },
+        { id: 'bar-horizontal', name: 'Horizontal Bar', icon: '📉', description: 'Horizontal bar chart' },
+        { id: 'bar-stacked-horizontal', name: 'Stacked Horizontal', icon: '📊', description: 'Stacked horizontal bar chart' },
+        { id: 'area', name: 'Area Chart', icon: '📊', description: 'Area chart' },
+        { id: 'area-stacked', name: 'Stacked Area', icon: '📈', description: 'Stacked area chart' },
+        { id: 'pie', name: 'Pie Chart', icon: '🥧', description: 'Pie chart' },
+        { id: 'donut', name: 'Donut Chart', icon: '🍩', description: 'Donut chart' },
+        { id: 'line', name: 'Line Chart', icon: '📈', description: 'Line chart' },
+        { id: 'combo-bar-line', name: 'Combo Chart', icon: '📊', description: 'Bar and line combination' },
+        { id: 'scatter', name: 'Scatter Plot', icon: '🔍', description: 'Scatter plot' },
+        { id: 'bubble', name: 'Bubble Chart', icon: '🫧', description: 'Bubble chart' }
+      ]
+    },
+    '3d': {
+      name: '3D',
+      charts: [
+        { id: '3d-bar', name: '3D Bar', icon: '📊', description: '3D bar chart' },
+        { id: '3d-pie', name: '3D Pie', icon: '🥧', description: '3D pie chart' },
+        { id: '3d-surface', name: '3D Surface', icon: '🏔️', description: '3D surface chart' },
+        { id: '3d-scatter', name: '3D Scatter', icon: '🔍', description: '3D scatter plot' }
+      ]
+    },
+    interactive: {
+      name: 'Interactive',
+      charts: [
+        { id: 'interactive-bar', name: 'Interactive Bar', icon: '📊', description: 'Interactive bar chart' },
+        { id: 'interactive-pie', name: 'Interactive Pie', icon: '🥧', description: 'Interactive pie chart' },
+        { id: 'interactive-line', name: 'Interactive Line', icon: '📈', description: 'Interactive line chart' },
+        { id: 'dashboard', name: 'Dashboard', icon: '📊', description: 'Interactive dashboard' }
+      ]
+    }
+  };
+
+  // Enhanced shapes data with categories and icons
+  const shapeCategories = {
+    basic: {
+      name: 'Basic',
+      shapes: [
+        { id: 'line', name: 'Line', icon: '╱', description: 'Diagonal line' },
+        { id: 'arrow-up-right', name: 'Arrow Up-Right', icon: '↗', description: 'Diagonal arrow' },
+        { id: 'curve', name: 'Curve', icon: '⌒', description: 'Curved path' },
+        { id: 'square', name: 'Square', icon: '■', description: 'Solid square' },
+        { id: 'rounded-rect', name: 'Rounded Rectangle', icon: '▢', description: 'Rounded rectangle' },
+        { id: 'circle', name: 'Circle', icon: '●', description: 'Solid circle' },
+        { id: 'triangle', name: 'Triangle', icon: '▲', description: 'Equilateral triangle' },
+        { id: 'right-triangle', name: 'Right Triangle', icon: '◣', description: 'Right-angled triangle' },
+        { id: 'arrow-right', name: 'Arrow Right', icon: '→', description: 'Right-pointing arrow' },
+        { id: 'double-arrow', name: 'Double Arrow', icon: '↔', description: 'Double-headed arrow' },
+        { id: 'diamond', name: 'Diamond', icon: '◆', description: 'Diamond shape' },
+        { id: 'speech-bubble', name: 'Speech Bubble', icon: '💬', description: 'Speech bubble' },
+        { id: 'pentagon', name: 'Pentagon', icon: '⬟', description: 'Five-sided polygon' },
+        { id: 'star', name: 'Star', icon: '★', description: 'Five-pointed star' }
+      ]
+    },
+    geometry: {
+      name: 'Geometry',
+      shapes: [
+        { id: 'hexagon', name: 'Hexagon', icon: '⬡', description: 'Six-sided polygon' },
+        { id: 'octagon', name: 'Octagon', icon: '⬢', description: 'Eight-sided polygon' },
+        { id: 'cross', name: 'Cross', icon: '✚', description: 'Plus symbol' },
+        { id: 'ellipse', name: 'Ellipse', icon: '⬭', description: 'Oval shape' },
+        { id: 'parallelogram', name: 'Parallelogram', icon: '▱', description: 'Slanted rectangle' },
+        { id: 'trapezoid', name: 'Trapezoid', icon: '⏢', description: 'Trapezoid shape' }
+      ]
+    },
+    objects: {
+      name: 'Objects',
+      shapes: [
+        { id: 'cube', name: 'Cube', icon: '⬛', description: '3D cube' },
+        { id: 'cylinder', name: 'Cylinder', icon: '⬡', description: '3D cylinder' },
+        { id: 'sphere', name: 'Sphere', icon: '●', description: '3D sphere' },
+        { id: 'pyramid', name: 'Pyramid', icon: '▲', description: '3D pyramid' }
+      ]
+    },
+    nature: {
+      name: 'Nature',
+      shapes: [
+        { id: 'leaf', name: 'Leaf', icon: '🍃', description: 'Leaf shape' },
+        { id: 'flower', name: 'Flower', icon: '🌸', description: 'Flower shape' },
+        { id: 'tree', name: 'Tree', icon: '🌳', description: 'Tree shape' },
+        { id: 'cloud', name: 'Cloud', icon: '☁', description: 'Cloud shape' }
+      ]
+    },
+    symbols: {
+      name: 'Symbols',
+      shapes: [
+        { id: 'heart', name: 'Heart', icon: '❤', description: 'Heart symbol' },
+        { id: 'infinity', name: 'Infinity', icon: '∞', description: 'Infinity symbol' },
+        { id: 'checkmark', name: 'Checkmark', icon: '✓', description: 'Check mark' },
+        { id: 'x-mark', name: 'X Mark', icon: '✗', description: 'X mark' }
+      ]
+    }
+  };
+
+  // List Styles data
+  const listStyles = [
+    { id: 'none', name: 'None', icon: '', description: 'No list formatting' },
+    { id: 'none1', name: 'None 1', icon: '', description: 'No list formatting variant 1' },
+    { id: 'bullet', name: 'Bullet', icon: '•', description: 'Simple bullet points' },
+    { id: 'bullet-big', name: 'Bullet Big', icon: '●', description: 'Large bullet points' },
+    { id: 'image', name: 'Image', icon: '☐', description: 'Image-based bullets' },
+    { id: 'lettered', name: 'Lettered', icon: 'A.', description: 'A, B, C... format' },
+    { id: 'numbered', name: 'Numbered', icon: '1.', description: '1, 2, 3... format' },
+    { id: 'harvard', name: 'Harvard', icon: 'I.', description: 'I, II, III... format' },
+    { id: 'dash', name: 'Dash', icon: '-', description: 'Dash-separated items' },
+    { id: 'note-taking', name: 'Note Taking', icon: '☑', description: 'Checkbox-style items' }
+  ];
 
   const [activeTab, setActiveTab] = useState('content');
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showFontDropdown, setShowFontDropdown] = useState(false);
   const [showColorDropdown, setShowColorDropdown] = useState(false);
   const [showHeadingPopup, setShowHeadingPopup] = useState(false);
+  const [showListPopup, setShowListPopup] = useState(false);
+  const [showShapesPopup, setShowShapesPopup] = useState(false);
   const [showMathDropdown, setShowMathDropdown] = useState(false);
   const [activeMathCategory, setActiveMathCategory] = useState('common');
   const [fontSearchTerm, setFontSearchTerm] = useState('');
@@ -168,6 +309,14 @@ export default function LeftToolbar({}: LeftToolbarProps) {
   const [selectedColor, setSelectedColor] = useState('#000000');
   const [activeFontCategory, setActiveFontCategory] = useState('all');
   const [currentHeadingStyle, setCurrentHeadingStyle] = useState<'h1' | 'h2' | 'h3' | 'sub' | 'body' | 'caption' | null>(null);
+  const [currentListStyle, setCurrentListStyle] = useState<string>('None');
+  const [activeShapeCategory, setActiveShapeCategory] = useState('basic');
+  const [shapeSearchTerm, setShapeSearchTerm] = useState('');
+  const [showChartsPopup, setShowChartsPopup] = useState(false);
+  const [activeChartCategory, setActiveChartCategory] = useState('2d');
+  const [showTablesPopup, setShowTablesPopup] = useState(false);
+  const [activeTableCategory, setActiveTableCategory] = useState('basic');
+  const [activeMathTab, setActiveMathTab] = useState('symbols');
   
   // Debug effect to log state changes
   useEffect(() => {
@@ -287,13 +436,18 @@ export default function LeftToolbar({}: LeftToolbarProps) {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element;
-      if (!target.closest('.font-dropdown') && !target.closest('.color-dropdown') && !target.closest('.heading-popup') && !target.closest('.math-symbols-dropdown')) {
+      if (!target.closest('.font-dropdown') && !target.closest('.color-dropdown') && !target.closest('.heading-popup') && !target.closest('.list-popup') && !target.closest('.shapes-popup') && !target.closest('.charts-popup') && !target.closest('.tables-popup') && !target.closest('.math-symbols-dropdown')) {
         setShowFontDropdown(false);
         setShowColorDropdown(false);
         setShowHeadingPopup(false);
+        setShowListPopup(false);
+        setShowShapesPopup(false);
+        setShowChartsPopup(false);
+        setShowTablesPopup(false);
         setShowMathDropdown(false);
         setFontSearchTerm('');
         setFilteredFonts(fonts);
+        setShapeSearchTerm('');
         
         // Close math symbols dropdown
         setShowMathDropdown(false);
@@ -480,6 +634,88 @@ export default function LeftToolbar({}: LeftToolbarProps) {
           listItem.append($createTextNode('List item'));
           list.append(listItem);
           selection.insertNodes([list]);
+        }
+      });
+    }
+  };
+
+  // Function to insert table with specific type
+  const insertTableWithType = (tableType: string) => {
+    const editor = getCurrentEditor();
+    if (editor) {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const paragraph = $createParagraphNode();
+          paragraph.append($createTextNode(`[${tableType} Table]`));
+          selection.insertNodes([paragraph]);
+        }
+      });
+    }
+  };
+
+  // Function to insert chart
+  const insertChart = (chartType: string) => {
+    const editor = getCurrentEditor();
+    if (editor) {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const paragraph = $createParagraphNode();
+          paragraph.append($createTextNode(`[${chartType} Chart]`));
+          selection.insertNodes([paragraph]);
+        }
+      });
+    }
+  };
+
+  // Function to insert list with specific style
+  const insertListWithStyle = (style: string) => {
+    const editor = getCurrentEditor();
+    if (editor) {
+      editor.update(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          let listType: 'bullet' | 'number' = 'bullet';
+          let prefix = '';
+          
+          // Determine list type and prefix based on style
+          switch (style) {
+            case 'numbered':
+            case 'harvard':
+              listType = 'number';
+              break;
+            case 'lettered':
+              listType = 'number';
+              break;
+            case 'dash':
+              prefix = '- ';
+              break;
+            case 'note-taking':
+              prefix = '☐ ';
+              break;
+            default:
+              listType = 'bullet';
+          }
+          
+          const list = $createListNode(listType);
+          const listItem = $createListItemNode();
+          
+          if (prefix) {
+            const prefixNode = $createTextNode(prefix);
+            const textNode = $createTextNode('List item');
+            listItem.append(prefixNode);
+            listItem.append(textNode);
+          } else {
+            listItem.append($createTextNode('List item'));
+          }
+          
+          list.append(listItem);
+          selection.insertNodes([list]);
+          
+          // Set the current list style
+          setCurrentListStyle(style);
+          setShowListPopup(false);
         }
       });
     }
@@ -745,20 +981,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
     }
   };
 
-  // Template Functions
-  const insertTemplate = (template: string) => {
-    const editor = getCurrentEditor();
-    if (editor) {
-      editor.update(() => {
-        const selection = $getSelection();
-        if ($isRangeSelection(selection)) {
-          const paragraph = $createParagraphNode();
-          paragraph.append($createTextNode(template));
-          selection.insertNodes([paragraph]);
-        }
-      });
-    }
-  };
+
 
   // Tool Functions
   const changeTextDirection = (direction: 'ltr' | 'rtl') => {
@@ -804,10 +1027,14 @@ export default function LeftToolbar({}: LeftToolbarProps) {
       }
     };
 
-    // Close heading popup when pressing Escape
+    // Close popups when pressing Escape
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setShowHeadingPopup(false);
+        setShowListPopup(false);
+        setShowShapesPopup(false);
+        setShowChartsPopup(false);
+        setShowTablesPopup(false);
       }
     };
 
@@ -866,7 +1093,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
     <div 
       className={`fixed top-0 left-0 h-screen transition-all duration-300 ease-in-out left-toolbar ${
         isCollapsed ? 'w-16' : 'w-80'
-      } bg-white dark:bg-gray-50 border-r border-gray-200 dark:border-gray-300 shadow-lg z-50 overflow-hidden`} 
+      } bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700 shadow-lg z-50 overflow-hidden`} 
       style={{ 
         left: '-50px !important', 
         top: '-40px !important', 
@@ -879,7 +1106,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
     >
       
       {/* Pages-style Header with Notion-like simplicity */}
-      <div className="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-300 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
+      <div className="h-16 px-6 flex items-center border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 to-gray-900">
         <div className="flex items-center gap-4">
           <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-md">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -888,36 +1115,36 @@ export default function LeftToolbar({}: LeftToolbarProps) {
           </div>
           <div>
             <h2 className="text-gray-900 dark:text-gray-100 font-semibold text-lg">Document Editor</h2>
-            <p className="text-gray-600 dark:text-gray-400 text-sm">Create & design content</p>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">Create & design content</p>
           </div>
         </div>
       </div>
 
       {/* Canva-style Search Bar */}
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-300 bg-gray-50 dark:bg-gray-100">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
         <div className="relative">
           <input
             type="text"
             placeholder="Search elements, templates, shapes..."
-            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-white border border-gray-300 dark:border-gray-400 rounded-xl text-sm text-gray-900 dark:text-gray-900 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200 shadow-sm"
+            className="w-full pl-11 pr-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400 transition-all duration-200 shadow-sm"
           />
-          <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-4 top-3.5 w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
         </div>
       </div>
 
       {/* Notion-style Tab Navigation */}
-      <div className="px-6 py-4 bg-white dark:bg-gray-50">
-        <div className="flex gap-1 bg-gray-100 dark:bg-gray-200 p-1.5 rounded-lg overflow-x-auto scrollbar-hide">
+      <div className="px-6 py-4 bg-white dark:bg-gray-900">
+        <div className="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1.5 rounded-lg overflow-x-auto scrollbar-hide">
           {tabs.slice(0, 5).map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
               className={`flex-shrink-0 py-2.5 px-3 rounded-md text-xs font-medium transition-all duration-200 ${
                 activeTab === tab.id
-                  ? 'bg-white dark:bg-white text-gray-900 dark:text-gray-900 shadow-sm ring-1 ring-gray-200 dark:ring-gray-300'
-                  : 'text-gray-600 dark:text-gray-600 hover:text-gray-800 dark:hover:text-gray-800 hover:bg-gray-200 dark:hover:bg-gray-300'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-gray-200 dark:ring-gray-600'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {!isCollapsed && tab.label}
@@ -927,18 +1154,18 @@ export default function LeftToolbar({}: LeftToolbarProps) {
       </div>
 
       {/* Content Area - Pages + Notion + Canva Mix */}
-      <div className="px-6 py-4 h-[calc(100vh-200px)] overflow-visible bg-gray-50 dark:bg-gray-100" style={{ position: 'relative', zIndex: 99999 }}>
+      <div className="px-6 py-4 h-[calc(100vh-200px)] overflow-y-auto bg-gray-50 dark:bg-gray-800 scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-gray-100 dark:scrollbar-track-gray-900" style={{ position: 'relative', zIndex: 99999 }}>
         {/* Content Tab - Notion-style blocks */}
         {activeTab === 'content' && (
           <div className="space-y-6">
             {/* Basic blocks section */}
             <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Basic blocks</div>
+              <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Basic blocks</div>
               
               {/* Text Block - Notion-style */}
               <button
                 onClick={insertTextBlock}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group mb-3"
+                className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group mb-3"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-200 transition-colors">
@@ -947,7 +1174,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Text</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Text</div>
                     <div className="text-xs text-gray-500 dark:text-gray-500">Just start writing</div>
                   </div>
                   <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -964,7 +1191,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                 className={`w-full p-4 border rounded-lg transition-all duration-200 group mb-3 relative ${
                   showHeadingPopup 
                     ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
-                    : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -1004,7 +1231,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                 
                 {/* Heading Style Popup */}
                 {showHeadingPopup && (
-                  <div className="fixed bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg shadow-xl z-[999999] w-64 overflow-hidden heading-popup animate-in slide-in-from-left-2 duration-200" style={{
+                  <div className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-[999999] w-64 overflow-hidden heading-popup animate-in slide-in-from-left-2 duration-200" style={{
                       position: 'fixed',
                       isolation: 'isolate',
                       left: '320px',
@@ -1013,7 +1240,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
                     {/* Header */}
                     <div className="p-3 border-b border-gray-100 dark:border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10">
-                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Heading Styles</div>
+                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">Heading Styles</div>
                       <div className="text-xs text-gray-500 mt-1">Current: {currentHeadingStyle || 'None'}</div>
                     </div>
                     
@@ -1036,7 +1263,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <div className={`text-lg font-bold ${currentHeadingStyle === 'h1' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-900'}`}>H1</div>
+                            <div className={`text-lg font-bold ${currentHeadingStyle === 'h1' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>H1</div>
                             <div className="text-xs text-gray-400 dark:text-gray-400">32px</div>
                           </div>
                         </button>
@@ -1058,7 +1285,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <div className={`text-base font-semibold ${currentHeadingStyle === 'h2' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-900'}`}>H2</div>
+                            <div className={`text-base font-semibold ${currentHeadingStyle === 'h2' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>H2</div>
                             <div className="text-xs text-gray-400 dark:text-gray-400">24px</div>
                           </div>
                         </button>
@@ -1078,7 +1305,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <div className={`text-sm font-semibold ${currentHeadingStyle === 'h3' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-900'}`}>H3</div>
+                            <div className={`text-sm font-semibold ${currentHeadingStyle === 'h3' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>H3</div>
                             <div className="text-xs text-gray-400 dark:text-gray-400">20px</div>
                           </div>
                         </button>
@@ -1198,7 +1425,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           }`}
                         >
                           <div className="flex items-center justify-between">
-                            <div className={`text-sm font-normal ${currentHeadingStyle === 'body' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-900'}`}>Body</div>
+                            <div className={`text-sm font-normal ${currentHeadingStyle === 'body' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>Body</div>
                             <div className="text-xs text-gray-400 dark:text-gray-400">16px</div>
                           </div>
                         </button>
@@ -1229,8 +1456,12 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
               {/* Lists - Notion-style */}
               <button
-                onClick={() => insertList('ul')}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group mb-3"
+                onClick={() => setShowListPopup(!showListPopup)}
+                className={`w-full p-4 border rounded-lg transition-all duration-200 group mb-3 relative ${
+                  showListPopup 
+                    ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                    : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+                }`}
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-green-100 dark:bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-200 transition-colors">
@@ -1239,17 +1470,216 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Bullet list</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">Create a simple list</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      {currentListStyle === 'None' ? 'Bullet list' : 
+                       currentListStyle === 'bullet' ? 'Bullet List' : 
+                       currentListStyle === 'numbered' ? 'Numbered List' : 
+                       currentListStyle === 'lettered' ? 'Lettered List' : 
+                       currentListStyle === 'harvard' ? 'Harvard List' : 
+                       currentListStyle === 'dash' ? 'Dash List' : 
+                       currentListStyle === 'note-taking' ? 'Note Taking List' : 
+                       currentListStyle}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      {currentListStyle === 'None' ? 'Create a simple list' : 
+                       currentListStyle === 'bullet' ? 'Simple bullet points' : 
+                       currentListStyle === 'numbered' ? '1, 2, 3... format' : 
+                       currentListStyle === 'lettered' ? 'A, B, C... format' : 
+                       currentListStyle === 'harvard' ? 'I, II, III... format' : 
+                       currentListStyle === 'dash' ? 'Dash-separated items' : 
+                       currentListStyle === 'note-taking' ? 'Checkbox-style items' : 
+                       'List formatting'}
+                    </div>
                   </div>
                   <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
                     <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                     </svg>
                   </div>
+                  {/* Popup indicator */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                 </div>
+                
+                {/* List Style Popup */}
+                {showListPopup && (
+                  <div className="fixed bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg shadow-xl z-[999999] w-64 overflow-hidden list-popup animate-in slide-in-from-left-2 duration-200" style={{
+                      position: 'fixed',
+                      isolation: 'isolate',
+                      left: '320px',
+                      top: '360px'
+                    }}>
+
+                    {/* Header */}
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
+                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">List Styles</div>
+                      <div className="text-xs text-gray-500 mt-1">Current: {currentListStyle}</div>
+                    </div>
+                    
+                    {/* List Options - Compact Grid */}
+                    <div className="p-2">
+                      {listStyles.map((style) => (
+                        <button
+                          key={style.id}
+                          onClick={() => {
+                            insertListWithStyle(style.id);
+                          }}
+                          className={`w-full p-2 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:scale-[1.02] transition-all duration-200 rounded-md group mb-1 ${
+                            currentListStyle === style.id 
+                              ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-300 dark:border-purple-600' 
+                              : ''
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm text-gray-600 dark:text-gray-400 w-4 text-center">
+                                {style.icon}
+                              </span>
+                              <div className={`text-sm font-medium ${currentListStyle === style.id ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>
+                                {style.name}
+                              </div>
+                            </div>
+                            {style.id === 'lettered' && (
+                              <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                              </svg>
+                            )}
+                </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </button>
 
+              {/* Math Symbols - Mathematical Notation */}
+              <button
+                onClick={() => setShowMathDropdown(!showMathDropdown)}
+                className={`w-full p-4 border rounded-lg transition-all duration-200 group mb-3 relative ${
+                  showMathDropdown 
+                    ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-200 transition-colors">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Math Symbols</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Symbols, formulas & equations</div>
+                  </div>
+                  <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                  {/* Popup indicator */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                </div>
+                
+                {/* Math Symbols Popup */}
+                {showMathDropdown && (
+                  <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-[600px] h-[500px] overflow-hidden math-symbols-dropdown animate-in slide-in-from-left-2 duration-200" style={{
+                      position: 'fixed',
+                      isolation: 'isolate',
+                      left: '320px',
+                      top: '440px'
+                    }}>
+
+                    {/* Header with Tabs */}
+                    <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">Math Symbols & Formulas</div>
+                        <button
+                          onClick={() => setShowMathDropdown(false)}
+                          className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 rounded-lg transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      
+                      {/* Tabs */}
+                      <div className="flex space-x-1">
+                        <button
+                          onClick={() => setActiveMathTab('symbols')}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            activeMathTab === 'symbols'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-200'
+                          }`}
+                        >
+                          Symbols
+                        </button>
+                        <button
+                          onClick={() => setActiveMathTab('formulas')}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            activeMathTab === 'formulas'
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-200'
+                          }`}
+                        >
+                          Formulas
+                        </button>
+                      </div>
+                    </div>
+                    
+                    {/* Content Area */}
+                    <div className="p-4 bg-white dark:bg-gray-800">
+                      {activeMathTab === 'symbols' ? (
+                        <div className="grid grid-cols-8 gap-2">
+                          {mathSymbols.map((symbol) => (
+                            <button
+                              key={symbol}
+                              onClick={() => {
+                                const editor = getCurrentEditor();
+                                if (editor) {
+                                  editor.update(() => {
+                                    const selection = $getSelection();
+                                    if ($isRangeSelection(selection)) {
+                                      selection.insertText(symbol);
+                                    }
+                                  });
+                                }
+                              }}
+                              className="w-12 h-12 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-purple-600 dark:hover:text-purple-400"
+                              title={`Insert ${symbol}`}
+                            >
+                              {symbol}
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-1 gap-2">
+                          {mathFormulas.map((formula, index) => (
+                            <button
+                              key={index}
+                              onClick={() => {
+                                const editor = getCurrentEditor();
+                                if (editor) {
+                                  editor.update(() => {
+                                    const selection = $getSelection();
+                                    if ($isRangeSelection(selection)) {
+                                      selection.insertText(formula);
+                                    }
+                                  });
+                                }
+                              }}
+                              className="w-full p-3 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 text-left text-sm font-mono hover:scale-[1.02]"
+                              title={`Insert ${formula}`}
+                            >
+                              {formula}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </button>
 
             </div>
 
@@ -1270,39 +1700,50 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                       console.log('Font dropdown opened');
                     }
                   }}
-                  className={`w-full p-3 border transition-all duration-200 text-left flex items-center justify-between group ${
-                    showFontDropdown 
-                      ? 'bg-blue-50 dark:bg-blue-50 border-blue-300 dark:border-blue-300' 
-                      : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+                  className={`w-full p-3 border transition-all duration-200 text-left flex items-center justify-between group relative ${
+                                      showFontDropdown 
+                    ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200 ${
+                      showFontDropdown 
+                        ? 'bg-gradient-to-br from-purple-500 to-indigo-600' 
+                        : 'bg-gradient-to-br from-blue-500 to-indigo-600'
+                    }`}>
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                       </svg>
                     </div>
                     <div className="flex-1 text-left">
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-900">Font</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Font</span>
                       <div className="text-xs text-gray-500 dark:text-gray-500" style={{ fontFamily: selectedFont }}>{selectedFont}</div>
                     </div>
                   </div>
                   <svg className={`w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-all duration-200 ${showFontDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
+                  {/* Popup indicator */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                 </button>
                 
                 {/* Font Dropdown */}
                 {showFontDropdown && (
-                  <div className="absolute bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-xl shadow-xl z-[99999] min-w-[300px] max-w-[350px] overflow-hidden font-dropdown" style={{ 
-                    top: '100%',
-                    left: '0',
-                    marginTop: '8px',
-                    position: 'absolute',
-                    isolation: 'isolate'
-                  }}>
+                  <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-64 overflow-hidden font-dropdown animate-in slide-in-from-left-2 duration-200" style={{
+                      position: 'fixed',
+                      isolation: 'isolate',
+                      left: '320px',
+                      top: '200px'
+                    }}>
+                    {/* Header */}
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 to-gray-900">
+                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-200">Font Selection</div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Current: {selectedFont}</div>
+                    </div>
+                    
                     {/* Search Input */}
-                    <div className="p-4 border-b border-gray-100 dark:border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10">
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                       <div className="relative">
                         <input
                           type="text"
@@ -1320,17 +1761,17 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                               setFilteredFonts(filtered);
                             }
                           }}
-                          className="w-full pl-10 pr-4 py-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg text-sm text-gray-900 dark:text-gray-900 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                          className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:focus:ring-purple-400 dark:focus:border-purple-400 transition-all duration-200"
                         />
-                        <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                       </div>
                     </div>
                     
                     {/* Font Categories */}
-                    <div className="p-3 border-b border-gray-100 dark:border-gray-200 bg-gray-50 dark:bg-gray-100">
-                      <div className="flex gap-2 flex-wrap">
+                    <div className="p-2 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                      <div className="flex gap-1 flex-wrap">
                         {Object.entries(fontCategories).map(([key, categoryFonts]) => (
                           <button
                             key={key}
@@ -1339,10 +1780,10 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                               setFilteredFonts(categoryFonts);
                               setFontSearchTerm('');
                             }}
-                            className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
+                            className={`px-2 py-1 rounded-md text-xs font-medium transition-all duration-200 ${
                               activeFontCategory === key
-                                ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                                : 'bg-gray-100 dark:bg-gray-200 text-gray-600 dark:text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-300'
+                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                             }`}
                           >
                             {key.charAt(0).toUpperCase() + key.slice(1)}
@@ -1378,11 +1819,17 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                               console.log('No editor found');
                             }
                           }}
-                          className="w-full p-3 text-left hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors border-b border-gray-50 dark:border-gray-100 last:border-b-0 group"
+                          className={`w-full p-2 text-left hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:scale-[1.02] transition-all duration-200 rounded-md group mb-1 ${
+                            selectedFont === font 
+                              ? 'bg-purple-100 dark:bg-purple-900/30 border-2 border-purple-300 dark:border-purple-600' 
+                              : ''
+                          }`}
                           style={{ fontFamily: font }}
                         >
-                          <div className="text-base font-medium text-gray-900 dark:text-gray-900 mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400">{font}</div>
-                          <div className="text-sm text-gray-500 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400">The quick brown fox jumps over the lazy dog</div>
+                          <div className="flex items-center justify-between">
+                            <div className={`text-sm font-medium ${selectedFont === font ? 'text-purple-700 dark:text-purple-300' : 'text-gray-900 dark:text-gray-100'}`}>{font}</div>
+                            <div className="text-xs text-gray-400 dark:text-gray-500">Aa</div>
+                          </div>
                         </button>
                       ))}
                       {filteredFonts.length === 0 && (
@@ -1398,7 +1845,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
             {/* Colors section - Color picker box */}
             <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Colors</div>
+              <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Colors</div>
               <div className="relative">
                 <button
                   onClick={() => {
@@ -1411,55 +1858,52 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                       console.log('Color dropdown opened');
                     }
                   }}
-                  className={`w-full p-3 border transition-all duration-200 text-left flex items-center justify-between group ${
-                    showColorDropdown 
-                      ? 'bg-blue-50 dark:bg-blue-50 border-blue-300 dark:border-blue-300' 
-                      : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+                  className={`w-full p-3 border transition-all duration-200 text-left flex items-center justify-between group relative ${
+                                      showColorDropdown 
+                    ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-gray-200 dark:border-gray-300" style={{ backgroundColor: selectedColor }}>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center border-2 transition-all duration-200 ${
+                      showColorDropdown 
+                        ? 'border-purple-300 dark:border-purple-600 ring-2 ring-purple-200 dark:ring-purple-800' 
+                        : 'border-gray-200 dark:border-gray-300'
+                    }`} style={{ backgroundColor: selectedColor }}>
                       <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a4 4 0 014-4h5.5a4 4 0 014 4v12a4 4 0 01-4 4H7z" />
                       </svg>
                     </div>
                     <div className="flex-1 text-left">
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-900">Color</span>
+                      <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Color</span>
                       <div className="text-xs text-gray-500 dark:text-gray-500">{selectedColor}</div>
                     </div>
                   </div>
                   <svg className={`w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-all duration-200 ${showColorDropdown ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
+                  {/* Popup indicator */}
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
                 </button>
                 
                 {/* Color Picker Dropdown */}
                 {showColorDropdown && (
-                  <div className="absolute bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-xl shadow-xl z-[99999] min-w-[300px] max-w-[350px] p-4 color-dropdown" style={{ 
-                    top: '100%',
-                    left: '0',
-                    marginTop: '8px',
-                    position: 'absolute',
-                    isolation: 'isolate'
-                  }}>
-                    {/* Search Input */}
-                    <div className="mb-4">
-                      <div className="relative">
-                        <input
-                          type="text"
-                          placeholder="Search colors..."
-                          className="w-full pl-10 pr-4 py-3 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg text-sm text-gray-900 dark:text-gray-900 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
-                        />
-                        <svg className="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
+                  <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-64 overflow-hidden color-dropdown animate-in slide-in-from-left-2 duration-200" style={{
+                      position: 'fixed',
+                      isolation: 'isolate',
+                      left: '320px',
+                      top: '280px'
+                    }}>
+                    {/* Header */}
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/20 dark:to-indigo-900/20">
+                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Color Selection</div>
+                      <div className="text-xs text-gray-500 mt-1">Current: {selectedColor}</div>
                     </div>
                     
                     {/* Quick Colors */}
-                    <div className="mb-6">
-                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Quick Colors</div>
-                      <div className="grid grid-cols-8 gap-3">
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                      <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">Quick Colors</div>
+                      <div className="grid grid-cols-8 gap-2">
                         {colors.map((color) => (
                           <button
                             key={color}
@@ -1484,19 +1928,29 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                                 console.log('No editor found');
                               }
                             }}
-                            className="w-10 h-10 rounded-lg border-2 border-gray-200 dark:border-gray-300 hover:border-gray-400 dark:hover:border-gray-500 hover:scale-110 transition-all duration-200 shadow-sm group"
+                            className={`w-8 h-8 rounded-lg border-2 hover:scale-110 transition-all duration-200 shadow-sm group ${
+                              selectedColor === color 
+                                ? 'border-purple-500 dark:border-purple-400 ring-2 ring-purple-200 dark:ring-purple-800' 
+                                : 'border-gray-200 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                            }`}
                             style={{ backgroundColor: color }}
                             title={`Apply ${color}`}
                           >
-                            <div className="w-full h-full rounded-lg bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                            {selectedColor === color && (
+                              <div className="w-full h-full rounded-lg flex items-center justify-center">
+                                <svg className="w-4 h-4 text-white drop-shadow-lg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                </svg>
+                              </div>
+                            )}
                           </button>
                         ))}
                       </div>
                     </div>
                     
                     {/* Color Palettes */}
-                    <div className="mb-6">
-                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Color Palettes</div>
+                    <div className="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                      <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">Color Palettes</div>
                       <div className="space-y-3">
                         {/* Professional Palette */}
                         <div>
@@ -1523,7 +1977,11 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                                     console.log('No editor found');
                                   }
                                 }}
-                                className="w-8 h-8 rounded border border-gray-200 dark:border-gray-300 hover:scale-110 transition-colors"
+                                className={`w-6 h-6 rounded border hover:scale-110 transition-colors ${
+                                  selectedColor === color 
+                                    ? 'border-purple-500 dark:border-purple-400 ring-2 ring-purple-200 dark:ring-purple-800' 
+                                    : 'border-gray-200 dark:border-gray-600'
+                                }`}
                                 style={{ backgroundColor: color }}
                                 title={color}
                               />
@@ -1556,7 +2014,11 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                                     console.log('No editor found');
                                   }
                                 }}
-                                className="w-8 h-8 rounded border border-gray-200 dark:border-gray-300 hover:scale-110 transition-all duration-200"
+                                className={`w-6 h-6 rounded border hover:scale-110 transition-all duration-200 ${
+                                  selectedColor === color 
+                                    ? 'border-purple-500 dark:border-purple-400 ring-2 ring-purple-200 dark:ring-purple-800' 
+                                    : 'border-gray-200 dark:border-gray-600'
+                                }`}
                                 style={{ backgroundColor: color }}
                                 title={color}
                               />
@@ -1567,12 +2029,12 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                     </div>
                     
                     {/* Custom Color Input */}
-                    <div>
-                      <div className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Custom Color</div>
-                      <div className="flex gap-3 items-center">
+                    <div className="p-3">
+                      <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-3">Custom Color</div>
+                      <div className="flex gap-2 items-center">
                         <input
                           type="color"
-                          className="w-14 h-12 rounded-lg border-2 border-gray-200 dark:border-gray-300 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
+                          className="w-10 h-10 rounded-lg border-2 border-gray-200 dark:border-gray-600 cursor-pointer hover:border-gray-400 dark:hover:border-gray-500 transition-colors"
                           onChange={(e) => {
                             const color = e.target.value;
                             const editor = getCurrentEditor();
@@ -1597,7 +2059,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           <input
                             type="text"
                             placeholder="#000000"
-                            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg text-sm text-gray-900 dark:text-gray-900 placeholder-gray-500 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all duration-200"
+                            className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:focus:ring-purple-400 dark:focus:border-purple-400 transition-all duration-200"
                             onChange={(e) => {
                               const color = e.target.value;
                               if (color.match(/^#[0-9A-F]{6}$/i)) {
@@ -1621,7 +2083,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                               }
                             }}
                           />
-                          <div className="text-xs text-gray-500 dark:text-gray-500 mt-2">Enter hex color code</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">Enter hex color code</div>
                         </div>
                       </div>
                     </div>
@@ -1632,14 +2094,14 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
             {/* Media & Elements section */}
             <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Media & Elements</div>
+              <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Media & Elements</div>
 
 
 
               {/* Image - Canva-style */}
               <button
                 onClick={insertImage}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group mb-3"
+                className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group mb-3"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-pink-100 dark:bg-pink-100 rounded-lg flex items-center justify-center group-hover:bg-pink-200 dark:group-hover:bg-pink-200 transition-colors">
@@ -1648,7 +2110,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Image</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Image</div>
                     <div className="text-xs text-gray-500 dark:text-gray-500">Upload from file</div>
                   </div>
                   <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -1662,7 +2124,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
               {/* Video - Canva-style */}
               <button
                 onClick={insertVideo}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group mb-3"
+                className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group mb-3"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-blue-100 dark:bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-200 transition-colors">
@@ -1671,7 +2133,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                     </svg>
                   </div>
                   <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Video</div>
+                    <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Video</div>
                     <div className="text-xs text-gray-500 dark:text-gray-500">Upload from file</div>
                   </div>
                   <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -1682,547 +2144,328 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                 </div>
               </button>
 
-              {/* Table - Pages-style */}
-              <button
-                onClick={insertTable}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 dark:group-hover:bg-indigo-200 transition-colors">
-                    <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Table</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">Add a data table</div>
-                  </div>
-                  <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </button>
+
             </div>
+          </div>
+        )}
 
-            {/* Mathematical Symbols section */}
-            <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Mathematical Symbols</div>
-              
-              {/* Quick Access - Most Common Symbols */}
-              <div className="mb-4">
-                <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2 px-2">Quick Access</div>
-                <div className="grid grid-cols-8 gap-2">
-                  {mathSymbols.slice(0, 16).map((symbol) => (
-                    <button
-                      key={symbol}
-                      onClick={() => {
-                        const editor = getCurrentEditor();
-                        if (editor) {
-                          editor.update(() => {
-                            const selection = $getSelection();
-                            if ($isRangeSelection(selection)) {
-                              selection.insertText(symbol);
-                            }
-                          });
-                        }
-                      }}
-                      className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
-                      title={`Insert ${symbol}`}
-                    >
-                      {symbol}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-                             {/* All Symbols Dropdown */}
-               <div className="relative overflow-visible" style={{ minHeight: '500px' }}>
-                                 <button
-                                     onClick={() => {
-                                       const newState = !showMathDropdown;
-                                       setShowMathDropdown(newState);
-                                       console.log('Math dropdown state changed to:', newState);
-                                       if (newState) {
-                                         // Force a re-render and check positioning
-                                         setTimeout(() => {
-                                           const dropdown = document.querySelector('.math-symbols-dropdown');
-                                           const container = dropdown?.parentElement;
-                                           if (dropdown) {
-                                             console.log('Dropdown element found:', dropdown);
-                                             console.log('Dropdown position:', dropdown.getBoundingClientRect());
-                                             console.log('Dropdown z-index:', window.getComputedStyle(dropdown).zIndex);
-                                             console.log('Container dimensions:', container?.getBoundingClientRect());
-                                             console.log('Container overflow:', window.getComputedStyle(container || document.body).overflow);
-                                             console.log('Dropdown computed styles:', {
-                                               display: window.getComputedStyle(dropdown).display,
-                                               visibility: window.getComputedStyle(dropdown).visibility,
-                                               opacity: window.getComputedStyle(dropdown).opacity,
-                                               position: window.getComputedStyle(dropdown).position
-                                             });
-                                           } else {
-                                             console.log('Dropdown element not found');
-                                           }
-                                         }, 100);
-                                       }
-                                     }}
-                  className={`w-full p-3 border transition-all duration-200 text-left flex items-center justify-between group ${
-                    showMathDropdown 
-                      ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-600' 
-                      : 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-200 dark:border-blue-600 hover:from-blue-100 dark:hover:from-blue-900/30 hover:to-indigo-100 dark:hover:to-indigo-900/30'
-                  }`}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M9 11h.01M12 11h.01M15 8h.01M9 8h.01M12 8h.01M15 5h.01M9 5h.01M12 5h.01M15 2h.01M9 2h.01M12 2h.01" />
-                      </svg>
-                    </div>
-                    <div className="flex-1 text-left">
-                      <span className="text-sm font-medium text-gray-900 dark:text-gray-900">All Mathematical Symbols</span>
-                      <div className="text-xs text-gray-500 dark:text-gray-500">Greek letters, operators, formulas & more</div>
-                    </div>
-                  </div>
-                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400 group-hover:text-blue-700 dark:group-hover:text-blue-300 transition-all duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        {/* Elements Tab - Shapes, Charts & Tables */}
+        {activeTab === 'shapes' && (
+          <div className="space-y-3">
+            <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider mb-4 px-2">Elements & Visuals</div>
+            
+            {/* Shapes Button - Opens Popup */}
+                <button
+              onClick={() => setShowShapesPopup(!showShapesPopup)}
+              className={`w-full p-4 border rounded-lg transition-all duration-200 group relative ${
+                showShapesPopup 
+                  ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                  : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-100 dark:to-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-200 transition-colors">
+                  <svg className="w-5 h-5 text-blue-600 dark:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-10 0a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2" />
                   </svg>
-                </button>
-                
-                 {/* Math Symbols Dropdown */}
-                 {showMathDropdown && (
-                   <div className="absolute bg-white dark:bg-white border-2 border-red-500 rounded-xl shadow-xl z-[99999] min-w-[400px] max-w-[500px] overflow-hidden math-symbols-dropdown" style={{ 
-                     top: '-200px',
-                     left: '0',
-                     position: 'absolute',
-                     isolation: 'isolate',
-                     transform: 'translateZ(0)',
-                     willChange: 'transform',
-                     backgroundColor: 'white',
-                     boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-                     pointerEvents: 'auto',
-                     visibility: 'visible',
-                     minHeight: '400px',
-                     width: '400px'
-                   }}>
-                  {/* Header */}
-                  <div className="p-4 border-b border-gray-100 dark:border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 relative">
-                    {/* Arrow indicator for top positioning */}
-                    <div className="absolute top-full left-6 w-4 h-4 bg-white dark:bg-white border-l border-t border-gray-200 dark:border-gray-300 transform rotate-45"></div>
-                    <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">Mathematical Symbols Library</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">Click any symbol to insert into your document</div>
+                </div>
+                <div className="flex-1 text-left">
+                                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">Shapes Library</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Basic, Geometry, Objects & more</div>
+                </div>
+                <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+                {/* Popup indicator */}
+                <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </div>
+              
+              {/* Shapes Popup */}
+              {showShapesPopup && (
+                <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-[600px] h-[500px] overflow-hidden shapes-popup animate-in slide-in-from-left-2 duration-200" style={{
+                    position: 'fixed',
+                    isolation: 'isolate',
+                    left: '320px',
+                    top: '200px'
+                  }}>
+
+                  {/* Header with Search */}
+                  <div className="p-4 border-b border-gray-100 dark:border-gray-700 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-gray-800 to-gray-900">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">Shapes Library</div>
+                      <button
+                        onClick={() => setShowShapesPopup(false)}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {/* Search Bar */}
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Search shapes..."
+                        value={shapeSearchTerm}
+                        onChange={(e) => setShapeSearchTerm(e.target.value)}
+                        className="w-full pl-10 pr-10 py-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:focus:ring-purple-400 dark:focus:border-purple-400 transition-all duration-200"
+                      />
+                                              <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <button className="absolute right-3 top-2.5 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                   
-                  {/* Tabs for different symbol categories */}
-                  <div className="p-3 border-b border-gray-100 dark:border-gray-200 bg-gray-50 dark:bg-gray-100">
-                    <div className="flex gap-2 flex-wrap">
-                      {['common', 'greek', 'operators', 'arrows', 'formulas'].map((category) => (
+                  {/* Content Area */}
+                  <div className="flex h-[400px]">
+                    {/* Left Panel - Categories */}
+                    <div className="w-1/3 border-r border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-3">
+                      <div className="space-y-2">
+                        {Object.entries(shapeCategories).map(([key, category]) => (
+                          <button
+                            key={key}
+                            onClick={() => setActiveShapeCategory(key)}
+                            className={`w-full p-3 text-left rounded-lg transition-all duration-200 ${
+                              activeShapeCategory === key
+                                ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-2 border-purple-300 dark:border-purple-600' 
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200'
+                            }`}
+                          >
+                            <div className="text-sm font-medium">{category.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Right Panel - Shapes Grid */}
+                    <div className="w-2/3 p-4 bg-white dark:bg-gray-800">
+                      <div className="grid grid-cols-4 gap-3">
+                        {shapeCategories[activeShapeCategory as keyof typeof shapeCategories]?.shapes.map((shape) => (
+                          <button
+                            key={shape.id}
+                            onClick={() => {
+                              insertShape(shape.id);
+                              setShowShapesPopup(false);
+                            }}
+                            className="p-3 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 group"
+                            title={shape.description}
+                          >
+                            <div className="w-12 h-12 bg-white dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-all duration-200 border border-gray-200 dark:border-gray-300">
+                              <span className="text-2xl text-gray-700 dark:text-gray-300">{shape.icon}</span>
+                  </div>
+                  <div className="text-center">
+                              <div className="text-xs font-medium text-gray-900 dark:text-gray-100 truncate">{shape.name}</div>
+                  </div>
+                </button>
+              ))}
+                      </div>
+                    </div>
+            </div>
+                </div>
+              )}
+            </button>
+
+            {/* Charts Button - Opens Popup */}
+            <button
+              onClick={() => setShowChartsPopup(!showChartsPopup)}
+              className={`w-full p-4 border rounded-lg transition-all duration-200 group relative ${
+                showChartsPopup 
+                  ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                  : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-orange-100 dark:bg-orange-100 rounded-lg flex items-center justify-center group-hover:bg-orange-200 dark:group-hover:bg-orange-200 transition-colors">
+                  <svg className="w-5 h-5 text-orange-600 dark:text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-7 4 7M3 4h18M4 4h16v2a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Charts & Graphs</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">2D, 3D & Interactive charts</div>
+                </div>
+                <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+                {/* Popup indicator */}
+                <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+              </div>
+              
+              {/* Charts Popup */}
+              {showChartsPopup && (
+                <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-[600px] h-[500px] overflow-hidden charts-popup animate-in slide-in-from-left-2 duration-200" style={{
+                    position: 'fixed',
+                    isolation: 'isolate',
+                    left: '320px',
+                    top: '280px'
+                  }}>
+
+                  {/* Header with Tabs */}
+                  <div className="p-4 border-b border-gray-100 dark:border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">Insert Charts</div>
+                      <button
+                        onClick={() => setShowChartsPopup(false)}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {/* Tabs */}
+                    <div className="flex space-x-1">
+                      {Object.entries(chartCategories).map(([key, category]) => (
                         <button
-                          key={category}
-                          onClick={() => {
-                            setActiveMathCategory(category);
-                          }}
-                          className={`px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ${
-                            activeMathCategory === category
-                              ? 'bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                              : 'bg-gray-100 dark:bg-gray-200 text-gray-600 dark:text-gray-600 hover:bg-gray-200 dark:hover:bg-gray-300'
+                          key={key}
+                          onClick={() => setActiveChartCategory(key)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            activeChartCategory === key
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-200'
                           }`}
                         >
-                          {category.charAt(0).toUpperCase() + category.slice(1)}
+                          {category.name}
                         </button>
                       ))}
                     </div>
                   </div>
                   
-                  {/* Content Area */}
-                  <div className="max-h-96 overflow-y-auto p-4">
-                    {/* Common Symbols */}
-                    {activeMathCategory === 'common' && (
-                      <div>
-                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-3">Most Common Symbols</div>
-                        <div className="grid grid-cols-8 gap-2">
-                          {mathSymbols.slice(0, 32).map((symbol) => (
-                            <button
-                              key={symbol}
-                              onClick={() => {
-                                const editor = getCurrentEditor();
-                                if (editor) {
-                                  editor.update(() => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                      selection.insertText(symbol);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
-                              title={`Insert ${symbol}`}
-                            >
-                              {symbol}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Greek Letters */}
-                    {activeMathCategory === 'greek' && (
-                      <div>
-                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-3">Greek Letters</div>
-                        <div className="grid grid-cols-8 gap-2">
-                          {mathSymbols.slice(32, 80).map((symbol) => (
-                            <button
-                              key={symbol}
-                              onClick={() => {
-                                const editor = getCurrentEditor();
-                                if (editor) {
-                                  editor.update(() => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                      selection.insertText(symbol);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300 dark:hover:border-green-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-green-600 dark:hover:text-green-400"
-                              title={`Insert ${symbol}`}
-                            >
-                              {symbol}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Mathematical Operators */}
-                    {activeMathCategory === 'operators' && (
-                      <div>
-                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-3">Mathematical Operators</div>
-                        <div className="grid grid-cols-8 gap-2">
-                          {mathSymbols.slice(80, 120).map((symbol) => (
-                            <button
-                              key={symbol}
-                              onClick={() => {
-                                const editor = getCurrentEditor();
-                                if (editor) {
-                                  editor.update(() => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                      selection.insertText(symbol);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-purple-600 dark:hover:text-purple-400"
-                              title={`Insert ${symbol}`}
-                            >
-                              {symbol}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Arrows and Relations */}
-                    {activeMathCategory === 'arrows' && (
-                      <div>
-                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-3">Arrows & Relations</div>
-                        <div className="grid grid-cols-8 gap-2">
-                          {mathSymbols.slice(120, 180).map((symbol) => (
-                            <button
-                              key={symbol}
-                              onClick={() => {
-                                const editor = getCurrentEditor();
-                                if (editor) {
-                                  editor.update(() => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                      selection.insertText(symbol);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-orange-600 dark:hover:text-orange-400"
-                              title={`Insert ${symbol}`}
-                            >
-                              {symbol}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Common Formulas */}
-                    {activeMathCategory === 'formulas' && (
-                      <div>
-                        <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-3">Common Formulas</div>
-                        <div className="space-y-2">
-                          {mathFormulas.slice(0, 15).map((formula) => (
-                            <button
-                              key={formula}
-                              onClick={() => {
-                                const editor = getCurrentEditor();
-                                if (editor) {
-                                  editor.update(() => {
-                                    const selection = $getSelection();
-                                    if ($isRangeSelection(selection)) {
-                                      selection.insertText(formula);
-                                    }
-                                  });
-                                }
-                              }}
-                              className="w-full p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200 text-center font-mono text-sm hover:text-orange-600 dark:hover:text-orange-400"
-                            >
-                              {formula}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
+                  {/* Charts Grid */}
+                  <div className="p-4 bg-white dark:bg-white">
+                    <div className="grid grid-cols-4 gap-3">
+                      {chartCategories[activeChartCategory as keyof typeof chartCategories]?.charts.map((chart) => (
+                        <button
+                          key={chart.id}
+                          onClick={() => {
+                            insertChart(chart.id);
+                            setShowChartsPopup(false);
+                          }}
+                          className="p-3 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 group"
+                          title={chart.description}
+                        >
+                          <div className="w-12 h-12 bg-white dark:bg-white rounded-lg flex items-center justify-center mx-auto mb-2 group-hover:scale-110 transition-all duration-200 border border-gray-200 dark:border-gray-300">
+                            <span className="text-2xl">{chart.icon}</span>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-xs font-medium text-gray-900 dark:text-gray-900 truncate">{chart.name}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
-                 )}
-              </div>
-            </div>
+              )}
+            </button>
 
-            {/* Text Formatting */}
-            <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Text Formatting</div>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Toggle bold formatting
-                            const isBold = selection.hasFormat('bold');
-                            selection.formatText('bold', !isBold);
-                          } else {
-                            // Set bold as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg font-bold text-gray-900 dark:text-gray-900 mb-1">B</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Bold</div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Toggle italic formatting
-                            const isItalic = selection.hasFormat('italic');
-                            selection.formatText('italic', !isItalic);
-                          } else {
-                            // Set italic as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg italic text-gray-900 dark:text-gray-900 mb-1">I</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Italic</div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Toggle underline formatting
-                            const isUnderline = selection.hasFormat('underline');
-                            selection.formatText('underline', !isUnderline);
-                          } else {
-                            // Set underline as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg underline text-gray-900 dark:text-gray-900 mb-1">U</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Underline</div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Toggle strikethrough formatting
-                            const isStrikethrough = selection.hasFormat('strikethrough');
-                            selection.formatText('strikethrough', !isStrikethrough);
-                          } else {
-                            // Set strikethrough as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg line-through text-gray-900 dark:text-gray-900 mb-1">S</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Strike</div>
-                </button>
+            {/* Tables Button - Opens Popup */}
+            <button
+              onClick={() => setShowTablesPopup(!showTablesPopup)}
+              className={`w-full p-4 border rounded-lg transition-all duration-200 group relative ${
+                showTablesPopup 
+                  ? 'bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-600' 
+                  : 'bg-white dark:bg-white border-gray-200 dark:border-gray-300 hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400'
+              }`}
+            >
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-100 dark:to-purple-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 dark:group-hover:bg-indigo-200 transition-colors">
+                  <svg className="w-5 h-5 text-indigo-600 dark:text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Tables & Grids</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-500">Basic, Structured & Data tables</div>
+                </div>
+                <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+                {/* Popup indicator */}
+                <div className="absolute top-2 right-2 w-2 h-2 bg-purple-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
               </div>
               
-              {/* Clear Formatting Button */}
-              <div className="mt-3">
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Clear all formatting from selected text
-                            selection.formatText('bold', false);
-                            selection.formatText('italic', false);
-                            selection.formatText('underline', false);
-                            selection.formatText('strikethrough', false);
-                            selection.formatText('font-family', 'Inter');
-                            selection.formatText('color', '#000000');
-                            console.log('Formatting cleared from selection');
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="w-full p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-600 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-all duration-200 text-center group"
-                >
-                  <div className="text-sm font-medium text-red-700 dark:text-red-300 mb-1">Clear Formatting</div>
-                  <div className="text-xs text-red-500 dark:text-red-400">Remove all formatting</div>
-                </button>
-              </div>
-            </div>
+              {/* Tables Popup */}
+              {showTablesPopup && (
+                <div className="fixed bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-[999999] w-[600px] h-[500px] overflow-hidden tables-popup animate-in slide-in-from-left-2 duration-200" style={{
+                    position: 'fixed',
+                    isolation: 'isolate',
+                    left: '320px',
+                    top: '360px'
+                  }}>
 
-            {/* Text Alignment */}
-            <div>
-              <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Text Alignment</div>
-              <div className="grid grid-cols-3 gap-3">
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Apply left alignment to selected text
-                            selection.formatText('text-align', 'left');
-                          } else {
-                            // Set left alignment as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300 dark:hover:border-green-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg text-gray-900 dark:text-gray-900 mb-1">⫷</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Left</div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Apply center alignment to selected text
-                            selection.formatText('text-align', 'center');
-                          } else {
-                            // Set center alignment as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300 dark:hover:border-green-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg text-gray-900 dark:text-gray-900 mb-1">⫸</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Center</div>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    const editor = getCurrentEditor();
-                    if (editor) {
-                      editor.update(() => {
-                        const selection = $getSelection();
-                        if ($isRangeSelection(selection)) {
-                          if (!selection.isCollapsed()) {
-                            // Apply right alignment to selected text
-                            selection.formatText('text-align', 'right');
-                          } else {
-                            // Set right alignment as default for new text
-                            maintainFormattingContext(selectedFont, selectedColor);
-                          }
-                        }
-                      });
-                    }
-                  }}
-                  className="p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-300 dark:hover:border-green-600 transition-all duration-200 text-center group"
-                >
-                  <div className="text-lg text-gray-900 dark:text-gray-900 mb-1">⫹</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-500">Right</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Shapes Tab - Canva-style */}
-        {activeTab === 'shapes' && (
-          <div className="space-y-3">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Shapes & Elements</div>
-            
-            <div className="grid grid-cols-2 gap-3">
-              {shapes.map((shape) => (
-                <button
-                  key={shape}
-                  onClick={() => insertShape(shape)}
-                  className="p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
-                >
-                  <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-100 dark:to-indigo-100 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-all duration-200">
-                    <div className="w-6 h-6 bg-blue-500 rounded-sm"></div>
+                  {/* Header with Tabs */}
+                  <div className="p-4 border-b border-gray-100 dark:border-gray-200 bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/10 dark:to-indigo-900/10">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">Insert Tables</div>
+                      <button
+                        onClick={() => setShowTablesPopup(false)}
+                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-200 rounded-lg transition-colors"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                    
+                    {/* Tabs */}
+                    <div className="flex space-x-1">
+                      {Object.entries(tableCategories).map(([key, category]) => (
+                        <button
+                          key={key}
+                          onClick={() => setActiveTableCategory(key)}
+                          className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            activeTableCategory === key
+                              ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' 
+                              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-200'
+                          }`}
+                        >
+                          {category.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 capitalize">{shape}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">Add shape</div>
+                  
+                  {/* Tables Grid */}
+                  <div className="p-4 bg-white dark:bg-white">
+                    <div className="grid grid-cols-2 gap-4">
+                      {tableCategories[activeTableCategory as keyof typeof tableCategories]?.tables.map((table) => (
+                        <button
+                          key={table.id}
+                          onClick={() => {
+                            insertTableWithType(table.id);
+                            setShowTablesPopup(false);
+                          }}
+                          className="p-4 bg-gray-50 dark:bg-gray-100 border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-300 dark:hover:border-purple-600 transition-all duration-200 group"
+                          title={table.description}
+                        >
+                          <div className="w-20 h-20 bg-gray-300 dark:bg-gray-600 rounded-lg flex items-center justify-center mx-auto mb-3 group-hover:scale-105 transition-all duration-200">
+                            <div className="text-lg font-bold text-gray-600 dark:text-gray-400">{table.preview}</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">{table.name}</div>
+                            <div className="text-xs text-gray-500 dark:text-gray-500">{table.description}</div>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </button>
-              ))}
-            </div>
+                </div>
+              )}
+            </button>
           </div>
         )}
 
@@ -2233,7 +2476,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
             
             <button
               onClick={insertImage}
-              className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
+              className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-pink-100 dark:bg-pink-100 rounded-lg flex items-center justify-center group-hover:bg-pink-200 dark:group-hover:bg-pink-200 transition-colors">
@@ -2242,7 +2485,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Image</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Image</div>
                   <div className="text-xs text-gray-500 dark:text-gray-500">Upload or embed</div>
                 </div>
                 <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -2255,7 +2498,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
             <button
               onClick={insertVideo}
-              className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
+              className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-red-100 dark:bg-red-100 rounded-lg flex items-center justify-center group-hover:bg-red-200 dark:group-hover:bg-red-200 transition-colors">
@@ -2264,7 +2507,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Video</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Video</div>
                   <div className="text-xs text-gray-500 dark:text-gray-500">Upload from file</div>
                 </div>
                 <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -2278,36 +2521,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
         )}
 
         {/* Templates Tab - Pages-style */}
-        {activeTab === 'templates' && (
-          <div className="space-y-3">
-            <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Templates</div>
-            
-            {templates.slice(0, 3).map((template, index) => (
-              <button
-                key={index}
-                onClick={() => insertTemplate(template)}
-                className="w-full p-4 bg-gradient-to-br from-white to-gray-50 dark:from-white dark:to-gray-50 border border-gray-200 dark:border-gray-300 rounded-lg hover:from-gray-50 dark:hover:from-gray-50 hover:to-gray-100 dark:hover:to-gray-100 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group shadow-sm"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center group-hover:scale-110 transition-all duration-200 shadow-md">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Template {index + 1}</div>
-                    <div className="text-xs text-gray-500 dark:text-gray-500">{template.split('\n')[0]}...</div>
-                  </div>
-                  <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
-                    <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
+
 
         {/* Tools Tab - Notion-style */}
         {activeTab === 'tools' && (
@@ -2315,13 +2529,13 @@ export default function LeftToolbar({}: LeftToolbarProps) {
             <div className="text-xs font-semibold text-gray-600 dark:text-gray-600 uppercase tracking-wider mb-4 px-2">Tools</div>
             
             {/* Translation Button */}
-            <div className="p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg">
+            <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg">
               <TranslationButton variant="left" className="w-full" />
             </div>
             
             <button
               onClick={() => changeTextDirection('ltr')}
-              className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
+              className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-blue-100 dark:bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 dark:group-hover:bg-blue-200 transition-colors">
@@ -2330,7 +2544,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Left to Right</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Left to Right</div>
                   <div className="text-xs text-gray-500 dark:text-gray-500">Change text direction</div>
                 </div>
                 <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -2343,7 +2557,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
             <button
               onClick={() => changeTextDirection('rtl')}
-              className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
+              className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group"
             >
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 dark:group-hover:bg-green-200 transition-colors">
@@ -2352,7 +2566,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-900 mb-1">Right to Left</div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white mb-1">Right to Left</div>
                   <div className="text-xs text-gray-500 dark:text-gray-500">Change text direction</div>
                 </div>
                 <div className="w-6 h-6 bg-gray-100 dark:bg-gray-200 rounded flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200">
@@ -2401,7 +2615,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
               <button
                 key={index}
                 onClick={tool.action}
-                className="w-full p-4 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-50 hover:border-gray-300 dark:hover:border-gray-400 transition-all duration-200 group"
+                className="w-full p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500 transition-all duration-200 group"
               >
                 <div className="flex items-center gap-4">
                   <div className="w-10 h-10 bg-violet-100 dark:bg-violet-100 rounded-lg flex items-center justify-center group-hover:bg-violet-200 dark:group-hover:bg-violet-200 transition-colors">
@@ -2496,7 +2710,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                         });
                       }
                     }}
-                    className="w-10 h-10 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
+                    className="w-10 h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 flex items-center justify-center text-lg font-mono hover:scale-110 hover:text-blue-600 dark:hover:text-blue-400"
                     title={`Insert ${symbol}`}
                   >
                     {symbol}
@@ -2713,7 +2927,7 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                           });
                         }
                       }}
-                      className="w-full p-3 bg-white dark:bg-white border border-gray-200 dark:border-gray-300 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200 text-center font-mono text-sm hover:text-orange-600 dark:hover:text-orange-400"
+                      className="w-full p-3 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-orange-50 dark:hover:bg-orange-900/20 hover:border-orange-300 dark:hover:border-orange-600 transition-all duration-200 text-center font-mono text-sm hover:text-orange-600 dark:hover:text-orange-400"
                     >
                       {formula}
                     </button>

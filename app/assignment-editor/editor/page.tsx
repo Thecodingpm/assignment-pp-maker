@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react';
 import LexicalEditor from '../../components/LexicalEditor';
 import { useAuth } from '../../components/AuthContext';
 import { updateDocument as updateFirebaseDocument } from '../../firebase/documents';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { getDocument as fetchDocument } from '../../firebase/documents';
 import CollaborationPlugin from '../../components/CollaborationPlugin';
 import ToolbarContainer from '../../components/ToolbarContainer';
@@ -19,12 +19,11 @@ interface Page {
   title?: string;
 }
 
-export default function AssignmentEditor() {
+function AssignmentEditorContent() {
   const [documentTitle, setDocumentTitle] = useState('Untitled Assignment');
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [pageToDelete, setPageToDelete] = useState<string | null>(null);
-
 
   const [editorKey, setEditorKey] = useState<number>(0);
   const [editor, setEditor] = useState<any>(null);
@@ -37,10 +36,14 @@ export default function AssignmentEditor() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const documentId = searchParams.get('id');
-  const templateId = searchParams.get('template');
-  const sessionId = searchParams.get('session');
+  
+  // Get URL parameters safely without useSearchParams
+  const [urlParams, setUrlParams] = useState<{
+    documentId: string | null;
+    templateId: string | null;
+    sessionId: string | null;
+  }>({ documentId: null, templateId: null, sessionId: null });
+  
   const isCollaborateMode = false;
 
   const { saveDocument, loadDocument, user, loading, refreshDocuments } = useAuth();
@@ -51,6 +54,18 @@ export default function AssignmentEditor() {
   const lastInputAtRef = useRef<number>(0);
   const editorFocusedRef = useRef<boolean>(false);
   const pendingContentRef = useRef<string>('');
+
+  // Get URL parameters once on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      setUrlParams({
+        documentId: searchParams.get('id'),
+        templateId: searchParams.get('template'),
+        sessionId: searchParams.get('session')
+      });
+    }
+  }, []);
 
   // Require login: if not logged in, redirect to login with return URL
   useEffect(() => {
@@ -141,25 +156,16 @@ export default function AssignmentEditor() {
   // Duplicate page function
   const duplicatePage = useCallback((pageId: string) => {
     const pageToDuplicate = pages.find(page => page.id === pageId);
-    if (!pageToDuplicate) return;
-    
-    const newPageId = Date.now().toString();
-    const newPage: Page = {
-      id: newPageId,
-      content: pageToDuplicate.content || '',
-      title: `${pageToDuplicate.title} (Copy)`
-    };
-    
-    // Insert the duplicated page after the current page
-    setPages(prevPages => {
-      const newPages = [...prevPages];
-      const currentIndex = newPages.findIndex(page => page.id === pageId);
-      newPages.splice(currentIndex + 1, 0, newPage);
-      return newPages;
-    });
-    
-    // Don't increment editorKey for duplication to preserve content
-    // setEditorKey(prev => prev + 1);
+    if (pageToDuplicate) {
+      const newPageId = (Date.now().toString());
+      const newPage: Page = {
+        id: newPageId,
+        content: pageToDuplicate.content,
+        title: `${pageToDuplicate.title} (Copy)`
+      };
+      
+      setPages(prevPages => [...prevPages, newPage]);
+    }
   }, [pages]);
 
   // Handle page content change
@@ -199,19 +205,19 @@ export default function AssignmentEditor() {
 
   // Load document on mount
   useEffect(() => {
-    if (!user) return;
+    if (!user || !urlParams.templateId) return;
 
     // If template is selected, load template content
-    if (templateId && !documentId) {
+    if (urlParams.templateId && !urlParams.documentId) {
       // Check if it's a Firebase template
-      const urlParams = new URLSearchParams(window.location.search);
-      const source = urlParams.get('source');
+      const urlParamsFromWindow = new URLSearchParams(window.location.search);
+      const source = urlParamsFromWindow.get('source');
       
       if (source === 'firebase') {
         // Load Firebase template
         const loadFirebaseTemplate = async () => {
           try {
-            const firebaseTemplate = await getTemplateById(templateId);
+            const firebaseTemplate = await getTemplateById(urlParams.templateId!);
             if (firebaseTemplate && firebaseTemplate.content) {
               setDocumentTitle(firebaseTemplate.title);
               setPages([{
@@ -228,7 +234,7 @@ export default function AssignmentEditor() {
         return;
       } else {
         // Load built-in template
-        const template = getTemplateContent(templateId);
+        const template = getTemplateContent(urlParams.templateId);
         if (template) {
           setDocumentTitle(template.name);
           setPages([{
@@ -242,10 +248,10 @@ export default function AssignmentEditor() {
     }
 
     // If document ID exists, load existing document
-    if (documentId) {
+    if (urlParams.documentId) {
       const load = async () => {
           try {
-            const doc = await fetchDocument(documentId);
+            const doc = await fetchDocument(urlParams.documentId!);
             if (doc) {
               setDocumentTitle(doc.title || 'Untitled Assignment');
               setCurrentDocId(doc.id);
@@ -271,18 +277,18 @@ export default function AssignmentEditor() {
 
       load();
     }
-  }, [user, documentId, templateId]);
+  }, [user, urlParams.documentId, urlParams.templateId]);
 
   // Auto-save functionality
   const handleSave = async () => {
-    if (!documentId) return;
+    if (!urlParams.documentId) return;
     
     setIsSaving(true);
     try {
       // Get content from all pages and combine into a single content string
       const combinedContent = pages.map(page => page.content || '').join('\n\n--- Page Break ---\n\n');
       
-      await updateFirebaseDocument(documentId, { content: combinedContent });
+      await updateFirebaseDocument(urlParams.documentId, { content: combinedContent });
       setAutoState('saved');
       setTimeout(() => setAutoState('idle'), 2000);
     } catch (error) {
@@ -295,12 +301,12 @@ export default function AssignmentEditor() {
 
   // Auto-save effect - save content whenever pages change
   useEffect(() => {
-    if (!documentId || pages.length === 0) return;
+    if (!urlParams.documentId || pages.length === 0) return;
     
     const autoSave = async () => {
       try {
         const combinedContent = pages.map(page => page.content || '').join('\n\n--- Page Break ---\n\n');
-        await updateFirebaseDocument(documentId, { content: combinedContent });
+        await updateFirebaseDocument(urlParams.documentId!, { content: combinedContent });
         setAutoState('saved');
         setTimeout(() => setAutoState('idle'), 2000);
       } catch (error) {
@@ -311,9 +317,7 @@ export default function AssignmentEditor() {
     // Debounce auto-save to avoid too many API calls
     const timeoutId = setTimeout(autoSave, 2000);
     return () => clearTimeout(timeoutId);
-  }, [pages, documentId]);
-
-
+  }, [pages, urlParams.documentId]);
 
   // Handle editor mount
   const handleEditorMount = useCallback((editorInstance: any) => {
@@ -586,7 +590,7 @@ export default function AssignmentEditor() {
             {/* Collaboration Plugin */}
             {showCollaborationPanel && (
               <CollaborationPlugin
-                documentId={documentId || undefined}
+                documentId={urlParams.documentId || undefined}
                 onCollaborationStateChange={(collaborating) => {
                   setIsCollaborating(collaborating);
                   if (!collaborating) {
@@ -662,5 +666,13 @@ export default function AssignmentEditor() {
         )}
       </div>
     </>
+  );
+}
+
+export default function AssignmentEditor() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AssignmentEditorContent />
+    </Suspense>
   );
 }

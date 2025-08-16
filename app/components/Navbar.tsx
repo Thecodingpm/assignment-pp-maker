@@ -308,7 +308,7 @@ export default function Navbar() {
                     </svg>
                   </button>
                   {showTeamMenu && (
-                    <div className="absolute right-0 top-full mt-2 w-[26rem] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-[100]">
+                    <div className="absolute right-0 top-full mt-2 w-[26rem] bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-[9999]">
                       <div className="mb-3">
                         <CollaborationPlugin documentId={documentId || undefined} inline showJoin={false} onCollaborationStateChange={() => {}} />
                       </div>
@@ -330,7 +330,7 @@ export default function Navbar() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
                   </button>
                   {showExportMenu && (
-                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg z-[70] overflow-hidden">
+                    <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-lg z-[9999] overflow-hidden">
                       <ul className="py-1">
                         <li>
                           <button onClick={() => doExport('pdf')} className="w-full px-4 py-2.5 text-left text-sm flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-700/60 text-gray-800 dark:text-gray-100">

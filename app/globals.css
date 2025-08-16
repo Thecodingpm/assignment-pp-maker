@@ -51,6 +51,189 @@ body > *:first-child {
   display: none;  /* Safari and Chrome */
 }
 
+/* Translation Button Enhancements */
+.translation-button-top {
+  position: relative;
+  z-index: 10;
+}
+
+.translation-button-top:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* Ensure toolbar buttons are always visible */
+.top-toolbar button {
+  flex-shrink: 0;
+}
+
+/* Fix toolbar positioning and z-index */
+.top-toolbar {
+  position: relative;
+  z-index: 100;
+}
+
+/* Ensure TranslationButton is visible above content */
+.translation-button-container {
+  position: relative;
+  z-index: 1000;
+  background: white;
+}
+
+/* Ensure content below top toolbar is properly spaced */
+.top-toolbar + * {
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+/* Fix sticky positioning to prevent content overlap */
+.sticky.top-0 {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 20px;
+}
+
+/* Ensure main content is properly spaced below toolbar */
+main, .main-content, .editor-content {
+  margin-top: 20px !important;
+  padding-top: 10px !important;
+}
+
+/* Lexical Editor Styles */
+[data-lexical-editor] {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #374151;
+  outline: none;
+}
+
+[data-lexical-editor] h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 1.5rem 0 1rem 0;
+  color: #111827;
+}
+
+[data-lexical-editor] h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 1.25rem 0 0.75rem 0;
+  color: #1f2937;
+}
+
+[data-lexical-editor] h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 1rem 0 0.5rem 0;
+  color: #374151;
+}
+
+[data-lexical-editor] p {
+  margin: 0.75rem 0;
+}
+
+[data-lexical-editor] ul, [data-lexical-editor] ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+[data-lexical-editor] li {
+  margin: 0.25rem 0;
+}
+
+[data-lexical-editor] strong {
+  font-weight: 600;
+}
+
+[data-lexical-editor] em {
+  font-style: italic;
+}
+
+[data-lexical-editor] u {
+  text-decoration: underline;
+}
+
+[data-lexical-editor] s {
+  text-decoration: line-through;
+}
+
+/* Selection styling */
+[data-lexical-editor]::selection {
+  background-color: #dbeafe;
+}
+
+[data-lexical-editor] *::selection {
+  background-color: #dbeafe;
+}
+
+/* Enhanced Font Formatting Support */
+.lexical-editor {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #374151;
+  outline: none;
+  min-height: 600px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+/* Font Family Support */
+.lexical-editor[style*="font-family"] {
+  font-family: inherit !important;
+}
+
+/* Font Size Support */
+.lexical-editor[style*="font-size"] {
+  font-size: inherit !important;
+}
+
+/* Color Support */
+.lexical-editor[style*="color"] {
+  color: inherit !important;
+}
+
+/* Ensure text nodes inherit formatting */
+.lexical-editor span,
+.lexical-editor div,
+.lexical-editor p {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Specific fix for assignment editor content */
+.assignment-editor main,
+.presentation-editor main,
+.assignment-editor .editor-content,
+.presentation-editor .editor-content {
+  margin-top: 30px !important;
+  padding-top: 15px !important;
+}
+
+/* Ensure dropdowns and modals appear above the top toolbar */
+.dropdown, .modal, .popup, [role="menu"], [role="dialog"] {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+/* Specific z-index for export and team up dropdowns */
+.export-dropdown, .team-dropdown, .invite-modal {
+  z-index: 9999 !important;
+  position: relative;
+}
+
+/* Ensure all interactive elements are above the toolbar */
+button[aria-expanded="true"] + div,
+button[aria-haspopup="true"] + div {
+  z-index: 9999 !important;
+  position: relative;
+}
+
 /* RTL-friendly fonts for Arabic, Urdu, and other languages */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Nastaliq+Urdu:wght@400;700&display=swap');
 
@@ -83,6 +266,156 @@ body > *:first-child {
   direction: ltr;
   unicode-bidi: plaintext;
   text-align: left;
+}
+
+/* Font Size Handling for Lexical Editor */
+/* Font size changes are now handled inline for selected text only */
+/* No CSS custom properties are used to avoid affecting whole editor */
+
+/* Cursor Blinking and Focus Management */
+.content-editable-editor {
+  caret-color: #3b82f6; /* Blue cursor color */
+}
+
+.content-editable-editor:focus {
+  outline: none;
+  caret-color: #3b82f6;
+}
+
+/* Ensure cursor is always visible when editor is focused */
+.content-editable-editor:focus::selection {
+  background-color: #dbeafe;
+}
+
+/* Force cursor to blink */
+.content-editable-editor:focus {
+  animation: cursor-blink 1s infinite;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Lexical Editor Cursor Management */
+.lexical-editor {
+  caret-color: #3b82f6 !important;
+}
+
+.lexical-editor:focus {
+  outline: none !important;
+  caret-color: #3b82f6 !important;
+}
+
+.lexical-editor:focus-within {
+  caret-color: #3b82f6 !important;
+}
+
+.lexical-editor[contenteditable="true"] {
+  caret-color: #3b82f6 !important;
+}
+
+/* Force cursor to be visible even when not focused */
+.lexical-editor:not(:focus) {
+  caret-color: #3b82f6 !important;
+  /* Stop cursor blinking when not focused */
+  animation: none !important;
+}
+
+/* Override browser default cursor hiding */
+.lexical-editor {
+  caret-color: #3b82f6 !important;
+}
+
+/* Cursor blinking control */
+.lexical-editor:focus {
+  /* Cursor blinks when focused */
+  caret-color: #3b82f6 !important;
+}
+
+.lexical-editor:not(:focus) {
+  /* Cursor stops blinking when not focused but remains visible */
+  caret-color: #3b82f6 !important;
+  animation: none !important;
+}
+
+/* Ensure cursor is always visible but blinking is controlled by focus */
+.lexical-editor {
+  caret-color: #3b82f6 !important;
+}
+
+/* Override any browser animations when not focused */
+.lexical-editor:not(:focus) * {
+  animation: none !important;
+}
+
+/* Force cursor to be visible in ALL states */
+.lexical-editor,
+.lexical-editor:focus,
+.lexical-editor:not(:focus),
+.lexical-editor:focus-within,
+.lexical-editor:focus-visible,
+.lexical-editor[contenteditable="true"],
+.lexical-editor[contenteditable="true"]:focus,
+.lexical-editor[contenteditable="true"]:not(:focus) {
+  caret-color: #000000 !important; /* Black cursor - ALWAYS VISIBLE */
+}
+
+/* Prevent browser from hiding cursor */
+.lexical-editor {
+  caret-color: #000000 !important; /* Black cursor */
+  -webkit-caret-color: #000000 !important; /* Safari support */
+  -moz-caret-color: #000000 !important; /* Firefox support */
+}
+
+/* Force cursor to be visible with maximum priority */
+.lexical-editor * {
+  caret-color: #000000 !important; /* Black cursor on all child elements */
+}
+
+/* Override any browser cursor hiding */
+.lexical-editor,
+.lexical-editor *,
+.lexical-editor[contenteditable="true"],
+.lexical-editor[contenteditable="true"] * {
+  caret-color: #000000 !important; /* Black cursor - MAXIMUM PRIORITY */
+}
+
+/* Force cursor visibility even when not focused */
+.lexical-editor:not(:focus),
+.lexical-editor:not(:focus) * {
+  caret-color: #000000 !important; /* Black cursor when not focused */
+  visibility: visible !important; /* Force visibility */
+  display: block !important; /* Force display */
+}
+
+/* Selection styling for Lexical */
+.lexical-editor::selection {
+  background-color: #dbeafe !important;
+}
+
+.lexical-editor *::selection {
+  background-color: #dbeafe !important;
+}
+
+/* Cursor blinking - only affects the caret, not the text */
+.lexical-editor:focus {
+  caret-color: #3b82f6 !important;
+}
+
+/* Ensure cursor is visible without affecting text */
+.lexical-editor:focus {
+  --cursor-opacity: 1;
+}
+
+/* Remove any conflicting animations */
+.lexical-editor * {
+  animation: none !important;
+}
+
+/* Only animate the caret itself, not the text content */
+.lexical-editor:focus {
+  caret-color: #3b82f6 !important;
 }
 
 /* Custom Scrollbar Styles */

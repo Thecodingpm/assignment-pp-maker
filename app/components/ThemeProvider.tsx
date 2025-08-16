@@ -15,7 +15,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>('light');
-  const [fontSize, setFontSize] = useState<string>('16');
+  const [fontSize, setFontSize] = useState<string>('12');
 
   useEffect(() => {
     // Check for saved theme preference or default to light mode
@@ -31,6 +31,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedFontSize) {
       setFontSize(savedFontSize);
     }
+    
+
   }, []);
 
   useEffect(() => {
