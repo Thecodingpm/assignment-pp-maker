@@ -1,0 +1,460 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===== CLEAN LEXICAL EDITOR STYLES ===== */
+/* Remove ALL conflicting styles and create clean, minimal editor styles */
+
+/* Basic editor container */
+.lexical-editor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ContentEditable - Clean and minimal */
+.lexical-editor [contenteditable="true"] {
+  outline: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  caret-color: var(--cursor-color, #000000) !important;
+  -webkit-caret-color: var(--cursor-color, #000000) !important;
+  -moz-caret-color: var(--cursor-color, #000000) !important;
+  
+  /* Remove ALL transitions and animations */
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  
+  /* Ensure proper text selection */
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  
+  /* Remove any margin/padding that could cause glitches */
+  margin: 0 !important;
+  padding: 0 !important;
+  
+  /* Ensure smooth typing */
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Remove ALL focus styles that could interfere */
+.lexical-editor [contenteditable="true"]:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove ALL transitions from editor children */
+.lexical-editor [contenteditable="true"] *,
+.lexical-editor * {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Clean text nodes - allow color inheritance */
+.lexical-editor [data-lexical-text="true"] {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean paragraph nodes */
+.lexical-editor p {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean span nodes */
+.lexical-editor span {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean div nodes */
+.lexical-editor div {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean heading styles */
+.lexical-editor h1,
+.lexical-editor h2,
+.lexical-editor h3,
+.lexical-editor h4,
+.lexical-editor h5,
+.lexical-editor h6 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean list styles */
+.lexical-editor ul,
+.lexical-editor ol {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor li {
+  margin: 0 !important;
+  padding: 0 !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean formatting styles */
+.lexical-editor strong,
+.lexical-editor b {
+  font-weight: bold !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor em,
+.lexical-editor i {
+  font-style: italic !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor u {
+  text-decoration: underline !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor s,
+.lexical-editor strike {
+  text-decoration: line-through !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean selection styles */
+.lexical-editor::selection,
+.lexical-editor *::selection {
+  background-color: #b3d4fc !important;
+}
+
+/* Remove ALL conflicting data-lexical-editor styles */
+[data-lexical-editor] {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ===== PAGE CONTAINER STYLES ===== */
+.page-container {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  scroll-margin-top: 0 !important;
+  scroll-margin-bottom: 0 !important;
+}
+
+/* ===== COLOR BOX STYLES ===== */
+.color-box {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.color-box:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-box.selected {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px #007acc;
+}
+
+/* ===== BASIC RESET ===== */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  scroll-behavior: auto !important;
+}
+
+/* ===== TOOLBAR STYLES ===== */
+.left-toolbar {
+  position: fixed !important;
+  z-index: 50 !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Custom scrollbar for left toolbar */
+.left-toolbar .overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #94a3b8;
+}
+
+/* ===== SCROLLBAR STYLES ===== */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== TRANSLATION BUTTON STYLES ===== */
+.translation-button-top {
+  position: relative;
+  z-index: 10;
+}
+
+.translation-button-top:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* ===== TOOLBAR POSITIONING ===== */
+.top-toolbar button {
+  flex-shrink: 0;
+}
+
+.top-toolbar {
+  position: relative;
+  z-index: 100;
+}
+
+.translation-button-container {
+  position: relative;
+  z-index: 1000;
+  background: white;
+}
+
+.top-toolbar + * {
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.sticky.top-0 {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 20px;
+}
+
+main, .main-content, .editor-content {
+  margin-top: 20px !important;
+  padding-top: 10px !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* ===== MATH SYMBOLS DROPDOWN STYLES ===== */
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #94a3b8;
+}
+
+/* ===== FONT SIZE AND LINE SPACING SUPPORT ===== */
+/* Line spacing support - allow dynamic line-height changes */
+.lexical-editor[data-line-spacing] {
+  line-height: var(--line-spacing, 1.5) !important;
+}
+
+.lexical-editor[data-line-spacing] * {
+  line-height: var(--line-spacing, 1.5) !important;
+}
+
+/* Font size support - allow dynamic font-size changes */
+.lexical-editor[data-font-size] {
+  font-size: var(--current-font-size, 16px) !important;
+}
+
+.lexical-editor[data-font-size] * {
+  font-size: var(--current-font-size, 16px) !important;
+}
+
+/* Font family support - allow dynamic font-family changes */
+.lexical-editor[data-font-family] {
+  font-family: var(--current-font-family, "Inter", sans-serif) !important;
+}
+
+.lexical-editor[data-font-family] * {
+  font-family: var(--current-font-family, "Inter", sans-serif) !important;
+}
+
+/* ===== CUSTOM SCROLLBAR STYLES ===== */
+/* Thin scrollbar for font dropdown */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Font dropdown specific scrollbar */
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+  transform: scaleX(1.2);
+}
+
+/* Dark mode font dropdown scrollbar */
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Enhanced font dropdown scrolling */
+.font-dropdown-container .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.dark .font-dropdown-container .overflow-y-auto {
+  scrollbar-color: #475569 #1e293b;
+}
+
+/* Smooth scrolling for font dropdown */
+.font-dropdown-container * {
+  scroll-behavior: smooth;
+}
+
