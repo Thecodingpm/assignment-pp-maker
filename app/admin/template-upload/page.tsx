@@ -9,7 +9,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 export default function AdminTemplateUpload() {
-  const { isAdmin, logoutAdmin, uploadTemplate, getTemplates, updateTemplate, deleteTemplate } = useAdmin();
+  const { isAdmin, logoutAdmin, uploadTemplate, createTestTemplate, getTemplates, updateTemplate, deleteTemplate } = useAdmin();
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -378,7 +378,7 @@ export default function AdminTemplateUpload() {
   console.log('isAdmin:', isAdmin);
   console.log('isAuthenticatedState:', isAuthenticatedState);
   console.log('isLoadingTemplates:', isLoadingTemplates);
-  console.log('localStorage templates:', localStorage.getItem('localTemplates'));
+  console.log('localStorage templates:', typeof window !== 'undefined' ? localStorage.getItem('localTemplates') : 'Not available');
   console.log('=== END DEBUG ===');
 
   const clearAllLocalStorage = () => {
@@ -490,7 +490,7 @@ export default function AdminTemplateUpload() {
           <h1 style="color: #2563eb; text-align: center; margin-bottom: 30px;">Simple Test Template</h1>
           
           <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
-            <h2 style="color: #1e293b; margin-bottom: 15px;">✅ Test Content</h2>
+            <h2 style="color: #1e293b; margin-bottom: 15px; font-size: 18px;">✅ Test Content</h2>
             <p style="color: #475569; margin-bottom: 10px; line-height: 1.6;">
               This is a simple test template to verify that upload and preview work without any errors.
             </p>
@@ -500,7 +500,7 @@ export default function AdminTemplateUpload() {
           </div>
           
           <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
-            <h3 style="color: #92400e; margin-bottom: 10px;">🎯 Test Features</h3>
+            <h3 style="color: #92400e; margin-bottom: 10px; font-size: 16px;">🎯 Test Features</h3>
             <ul style="color: #92400e; line-height: 1.8; margin: 0; padding-left: 20px;">
               <li>Simple HTML content</li>
               <li>Basic styling</li>
@@ -510,7 +510,7 @@ export default function AdminTemplateUpload() {
           </div>
           
           <div style="background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 20px;">
-            <h3 style="color: #065f46; margin-bottom: 10px;">✨ Expected Results</h3>
+            <h3 style="color: #065f46; margin-bottom: 10px; font-size: 16px;">✨ Expected Results</h3>
             <p style="color: #065f46; margin: 0;">
               This template should upload successfully and preview without any removeChild errors.
             </p>
@@ -530,10 +530,18 @@ export default function AdminTemplateUpload() {
       
       console.log('Template data created:', templateData);
       
-      // Try to upload using the existing upload function
-      const success = await uploadTemplate(templateData);
+      // Try to upload using the new test template function
+      const success = await createTestTemplate(templateData);
       
       if (success) {
+        console.log('Template created successfully, refreshing list...');
+        
+        // Add a small delay to ensure Firebase operations complete
+        setTimeout(async () => {
+          // Refresh the templates list
+          await refreshTemplates();
+        }, 1000);
+        
         alert('✅ Simple test template created successfully!\n\nNow:\n1. Go to template selection\n2. Find "Simple Test Template"\n3. Click Preview\n4. Should work without any errors');
       } else {
         alert('❌ Failed to create test template. Check console for details.');
@@ -542,6 +550,393 @@ export default function AdminTemplateUpload() {
     } catch (error) {
       console.error('Error creating simple test template:', error);
       alert('❌ Error creating test template: ' + error);
+    }
+  };
+
+  const createAdvancedTestTemplate = async () => {
+    try {
+      console.log('Creating advanced test template with positioning...');
+      
+      const testContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; position: relative;">
+          <!-- Header with background image and overlaid text -->
+          <div style="position: relative; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin-bottom: 30px; overflow: hidden;">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; z-index: 2;">
+              <h1 style="font-size: 36px; font-weight: bold; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Advanced Test Template</h1>
+              <p style="font-size: 18px; margin: 10px 0 0 0; opacity: 0.9;">With Proper Positioning & Alignment</p>
+            </div>
+            <!-- Decorative elements -->
+            <div style="position: absolute; top: 20px; right: 20px; width: 60px; height: 60px; background: rgba(255,255,255,0.2); border-radius: 50%;"></div>
+            <div style="position: absolute; bottom: 20px; left: 20px; width: 40px; height: 40px; background: rgba(255,255,255,0.15); border-radius: 50%;"></div>
+          </div>
+          
+          <!-- Content sections with different alignments -->
+          <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+            <!-- Left column -->
+            <div style="flex: 1; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px;">
+              <h2 style="color: #1e293b; margin-bottom: 15px; text-align: center; font-size: 24px;">Left Column</h2>
+              <p style="color: #475569; margin-bottom: 10px; line-height: 1.6; text-align: justify;">
+                This is the left column content with justified text alignment. It demonstrates how text flows and aligns within the container.
+              </p>
+              <div style="text-align: right; margin-top: 15px;">
+                <span style="background: #3b82f6; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px;">Right Aligned Button</span>
+              </div>
+            </div>
+            
+            <!-- Right column -->
+            <div style="flex: 1; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 12px; padding: 25px;">
+              <h2 style="color: #92400e; margin-bottom: 15px; text-align: center; font-size: 24px;">Right Column</h2>
+              <p style="color: #92400e; margin-bottom: 10px; line-height: 1.6; text-align: left;">
+                This is the right column with left-aligned text. It shows different alignment options.
+              </p>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background: #f59e0b; color: white; padding: 8px 16px; border-radius: 6px; font-size: 14px;">Center Aligned Button</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Floating elements with absolute positioning -->
+          <div style="position: relative; height: 150px; background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 25px; margin-bottom: 30px;">
+            <h2 style="color: #065f46; margin-bottom: 15px; text-align: center; font-size: 24px;">Floating Elements</h2>
+            
+            <!-- Floating element 1 -->
+            <div style="position: absolute; top: 20px; left: 20px; background: #10b981; color: white; padding: 10px; border-radius: 8px; font-size: 14px; z-index: 3;">
+              Top Left
+            </div>
+            
+            <!-- Floating element 2 -->
+            <div style="position: absolute; top: 20px; right: 20px; background: #ef4444; color: white; padding: 10px; border-radius: 8px; font-size: 14px; z-index: 3;">
+              Top Right
+            </div>
+            
+            <!-- Floating element 3 -->
+            <div style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: #8b5cf6; color: white; padding: 10px; border-radius: 8px; font-size: 14px; z-index: 3;">
+              Bottom Center
+            </div>
+          </div>
+          
+          <!-- Grid layout with different alignments -->
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+            <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 8px; padding: 20px; text-align: left;">
+              <h3 style="color: #991b1b; margin-bottom: 10px; font-size: 18px;">Left Aligned</h3>
+              <p style="color: #7f1d1d; font-size: 14px; line-height: 1.5;">This content is left-aligned within its container.</p>
+            </div>
+            
+            <div style="background: #f0f9ff; border: 2px solid #bae6fd; border-radius: 8px; padding: 20px; text-align: center;">
+              <h3 style="color: #0c4a6e; margin-bottom: 10px; font-size: 18px;">Center Aligned</h3>
+              <p style="color: #0c4a6e; font-size: 14px; line-height: 1.5;">This content is center-aligned within its container.</p>
+            </div>
+            
+            <div style="background: #f0fdf4; border: 2px solid #bbf7d0; border-radius: 8px; padding: 20px; text-align: right;">
+              <h3 style="color: #14532d; margin-bottom: 10px; font-size: 18px;">Right Aligned</h3>
+              <p style="color: #14532d; font-size: 14px; line-height: 1.5;">This content is right-aligned within its container.</p>
+            </div>
+          </div>
+          
+          <!-- Footer with mixed content -->
+          <div style="background: #1e293b; color: white; border-radius: 12px; padding: 25px; text-align: center;">
+            <h2 style="margin-bottom: 15px; font-size: 24px;">Footer Section</h2>
+            <p style="margin-bottom: 20px; opacity: 0.9; line-height: 1.6;">
+              This footer demonstrates mixed content with proper alignment and positioning.
+            </p>
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px;">
+              <div style="background: #3b82f6; padding: 10px 20px; border-radius: 6px; font-size: 14px;">Button 1</div>
+              <div style="background: #10b981; padding: 10px 20px; border-radius: 6px; font-size: 14px;">Button 2</div>
+              <div style="background: #f59e0b; padding: 10px 20px; border-radius: 6px; font-size: 14px;">Button 3</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      const templateData = {
+        title: 'Advanced Test Template',
+        description: 'A comprehensive test template with positioning, alignment, and styling',
+        category: 'assignment',
+        content: testContent,
+        fileName: 'advanced-test.html',
+        fileSize: testContent.length,
+        uploadedBy: 'test@test.com'
+      };
+      
+      console.log('Advanced template data created:', templateData);
+      
+      // Try to upload using the new test template function
+      const success = await createTestTemplate(templateData);
+      
+      if (success) {
+        console.log('Template created successfully, refreshing list...');
+        
+        // Add a small delay to ensure Firebase operations complete
+        setTimeout(async () => {
+          // Refresh the templates list
+          await refreshTemplates();
+        }, 1000);
+        
+        alert('✅ Advanced test template created successfully!\n\nThis template includes:\n• Absolute positioning\n• Different text alignments\n• Floating elements\n• Grid layouts\n• Mixed styling\n\nPreview it to see if all formatting is preserved!');
+      } else {
+        alert('❌ Failed to create advanced test template. Check console for details.');
+      }
+      
+    } catch (error) {
+      console.error('Error creating advanced test template:', error);
+      alert('❌ Error creating advanced test template: ' + error);
+    }
+  };
+
+  const downloadTestTemplateFile = () => {
+    try {
+      console.log('Creating downloadable test template file...');
+      
+      const testContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Test Template</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .header {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 18px;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .two-columns {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .column {
+            flex: 1;
+            padding: 25px;
+            border-radius: 12px;
+        }
+        .left-column {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+        }
+        .right-column {
+            background: #fef3c7;
+            border: 2px solid #f59e0b;
+        }
+        .floating-container {
+            position: relative;
+            height: 150px;
+            background: #ecfdf5;
+            border: 2px solid #10b981;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .floating-element {
+            position: absolute;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: white;
+        }
+        .top-left {
+            top: 20px;
+            left: 20px;
+            background: #10b981;
+        }
+        .top-right {
+            top: 20px;
+            right: 20px;
+            background: #ef4444;
+        }
+        .bottom-center {
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #8b5cf6;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .grid-item {
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid;
+        }
+        .grid-left {
+            background: #fef2f2;
+            border-color: #fecaca;
+            text-align: left;
+        }
+        .grid-center {
+            background: #f0f9ff;
+            border-color: #bae6fd;
+            text-align: center;
+        }
+        .grid-right {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            text-align: right;
+        }
+        .footer {
+            background: #1e293b;
+            color: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        .button-group {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            color: white;
+            text-decoration: none;
+        }
+        .btn-blue { background: #3b82f6; }
+        .btn-green { background: #10b981; }
+        .btn-orange { background: #f59e0b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>Advanced Test Template</h1>
+                <p>With Proper Positioning & Alignment</p>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="two-columns">
+                <div class="column left-column">
+                    <h2 style="color: #1e293b; margin-bottom: 15px; text-align: center; font-size: 24px;">Left Column</h2>
+                    <p style="color: #475569; margin-bottom: 10px; line-height: 1.6; text-align: justify;">
+                        This is the left column content with justified text alignment. It demonstrates how text flows and aligns within the container.
+                    </p>
+                    <div style="text-align: right; margin-top: 15px;">
+                        <span class="button btn-blue">Right Aligned Button</span>
+                    </div>
+                </div>
+                
+                <div class="column right-column">
+                    <h2 style="color: #92400e; margin-bottom: 15px; text-align: center; font-size: 24px;">Right Column</h2>
+                    <p style="color: #92400e; margin-bottom: 10px; line-height: 1.6; text-align: left;">
+                        This is the right column with left-aligned text. It shows different alignment options.
+                    </p>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <span class="button btn-orange">Center Aligned Button</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="floating-container">
+                <h2 style="color: #065f46; margin-bottom: 15px; text-align: center; font-size: 24px;">Floating Elements</h2>
+                <div class="floating-element top-left">Top Left</div>
+                <div class="floating-element top-right">Top Right</div>
+                <div class="floating-element bottom-center">Bottom Center</div>
+            </div>
+            
+            <div class="grid">
+                <div class="grid-item grid-left">
+                    <h3 style="color: #991b1b; margin-bottom: 10px; font-size: 18px;">Left Aligned</h3>
+                    <p style="color: #7f1d1d; font-size: 14px; line-height: 1.5;">This content is left-aligned within its container.</p>
+                </div>
+                
+                <div class="grid-item grid-center">
+                    <h3 style="color: #0c4a6e; margin-bottom: 10px; font-size: 18px;">Center Aligned</h3>
+                    <p style="color: #0c4a6e; font-size: 14px; line-height: 1.5;">This content is center-aligned within its container.</p>
+                </div>
+                
+                <div class="grid-item grid-right">
+                    <h3 style="color: #14532d; margin-bottom: 10px; font-size: 18px;">Right Aligned</h3>
+                    <p style="color: #14532d; font-size: 14px; line-height: 1.5;">This content is right-aligned within its container.</p>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <h2 style="margin-bottom: 15px; font-size: 24px;">Footer Section</h2>
+                <p style="margin-bottom: 20px; opacity: 0.9; line-height: 1.6;">
+                    This footer demonstrates mixed content with proper alignment and positioning.
+                </p>
+                <div class="button-group">
+                    <span class="button btn-blue">Button 1</span>
+                    <span class="button btn-green">Button 2</span>
+                    <span class="button btn-orange">Button 3</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+      
+      // Create a blob with the HTML content
+      const blob = new Blob([testContent], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      // Create download link
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'advanced-test-template.html';
+      document.body.appendChild(a);
+      a.click();
+      
+      // Clean up
+      try {
+        if (a.parentNode) {
+          document.body.removeChild(a);
+        }
+      } catch (error) {
+        console.warn('Could not remove download link:', error);
+      }
+      URL.revokeObjectURL(url);
+      
+      alert('✅ Advanced test template file downloaded!\n\nNow:\n1. Upload this HTML file using the "Upload Template" button\n2. Give it a name and description\n3. Preview it to see if formatting is preserved\n4. This will test the file upload and preview system');
+      
+    } catch (error) {
+      console.error('Error creating downloadable template:', error);
+      alert('❌ Error creating downloadable template: ' + error);
     }
   };
 
@@ -851,6 +1246,24 @@ export default function AdminTemplateUpload() {
                   onClick={createSimpleTestTemplate}
                 >
                   🧪 Create Simple Test Template
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                  onClick={createAdvancedTestTemplate}
+                >
+                  🧪 Create Advanced Test Template
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  onClick={refreshTemplates}
+                >
+                  🔄 Refresh Templates
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  onClick={downloadTestTemplateFile}
+                >
+                  📥 Download Test Template
                 </button>
             </div>
           </div>

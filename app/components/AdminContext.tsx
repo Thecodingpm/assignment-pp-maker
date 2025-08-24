@@ -14,6 +14,13 @@ interface AdminContextType {
   checkAdminStatus: () => boolean;
   isCurrentUserAdmin: () => boolean;
   uploadTemplate: (file: File, title: string, description: string, category: string) => Promise<boolean>;
+  createTestTemplate: (templateData: {
+    title: string;
+    description: string;
+    category: string;
+    content: string;
+    fileName: string;
+  }) => Promise<boolean>;
   getTemplates: () => Promise<Template[]>;
   updateTemplate: (id: string, updates: Partial<Template>) => Promise<boolean>;
   deleteTemplate: (id: string) => Promise<boolean>;
@@ -385,6 +392,160 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Function to create test templates directly (for testing purposes)
+  const createTestTemplate = async (templateData: {
+    title: string;
+    description: string;
+    category: string;
+    content: string;
+    fileName: string;
+  }): Promise<boolean> => {
+    try {
+      console.log('=== CREATING TEST TEMPLATE ===');
+      console.log('Template data:', templateData);
+      
+      // Validate inputs
+      if (!templateData.title || !templateData.description || !templateData.category || !templateData.content) {
+        console.error('Missing required fields for test template:', {
+          title: !!templateData.title,
+          description: !!templateData.description,
+          category: !!templateData.category,
+          content: !!templateData.content
+        });
+        return false;
+      }
+      
+      const firebaseTemplateData: TemplateUploadData = {
+        title: templateData.title,
+        description: templateData.description,
+        category: templateData.category,
+        content: templateData.content,
+        fileName: templateData.fileName,
+        fileSize: templateData.content.length,
+        uploadedBy: user?.email || 'test@test.com'
+      };
+      
+      console.log('Created Firebase template data:', firebaseTemplateData);
+      
+      // Try Firebase upload FIRST - this is the primary storage
+      let templateId: string | null = null;
+      let firebaseError: any = null;
+      
+      try {
+        console.log('Attempting Firebase upload for test template...');
+        templateId = await firebaseUploadTemplate(firebaseTemplateData);
+        console.log('Firebase upload successful for test template, ID:', templateId);
+        
+        if (templateId) {
+          // Clear any Firebase blocked flag
+          localStorage.removeItem('firebase_blocked');
+          console.log('Test template Firebase upload successful, cleared blocked flag');
+        }
+        
+      } catch (error: any) {
+        firebaseError = error;
+        console.error('Firebase upload failed for test template:', error);
+        
+        // Set Firebase blocked flag
+        localStorage.setItem('firebase_blocked', Date.now().toString());
+        
+        // Check specific error types
+        if (error.code === 'permission-denied') {
+          console.error('Firebase permission denied - check rules');
+          alert('❌ Firebase permission denied. Please check Firebase security rules.');
+          return false;
+        } else if (error.code === 'quota-exceeded') {
+          console.error('Firebase quota exceeded');
+          alert('❌ Firebase quota exceeded. Please upgrade your Firebase plan.');
+          return false;
+        } else if (error.code === 'resource-exhausted') {
+          console.error('Firebase resource exhausted');
+          alert('❌ Firebase storage full. Please clear some data or upgrade plan.');
+          return false;
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+          console.error('Network error - Firebase might be blocked');
+          alert('❌ Network error. Firebase might be blocked by browser or network.');
+        }
+        
+        console.log('Firebase failed for test template, will try localStorage fallback...');
+      }
+      
+      // If Firebase failed, try localStorage fallback with quota management
+      if (!templateId) {
+        console.log('Creating local test template ID...');
+        templateId = 'local_test_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        try {
+          // Check localStorage quota before attempting to save
+          const templateSize = JSON.stringify(firebaseTemplateData).length;
+          console.log('Test template data size:', templateSize, 'bytes');
+          
+          // Try to estimate available space
+          let availableSpace = 0;
+          try {
+            // Test localStorage capacity
+            const testKey = 'storage_test_' + Date.now();
+            const testData = 'x'.repeat(1024); // 1KB test
+            localStorage.setItem(testKey, testData);
+            localStorage.removeItem(testKey);
+            availableSpace = 1024; // At least 1KB available
+          } catch (quotaError) {
+            console.error('localStorage quota check failed:', quotaError);
+            availableSpace = 0;
+          }
+          
+          if (availableSpace < templateSize) {
+            // Try to clear old templates to make space
+            console.log('localStorage space low, clearing old templates...');
+            try {
+              const existingTemplates = localStorage.getItem('localTemplates');
+              if (existingTemplates) {
+                const templates = JSON.parse(existingTemplates);
+                // Keep only the 5 most recent templates
+                const recentTemplates = templates.slice(-5);
+                localStorage.setItem('localTemplates', JSON.stringify(recentTemplates));
+                console.log('Cleared old templates, kept 5 most recent');
+              }
+            } catch (clearError) {
+              console.error('Failed to clear old templates:', clearError);
+            }
+          }
+          
+          const existingTemplates = localStorage.getItem('localTemplates');
+          const templates = existingTemplates ? JSON.parse(existingTemplates) : [];
+          
+          const newTemplate = {
+            id: templateId,
+            ...firebaseTemplateData,
+            uploadedAt: new Date().toISOString(),
+            status: 'active'
+          };
+          
+          templates.push(newTemplate);
+          localStorage.setItem('localTemplates', JSON.stringify(templates));
+          console.log('Test template saved to localStorage as fallback');
+          
+          // Show warning to user
+          if (firebaseError) {
+            console.log('Test template saved locally due to Firebase issues');
+          }
+          
+        } catch (localStorageError) {
+          console.error('Failed to save test template to localStorage:', localStorageError);
+          alert('❌ Failed to save test template. Storage quota exceeded.');
+          return false;
+        }
+      }
+      
+      console.log('=== TEST TEMPLATE CREATION SUCCESS ===');
+      return true;
+      
+    } catch (error) {
+      console.error('Error creating test template:', error);
+      return false;
+    }
+  };
+
   const getTemplates = async (): Promise<Template[]> => {
     try {
       console.log('getTemplates called, trying Firebase first...');
@@ -547,6 +708,7 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     checkAdminStatus,
     isCurrentUserAdmin,
     uploadTemplate,
+    createTestTemplate,
     getTemplates,
     updateTemplate,
     deleteTemplate

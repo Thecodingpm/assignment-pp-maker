@@ -52,14 +52,14 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
   useEffect(() => {
     if (isOpen && iframeRef.current && template?.content) {
       try {
-        console.log('Setting up iframe content...');
+        console.log('Setting up iframe content with preserved styling...');
         const iframe = iframeRef.current;
         const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
         
         if (iframeDoc) {
           iframeDoc.open();
           
-          // Create a completely raw HTML document - NO PROCESSING
+          // Create a completely raw HTML document that preserves ALL original styling
           const htmlContent = `
             <!DOCTYPE html>
             <html>
@@ -68,21 +68,26 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Template Preview - ${template?.name || 'Template'}</title>
                 <style>
-                  /* ENHANCED STYLES FOR BETTER TEMPLATE DISPLAY */
+                  /* RESET STYLES - MINIMAL INTERFERENCE */
+                  * {
+                    box-sizing: border-box;
+                  }
+                  
                   body {
                     margin: 0;
                     padding: 20px;
                     background: #f5f5f5;
-                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    font-family: Arial, sans-serif;
                     line-height: 1.6;
                   }
                   
+                  /* TEMPLATE CONTAINER - PRESERVE ALL ORIGINAL STYLES */
                   .template-container {
-                    max-width: 800px;
+                    max-width: 100%;
                     margin: 0 auto;
                     background: white;
                     border-radius: 10px;
-                    overflow: hidden;
+                    overflow: visible;
                     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
                     position: relative;
                   }
@@ -91,62 +96,97 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                     padding: 30px;
                     position: relative;
                     z-index: 1;
-                    font-family: inherit;
-                    line-height: 1.6;
-                    color: #333;
+                    /* CRITICAL: Allow ALL original styles to work */
+                    min-height: 400px;
                   }
                   
-                  /* PRESERVE ALL ORIGINAL STYLES */
+                  /* PRESERVE ALL ORIGINAL STYLES - NO OVERRIDES */
                   .template-content * {
                     /* Allow all original styles to take precedence */
+                    box-sizing: border-box;
                   }
                   
-                  /* Enhanced typography */
-                  .template-content h1 {
-                    font-size: 24px;
-                    font-weight: bold;
-                    margin-bottom: 16px;
-                    color: #1a1a1a;
+                  /* Ensure positioned elements work correctly */
+                  .template-content [style*="position: absolute"],
+                  .template-content [style*="position:absolute"] {
+                    position: absolute !important;
                   }
                   
-                  .template-content h2 {
-                    font-size: 20px;
-                    font-weight: bold;
-                    margin-bottom: 12px;
-                    color: #1f2937;
+                  .template-content [style*="position: relative"],
+                  .template-content [style*="position:relative"] {
+                    position: relative !important;
                   }
                   
-                  .template-content h3 {
-                    font-size: 18px;
-                    font-weight: bold;
-                    margin-bottom: 10px;
-                    color: #374151;
+                  .template-content [style*="position: fixed"],
+                  .template-content [style*="position:fixed"] {
+                    position: fixed !important;
                   }
                   
-                  .template-content p {
-                    margin-bottom: 12px;
-                    line-height: 1.6;
+                  /* Preserve all positioning styles */
+                  .template-content [style*="top:"] {
+                    /* Keep original top positioning */
                   }
                   
-                  .template-content ul {
-                    margin-bottom: 12px;
-                    padding-left: 20px;
+                  .template-content [style*="left:"] {
+                    /* Keep original left positioning */
                   }
                   
-                  .template-content li {
-                    margin-bottom: 6px;
+                  .template-content [style*="right:"] {
+                    /* Keep original right positioning */
                   }
                   
-                  .template-content strong {
-                    font-weight: bold;
-                    color: #1f2937;
+                  .template-content [style*="bottom:"] {
+                    /* Keep original bottom positioning */
                   }
                   
-                  /* Preserve text alignment */
-                  .text-center { text-align: center; }
-                  .text-left { text-align: left; }
-                  .text-right { text-align: right; }
-                  .text-justify { text-align: justify; }
+                  /* Preserve all alignment styles */
+                  .template-content [style*="text-align:"] {
+                    /* Keep original text alignment */
+                  }
+                  
+                  .template-content [style*="vertical-align:"] {
+                    /* Keep original vertical alignment */
+                  }
+                  
+                  /* Preserve all font and color styles */
+                  .template-content [style*="font-family:"] {
+                    /* Keep original font family */
+                  }
+                  
+                  .template-content [style*="font-size:"] {
+                    /* Keep original font size */
+                  }
+                  
+                  .template-content [style*="color:"] {
+                    /* Keep original color */
+                  }
+                  
+                  .template-content [style*="background:"] {
+                    /* Keep original background */
+                  }
+                  
+                  /* Preserve all margin and padding */
+                  .template-content [style*="margin:"] {
+                    /* Keep original margin */
+                  }
+                  
+                  .template-content [style*="padding:"] {
+                    /* Keep original padding */
+                  }
+                  
+                  /* Preserve all border styles */
+                  .template-content [style*="border:"] {
+                    /* Keep original border */
+                  }
+                  
+                  /* Preserve all width and height */
+                  .template-content [style*="width:"] {
+                    /* Keep original width */
+                  }
+                  
+                  .template-content [style*="height:"] {
+                    /* Keep original height */
+                  }
                   
                   /* Debug info styles */
                   .debug-info {
@@ -164,6 +204,20 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                   
                   .debug-info .success { color: #10b981; }
                   .debug-info .error { color: #ef4444; }
+                  
+                  /* Raw HTML display */
+                  .raw-html {
+                    background: #1e1e1e;
+                    color: #d4d4d4;
+                    padding: 20px;
+                    border-radius: 8px;
+                    font-family: 'Courier New', monospace;
+                    font-size: 12px;
+                    white-space: pre-wrap;
+                    overflow-x: auto;
+                    max-height: 500px;
+                    overflow-y: auto;
+                  }
                 </style>
               </head>
               <body>
@@ -183,34 +237,45 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                 </div>
                 
                 <script>
-                  // Debug script to analyze the rendered content
+                  // Enhanced debug script to analyze the rendered content
                   setTimeout(() => {
                     try {
                       const textContent = document.body.textContent || '';
                       const positionedElements = document.querySelectorAll('[style*="position:"]');
                       const styledElements = document.querySelectorAll('[style]');
                       const images = document.querySelectorAll('img');
-                      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
-                      const paragraphs = document.querySelectorAll('p');
-                      const lists = document.querySelectorAll('ul, ol');
+                      const alignedElements = document.querySelectorAll('[style*="text-align:"]');
+                      const coloredElements = document.querySelectorAll('[style*="color:"]');
+                      const fontElements = document.querySelectorAll('[style*="font"]');
                       
-                      console.log('Template content analysis:');
+                      console.log('=== TEMPLATE CONTENT ANALYSIS ===');
                       console.log('- Text content length:', textContent.length);
                       console.log('- Positioned elements:', positionedElements.length);
                       console.log('- Styled elements:', styledElements.length);
                       console.log('- Images:', images.length);
-                      console.log('- Headings:', headings.length);
-                      console.log('- Paragraphs:', paragraphs.length);
-                      console.log('- Lists:', lists.length);
+                      console.log('- Aligned elements:', alignedElements.length);
+                      console.log('- Colored elements:', coloredElements.length);
+                      console.log('- Font elements:', fontElements.length);
+                      
+                      // Log specific positioned elements
+                      positionedElements.forEach((el, index) => {
+                        console.log('Positioned element', index + 1, ':', el.tagName, el.style.cssText);
+                      });
+                      
+                      // Log specific aligned elements
+                      alignedElements.forEach((el, index) => {
+                        console.log('Aligned element', index + 1, ':', el.tagName, el.style.cssText);
+                      });
                       
                       const debugInfo = document.getElementById('rendered-info');
                       if (debugInfo) {
                         debugInfo.innerHTML = \`
-                          <p><strong>Headings:</strong> <span class="\${headings.length > 0 ? 'success' : 'error'}">\${headings.length}</span></p>
-                          <p><strong>Paragraphs:</strong> <span class="\${paragraphs.length > 0 ? 'success' : 'error'}">\${paragraphs.length}</span></p>
-                          <p><strong>Lists:</strong> <span class="\${lists.length > 0 ? 'success' : 'error'}">\${lists.length}</span></p>
+                          <p><strong>Positioned Elements:</strong> <span class="\${positionedElements.length > 0 ? 'success' : 'error'}">\${positionedElements.length}</span></p>
                           <p><strong>Styled Elements:</strong> <span class="\${styledElements.length > 0 ? 'success' : 'error'}">\${styledElements.length}</span></p>
                           <p><strong>Images:</strong> <span class="\${images.length > 0 ? 'success' : 'error'}">\${images.length}</span></p>
+                          <p><strong>Aligned Elements:</strong> <span class="\${alignedElements.length > 0 ? 'success' : 'error'}">\${alignedElements.length}</span></p>
+                          <p><strong>Colored Elements:</strong> <span class="\${coloredElements.length > 0 ? 'success' : 'error'}">\${coloredElements.length}</span></p>
+                          <p><strong>Font Elements:</strong> <span class="\${fontElements.length > 0 ? 'success' : 'error'}">\${fontElements.length}</span></p>
                           <p><strong>Text Content:</strong> <span class="\${textContent.length > 0 ? 'success' : 'error'}">\${textContent.length} chars</span></p>
                         \`;
                       }
@@ -225,7 +290,7 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
           
           iframeDoc.write(htmlContent);
           iframeDoc.close();
-          console.log('Iframe content set successfully');
+          console.log('Iframe content set successfully with preserved styling');
         }
       } catch (error) {
         console.error('Error setting up iframe content:', error);
