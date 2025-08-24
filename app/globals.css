@@ -62,6 +62,49 @@
   transform: none !important;
 }
 
+/* EXCEPTION: Allow image containers to have transforms and transitions for dragging */
+.lexical-editor .image-container,
+.lexical-editor .image-container * {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+  animation: none !important;
+  pointer-events: auto !important;
+}
+
+/* Allow image containers to be draggable */
+.lexical-editor .image-container {
+  position: relative !important;
+  display: inline-block !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  pointer-events: auto !important;
+  z-index: 1 !important;
+}
+
+/* Ensure images are draggable */
+.lexical-editor .inserted-image {
+  pointer-events: auto !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+}
+
+/* When dragging */
+.lexical-editor .image-container.dragging {
+  cursor: grabbing !important;
+  z-index: 1000 !important;
+}
+
 /* Clean text nodes - allow color inheritance */
 .lexical-editor [data-lexical-text="true"] {
   font-family: inherit !important;
@@ -93,6 +136,151 @@
   line-height: inherit !important;
   transition: none !important;
   animation: none !important;
+}
+
+/* ===== DRAGGABLE LINE INDICATOR STYLES ===== */
+/* Import the draggable line indicator styles */
+@import './components/DraggableLineIndicator.css';
+
+/* Draggable elements */
+.draggable-block {
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.draggable-block:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.draggable-block:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.draggable-block.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  z-index: 1000;
+}
+
+/* Editor elements that can be dragged */
+.lexical-editor [data-lexical-key] {
+  cursor: grab;
+  transition: background-color 0.2s ease;
+}
+
+.lexical-editor [data-lexical-key]:hover {
+  background-color: rgba(255, 107, 53, 0.05);
+}
+
+.lexical-editor [data-lexical-key].dragging {
+  opacity: 0.7;
+  background-color: rgba(255, 107, 53, 0.1);
+}
+
+/* ===== IMAGE STYLES ===== */
+/* Ensure images display properly in the editor */
+.lexical-editor .image-container {
+  display: inline-block !important;
+  margin: 8px 0;
+  max-width: 100%;
+  position: relative !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+}
+
+.lexical-editor .inserted-image {
+  max-width: 100%;
+  height: auto;
+  display: block !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+  pointer-events: auto !important;
+}
+
+/* Image selection and interaction styles */
+.lexical-editor .image-container:hover {
+  outline: 2px solid rgba(59, 130, 246, 0.3);
+  outline-offset: 2px;
+}
+
+.lexical-editor .image-container.selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Resize handle styles */
+.lexical-editor .resize-handle {
+  position: absolute;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+.lexical-editor .resize-handle:hover {
+  transform: scale(1.2);
+  background: #2563eb;
+}
+
+/* Drag handle styles */
+.lexical-editor .drag-handle {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.9);
+  border: 3px solid white;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.lexical-editor .drag-handle:hover {
+  transform: scale(1.1);
+}
+
+.lexical-editor .drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Delete button styles */
+.lexical-editor .delete-button {
+  position: absolute;
+  background: #ef4444;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  color: white;
+  font-size: 10px;
+}
+
+.lexical-editor .delete-button:hover {
+  transform: scale(1.2);
+  background: #dc2626;
 }
 
 /* Clean heading styles */

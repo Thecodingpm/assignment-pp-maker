@@ -165,13 +165,12 @@ async function parseHtmlFile(file: File): Promise<ParsedDocument> {
     const html = await file.text();
     const title = extractTitleFromHtml(html);
     
-    // Clean up the HTML but preserve styling
-    const cleanedHtml = cleanHtmlContent(html);
-    
+    // PRESERVE RAW HTML EXACTLY - NO CLEANING
+    console.log('Raw HTML content (first 500 chars):', html.substring(0, 500));
     console.log('=== HTML PARSER SUCCESS ===');
     
     return {
-      content: cleanedHtml,
+      content: html, // Return raw HTML without any cleaning
       title: title
     };
   } catch (error) {

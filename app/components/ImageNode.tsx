@@ -184,17 +184,6 @@ function ImageEditor({
   const [isResizing, setIsResizing] = React.useState(false);
   const [isDragging, setIsDragging] = React.useState(false);
   const [showCoords, setShowCoords] = React.useState(false);
-  const [alignmentGuides, setAlignmentGuides] = React.useState({ horizontal: false, vertical: false });
-  const [snapPosition, setSnapPosition] = React.useState({ x: 0, y: 0 });
-  
-  // Drag helpers
-  const dragFrameRef = React.useRef<number | null>(null);
-  const dragBaseRef = React.useRef<{offsetX: number; offsetY: number; pageX: number; pageY: number}>({
-    offsetX: 0,
-    offsetY: 0,
-    pageX: 0,
-    pageY: 0,
-  });
 
   // Fixed resize logic with proper calculations
   React.useEffect(() => {
@@ -252,123 +241,51 @@ function ImageEditor({
     };
   }, [isResizing, aspectRatio, imageWidth, imageHeight]);
 
-  // Enhanced drag logic with Pages-like visual feedback and alignment guides (with rAF + editor coords)
+  // Simplified drag logic for better reliability
   React.useEffect(() => {
     if (!isDragging) return;
 
-    // Cache editor container and its rect to convert viewport to editor coords
-    const editorEl = document.querySelector('.lexical-editor') as HTMLElement | null;
-    const editorRect = editorEl?.getBoundingClientRect();
+    console.log('🖼️ Setting up drag listeners...');
 
-    const calcNext = (e: MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
       const deltaX = e.clientX - dragStart.x;
       const deltaY = e.clientY - dragStart.y;
 
-      // Base new position
-      let newX = dragStart.startX + deltaX;
-      let newY = dragStart.startY + deltaY;
+      const newX = dragStart.startX + deltaX;
+      const newY = dragStart.startY + deltaY;
 
-      // All other images for alignment (within the editor only)
-      const allImages = (editorEl ?? document).querySelectorAll('.image-container');
-      let horizontalGuide = false;
-      let verticalGuide = false;
-      let snappedX = newX;
-      let snappedY = newY;
-
-      allImages.forEach((otherImage) => {
-        if (otherImage === containerRef.current) return;
-        const otherRect = otherImage.getBoundingClientRect();
-
-        // Convert other image rect into editor coordinate space if we have editor rect
-        const otherLeft = editorRect ? otherRect.left - editorRect.left : otherRect.left;
-        const otherTop = editorRect ? otherRect.top - editorRect.top : otherRect.top;
-        const otherCenterX = otherLeft + otherRect.width / 2;
-        const otherCenterY = otherTop + otherRect.height / 2;
-        const otherRight = otherLeft + otherRect.width;
-        const otherBottom = otherTop + otherRect.height;
-
-        // Current positions already in our editor space (position is relative to container transform)
-        const currentCenterX = newX + imageWidth / 2;
-        const currentLeft = newX;
-        const currentRight = newX + imageWidth;
-        const currentCenterY = newY + imageHeight / 2;
-        const currentTop = newY;
-        const currentBottom = newY + imageHeight;
-
-        // Horizontal snapping: center, left, right
-        if (Math.abs(currentCenterX - otherCenterX) < 10) {
-          horizontalGuide = true;
-          snappedX = otherCenterX - imageWidth / 2;
-        } else if (Math.abs(currentLeft - otherLeft) < 10) {
-          horizontalGuide = true;
-          snappedX = otherLeft;
-        } else if (Math.abs(currentRight - otherRight) < 10) {
-          horizontalGuide = true;
-          snappedX = otherRight - imageWidth;
-        }
-
-        // Vertical snapping: center, top, bottom
-        if (Math.abs(currentCenterY - otherCenterY) < 10) {
-          verticalGuide = true;
-          snappedY = otherCenterY - imageHeight / 2;
-        } else if (Math.abs(currentTop - otherTop) < 10) {
-          verticalGuide = true;
-          snappedY = otherTop;
-        } else if (Math.abs(currentBottom - otherBottom) < 10) {
-          verticalGuide = true;
-          snappedY = otherBottom - imageHeight;
-        }
-      });
-
-      // Update alignment guides
-      setAlignmentGuides({ horizontal: horizontalGuide, vertical: verticalGuide });
-
-      // Use snapped position if guides are active
-      const finalX = horizontalGuide ? snappedX : newX;
-      const finalY = verticalGuide ? snappedY : newY;
-
-      setPosition({ x: finalX, y: finalY });
-      setSnapPosition({ x: finalX, y: finalY });
+      console.log('🖼️ Dragging to:', { x: newX, y: newY, deltaX, deltaY });
+      setPosition({ x: newX, y: newY });
       setShowCoords(true);
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      if (dragFrameRef.current) cancelAnimationFrame(dragFrameRef.current);
-      dragFrameRef.current = requestAnimationFrame(() => calcNext(e));
-    };
-
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      console.log('🖼️ Mouse up - ending drag');
       setIsDragging(false);
       setShowCoords(false);
-      setAlignmentGuides({ horizontal: false, vertical: false });
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
-      
-      // Add a subtle "drop" animation
-      if (containerRef.current) {
-        containerRef.current.style.transform = `translate(${position.x}px, ${position.y}px) scale(1.02)`;
-        setTimeout(() => {
-          if (containerRef.current) {
-            containerRef.current.style.transform = `translate(${position.x}px, ${position.y}px) scale(1)`;
-          }
-        }, 150);
-      }
+      console.log('🖼️ Drag ended at:', position);
     };
     
     document.body.style.cursor = 'grabbing';
     document.body.style.userSelect = 'none';
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mousemove', handleMouseMove, { passive: false });
+    document.addEventListener('mouseup', handleMouseUp, { passive: false });
     
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
       document.removeEventListener('mouseup', handleMouseUp);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
-      if (dragFrameRef.current) cancelAnimationFrame(dragFrameRef.current);
-      dragFrameRef.current = null;
     };
-  }, [isDragging, dragStart, imageWidth, imageHeight]);
+  }, [isDragging, dragStart, position]);
 
   const handleResizeStart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -379,6 +296,12 @@ function ImageEditor({
   const handleDragStart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Only start dragging if it's a left mouse button
+    if (e.button !== 0) return;
+    
+    console.log('🖼️ Drag started!', { clientX: e.clientX, clientY: e.clientY });
+    
     setIsDragging(true);
     setDragStart({
       x: e.clientX,
@@ -387,7 +310,32 @@ function ImageEditor({
       startY: position.y
     });
     
-    // Add Pages-like drag start effect
+    // Add visual feedback
+    if (containerRef.current) {
+      containerRef.current.style.transform = `translate(${position.x}px, ${position.y}px) scale(1.05)`;
+      containerRef.current.style.filter = 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))';
+      containerRef.current.style.zIndex = '1000';
+    }
+  };
+
+  // Alternative drag method using onMouseDown
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (e.button !== 0) return;
+    
+    console.log('🖼️ Mouse down on image!', { clientX: e.clientX, clientY: e.clientY });
+    
+    setIsDragging(true);
+    setDragStart({
+      x: e.clientX,
+      y: e.clientY,
+      startX: position.x,
+      startY: position.y
+    });
+    
+    // Add visual feedback
     if (containerRef.current) {
       containerRef.current.style.transform = `translate(${position.x}px, ${position.y}px) scale(1.05)`;
       containerRef.current.style.filter = 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))';
@@ -422,6 +370,7 @@ function ImageEditor({
     transition: isDragging || isResizing ? 'none' : 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     zIndex: isSelected ? 10 : 1,
     filter: isDragging ? 'drop-shadow(0 8px 16px rgba(0,0,0,0.3))' : 'none',
+    cursor: 'grab',
   };
 
   // Image style with enhanced drag feedback
@@ -432,7 +381,7 @@ function ImageEditor({
     boxShadow: isDragging ? '0 12px 24px rgba(0,0,0,0.4)' : shadow,
     display: 'block',
     border: `${borderWidth}px solid ${borderColor}`,
-    cursor: isDragging ? 'grabbing' : (isSelected ? 'grab' : 'pointer'),
+    cursor: isDragging ? 'grabbing' : (isSelected ? 'grab' : 'grab'),
     userSelect: 'none',
     pointerEvents: isResizing ? 'none' : 'auto',
     opacity: isDragging ? 0.9 : 1,
@@ -442,16 +391,22 @@ function ImageEditor({
   return (
     <div 
       ref={containerRef}
-      className="image-container group"
+      className={`image-container group ${isDragging ? 'dragging' : ''}`}
       style={containerStyle}
+      onDragStart={(e) => e.preventDefault()}
+      onDrag={(e) => e.preventDefault()}
+      onDragEnd={(e) => e.preventDefault()}
     >
       <img
         ref={imgRef}
         src={src}
         alt={alt}
         style={imageStyle}
-        className={`inserted-image ${isSelected ? 'ring-2 ring-blue-500' : ''}`}
-        onMouseDown={handleDragStart}
+        className={`inserted-image ${isSelected ? 'selected' : ''}`}
+        onMouseDown={handleMouseDown}
+        onDragStart={(e) => e.preventDefault()}
+        onDrag={(e) => e.preventDefault()}
+        onDragEnd={(e) => e.preventDefault()}
         onClick={handleImageClick}
         onLoad={() => console.log('🖼️ Image loaded successfully:', alt, 'src:', src.substring(0, 50) + '...')}
         onError={(e) => console.error('❌ Image failed to load:', alt, 'src:', src.substring(0, 50) + '...', e)}
@@ -534,12 +489,7 @@ function ImageEditor({
                   console.error('❌ Node not found:', nodeKey);
                 }
               });
-              // Fallback: remove DOM element if still present
-              setTimeout(() => {
-                if (containerRef.current && containerRef.current.isConnected) {
-                  containerRef.current.remove();
-                }
-              }, 0);
+              // Removed problematic fallback DOM removal that was causing removeChild error
             }}
             style={{
               position: 'absolute',
@@ -586,30 +536,7 @@ function ImageEditor({
         </div>
       )}
       
-      {/* Alignment Guides */}
-      {alignmentGuides.horizontal && (
-        <div 
-          className="absolute left-0 right-0 h-0.5 bg-blue-500 pointer-events-none"
-          style={{ 
-            top: '50%', 
-            transform: 'translateY(-50%)',
-            zIndex: 1000,
-            boxShadow: '0 0 4px rgba(59, 130, 246, 0.8)'
-          }}
-        />
-      )}
-      
-      {alignmentGuides.vertical && (
-        <div 
-          className="absolute top-0 bottom-0 w-0.5 bg-blue-500 pointer-events-none"
-          style={{ 
-            left: '50%', 
-            transform: 'translateX(-50%)',
-            zIndex: 1000,
-            boxShadow: '0 0 4px rgba(59, 130, 246, 0.8)'
-          }}
-        />
-      )}
+
       
       {/* Quick edit tooltip */}
       {!isSelected && !showCoords && (

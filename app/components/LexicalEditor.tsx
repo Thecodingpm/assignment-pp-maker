@@ -11,13 +11,14 @@ import { HeadingNode } from '@lexical/rich-text';
 import { ImageNode } from './ImageNode';
 import { VideoNode } from './VideoNode';
 import MediaInsertionPlugin from './MediaInsertionPlugin';
-import { EditorState, $getRoot, $createParagraphNode, $createTextNode, $getSelection, $isRangeSelection, $isTextNode, $createHeadingNode, $createListItemNode } from 'lexical';
+import { EditorState, $getRoot, $createParagraphNode, $createTextNode, $getSelection, $isRangeSelection, $isTextNode } from 'lexical';
 import { $generateNodesFromDOM } from '@lexical/html';
 import { useEffect, useRef } from 'react';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
 import { initializeColor, applyColorToNewText, getCurrentColor } from './SimpleFormatPlugin';
 import { registerEditor, unregisterEditor, setFocusedEditor } from './EditorRegistry';
 import FontStatePlugin from './FontStatePlugin';
+import DraggableLineIndicator from './DraggableLineIndicator';
 
 interface LexicalEditorProps {
   onChange?: (editorState: EditorState) => void;
@@ -78,7 +79,7 @@ export default function LexicalEditor({
         />
         
         {/* Core Editor */}
-        <div className="w-full h-full">
+        <div className="w-full h-full relative">
           <RichTextPlugin
             contentEditable={
               <ContentEditable 
@@ -110,6 +111,15 @@ export default function LexicalEditor({
               </div>
             }
             ErrorBoundary={LexicalErrorBoundary}
+          />
+          
+          {/* Draggable Line Indicator */}
+          <DraggableLineIndicator 
+            snapThreshold={50}
+            lineColor="#ff6b35"
+            onSnap={(isSnapped) => {
+              console.log('Snap state changed:', isSnapped);
+            }}
           />
           
           {/* Plugins */}
@@ -296,13 +306,13 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
                 console.log('Processing element:', tagName, textContent);
                 
                 if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3' || tagName === 'h4' || tagName === 'h5' || tagName === 'h6') {
-                  const headingNode = $createHeadingNode(tagName as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6');
-                  headingNode.append($createTextNode(textContent));
-                  root.append(headingNode);
+                  const paragraphNode = $createParagraphNode();
+                  paragraphNode.append($createTextNode(textContent));
+                  root.append(paragraphNode);
                   
                   // Apply styles after node is created
                   setTimeout(() => {
-                    const headingElement = document.querySelector(`[data-lexical-key="${headingNode.getKey()}"]`);
+                    const headingElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`) as HTMLElement;
                     if (headingElement) {
                       headingElement.style.color = '#2563eb';
                       headingElement.style.textAlign = 'center';
@@ -317,7 +327,7 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
                   
                   // Apply paragraph styles
                   setTimeout(() => {
-                    const paragraphElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`);
+                    const paragraphElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`) as HTMLElement;
                     if (paragraphElement) {
                       paragraphElement.style.fontSize = '16px';
                       paragraphElement.style.lineHeight = '1.6';

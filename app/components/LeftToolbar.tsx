@@ -15,7 +15,6 @@ import { FORMAT_TEXT_COMMAND } from 'lexical';
 import { HeadingNode } from '@lexical/rich-text';
 
 // Custom command constants
-const INSERT_IMAGE_COMMAND = 'INSERT_IMAGE_COMMAND';
 const INSERT_TABLE_COMMAND = 'INSERT_TABLE_COMMAND';
 
 
@@ -31,7 +30,7 @@ const $createListItemNode = () => {
   // We'll rely on CSS styling instead of trying to set tags
   return node;
 };
-import { INSERT_VIDEO_COMMAND } from './MediaCommands';
+import { INSERT_VIDEO_COMMAND, INSERT_IMAGE_COMMAND } from './MediaCommands';
 import { $createImageNode } from './ImageNode';
 import TranslationButton from './TranslationButton';
 import { applySimpleColor, applySimpleFontSize, applySimpleFormat, getSimpleFormatting, getCurrentColor } from './SimpleFormatPlugin';
@@ -935,6 +934,8 @@ export default function LeftToolbar({}: LeftToolbarProps) {
 
   // Media Functions
   const insertImage = () => {
+    console.log('🎯 LeftToolbar: insertImage called');
+    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -945,52 +946,31 @@ export default function LeftToolbar({}: LeftToolbarProps) {
       const file = target.files?.[0];
       
       if (file) {
+        console.log('🎯 LeftToolbar: File selected:', file.name, 'Size:', file.size);
+        
         const reader = new FileReader();
         reader.onload = (event) => {
           const result = event.target?.result as string;
           if (result) {
-            console.log('🎯 LeftToolbar: File read successfully, dispatching INSERT_IMAGE_COMMAND');
+            console.log('🎯 LeftToolbar: File read successfully, result length:', result.length);
+            
             const editor = getCurrentEditor();
             if (editor) {
-              console.log('🎯 LeftToolbar: Editor found, dispatching command with result length:', result.length);
-              // First, try to focus the editor
-            const editorElement = document.querySelector('.lexical-editor') as HTMLElement;
-            if (editorElement) {
-              editorElement.focus();
-              console.log('🎯 LeftToolbar: Editor focused');
-            }
-            
-            editor.dispatchCommand(INSERT_IMAGE_COMMAND, result);
+              console.log('🎯 LeftToolbar: Editor found, dispatching INSERT_IMAGE_COMMAND');
               
-              // Fallback: if command doesn't work, try direct insertion
-              setTimeout(() => {
-                console.log('🎯 LeftToolbar: Attempting fallback direct insertion...');
-                editor.update(() => {
-                  try {
-                    const { $getRoot, $createParagraphNode } = require('lexical');
-                    const { $createImageNode } = require('./ImageNode');
-                    
-                    const root = $getRoot();
-                    const paragraph = $createParagraphNode();
-                    const imageNode = $createImageNode(
-                      result, // src
-                      'Image', // alt
-                      300, // width
-                      200, // height
-                      8, // borderRadius
-                      1, // borderWidth
-                      '#e5e7eb', // borderColor
-                      '0 4px 6px -1px rgba(0,0,0,0.1)' // shadow
-                    );
-                    
-                    paragraph.append(imageNode);
-                    root.append(paragraph);
-                    console.log('🎯 LeftToolbar: Fallback insertion successful');
-                  } catch (error) {
-                    console.error('🎯 LeftToolbar: Fallback insertion failed:', error);
-                  }
-                });
-              }, 100);
+              // Focus the editor first
+              const editorElement = document.querySelector('.lexical-editor') as HTMLElement;
+              if (editorElement) {
+                editorElement.focus();
+                console.log('🎯 LeftToolbar: Editor focused');
+              }
+              
+              // Dispatch the command
+              editor.dispatchCommand(INSERT_IMAGE_COMMAND, result);
+              console.log('🎯 LeftToolbar: Command dispatched');
+              
+              // Clean up the input
+              input.remove();
             } else {
               console.error('🎯 LeftToolbar: No editor found!');
             }
@@ -998,6 +978,11 @@ export default function LeftToolbar({}: LeftToolbarProps) {
             console.error('🎯 LeftToolbar: File read failed - no result');
           }
         };
+        
+        reader.onerror = (error) => {
+          console.error('🎯 LeftToolbar: File read error:', error);
+        };
+        
         reader.readAsDataURL(file);
       }
     };
@@ -1590,9 +1575,34 @@ export default function LeftToolbar({}: LeftToolbarProps) {
                               document.head.appendChild(testCSS);
                               testHeading.className = 'injected-test-h1';
                               
-                              // Add to editor
-                              editorElement.appendChild(testHeading);
-                              console.log('🎯 Test H1 element added with inline styles');
+                              // Add to editor using Lexical methods instead of direct DOM manipulation
+                              try {
+                                const editor = getCurrentEditor();
+                                if (editor) {
+                                  editor.update(() => {
+                                    const root = $getRoot();
+                                    const headingNode = $createHeadingNode('h1');
+                                    const textNode = $createTextNode('Test Heading');
+                                    headingNode.append(textNode);
+                                    root.append(headingNode);
+                                    textNode.select();
+                                  });
+                                  console.log('🎯 Test H1 element added using Lexical methods');
+                                } else {
+                                  console.log('❌ No editor found for Lexical insertion');
+                                }
+                              } catch (lexicalError) {
+                                console.error('Lexical insertion failed:', lexicalError);
+                                // Fallback: use DOM manipulation with error handling
+                                try {
+                                  if (editorElement && testHeading.parentNode !== editorElement) {
+                                    editorElement.appendChild(testHeading);
+                                    console.log('🎯 Test H1 element added with inline styles (fallback)');
+                                  }
+                                } catch (domError) {
+                                  console.error('DOM insertion failed:', domError);
+                                }
+                              }
                               
                               // Check computed styles
                               setTimeout(() => {

@@ -1,22 +1,66 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { Inter } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from './components/ThemeProvider';
 import { AuthProvider } from './components/AuthContext';
 import { AdminProvider } from './components/AdminContext';
+import { ThemeProvider } from './components/ThemeProvider';
+import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import TopToolbarWrapper from './components/TopToolbarWrapper';
 
-export const metadata: Metadata = {
-  title: 'Document Maker - Create Assignments & Presentations',
-  description: 'A powerful online tool for creating professional documents and presentations',
-};
+const inter = Inter({ subsets: ['latin'] });
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  // Global error handler to prevent removeChild errors from crashing the app
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      console.error('Global error caught:', event.error);
+      if (event.error?.message?.includes('removeChild')) {
+        console.error('Global removeChild error caught:', event.error);
+        // Prevent the error from crashing the app
+        event.preventDefault();
+        return false;
+      }
+    };
+
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      console.error('Global unhandled rejection caught:', event.reason);
+      if (event.reason?.message?.includes('removeChild')) {
+        console.error('Global removeChild error in promise rejection:', event.reason);
+        event.preventDefault();
+        return false;
+      }
+    };
+
+    // Add more comprehensive error handling
+    const handleDOMException = (event: ErrorEvent) => {
+      if (event.error instanceof DOMException) {
+        console.error('DOM Exception caught:', event.error);
+        if (event.error.name === 'NotFoundError' && event.error.message.includes('removeChild')) {
+          console.error('DOM removeChild error prevented');
+          event.preventDefault();
+          return false;
+        }
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    window.addEventListener('error', handleDOMException);
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    
+    return () => {
+      window.removeEventListener('error', handleError);
+      window.removeEventListener('error', handleDOMException);
+      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+    };
+  }, []);
+
   return (
     <html lang="en" suppressHydrationWarning>
       <head>

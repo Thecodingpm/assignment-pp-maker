@@ -368,7 +368,14 @@ export default function Navbar() {
       a.download = filename;
       document.body.appendChild(a);
       a.click();
-      document.body.removeChild(a);
+      // Safe removal with error handling
+      try {
+        if (a.parentNode) {
+          document.body.removeChild(a);
+        }
+      } catch (error) {
+        console.warn('Could not remove download link:', error);
+      }
       URL.revokeObjectURL(url);
     };
 

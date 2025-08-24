@@ -39,7 +39,15 @@ export default function DraggableBlocksPlugin() {
         temp.innerHTML = html;
 
         const dragging = document.querySelector('.dragging');
-        if (dragging) dragging.remove();
+        if (dragging) {
+          try {
+            if (dragging.parentNode) {
+              dragging.remove();
+            }
+          } catch (error) {
+            console.warn('Could not remove dragging element:', error);
+          }
+        }
 
         const block = temp.firstChild;
         if (block) {

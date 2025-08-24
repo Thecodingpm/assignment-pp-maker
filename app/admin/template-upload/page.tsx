@@ -5,6 +5,8 @@ import { useAdmin } from '../../components/AdminContext';
 import AdminAuth from '../../components/AdminAuth';
 import { Template } from '../../firebase/templates';
 import { globalTemplateStore } from '../../utils/globalTemplateStore';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 
 export default function AdminTemplateUpload() {
   const { isAdmin, logoutAdmin, uploadTemplate, getTemplates, updateTemplate, deleteTemplate } = useAdmin();
@@ -379,6 +381,169 @@ export default function AdminTemplateUpload() {
   console.log('localStorage templates:', localStorage.getItem('localTemplates'));
   console.log('=== END DEBUG ===');
 
+  const clearAllLocalStorage = () => {
+    try {
+      localStorage.clear();
+      alert('✅ All localStorage data cleared successfully!');
+      // Refresh the page to update the template list
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to clear localStorage:', error);
+      alert('❌ Failed to clear localStorage: ' + error);
+    }
+  };
+
+  const checkStorageQuota = () => {
+    try {
+      const testKey = 'quota_test_' + Date.now();
+      const testData = 'x'.repeat(1024 * 10); // 10KB test
+      
+      localStorage.setItem(testKey, testData);
+      localStorage.removeItem(testKey);
+      
+      // Estimate current usage
+      let totalSize = 0;
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key) {
+          totalSize += localStorage.getItem(key)?.length || 0;
+        }
+      }
+      
+      alert(`📊 Storage Status:\n\nAvailable: ✅ (10KB+ test passed)\nCurrent Usage: ~${Math.round(totalSize / 1024)}KB\n\nlocalStorage is working properly.`);
+      
+    } catch (error) {
+      console.error('Storage quota check failed:', error);
+      alert('❌ Storage quota exceeded or localStorage not available.\n\nPlease clear browser data and try again.');
+    }
+  };
+
+  const testFirebaseConnection = async () => {
+    try {
+      console.log('=== COMPREHENSIVE FIREBASE TEST ===');
+      
+      // Test 1: Check if Firebase is initialized
+      const { db } = await import('../../firebase/config');
+      console.log('✅ Firebase config loaded');
+      
+      // Test 2: Check if we can access Firestore
+      const { collection, getDocs, addDoc, serverTimestamp } = await import('firebase/firestore');
+      console.log('✅ Firestore imports successful');
+      
+      // Test 3: Try to read from templates collection
+      const templatesRef = collection(db, 'templates');
+      console.log('✅ Templates collection reference created');
+      
+      const snapshot = await getDocs(templatesRef);
+      console.log('✅ Firestore read successful, found', snapshot.size, 'documents');
+      
+      // Test 4: Try to write a test document
+      const testData = {
+        title: 'Firebase Test Template',
+        description: 'Testing Firebase connection and upload functionality',
+        category: 'test',
+        content: '<p>This is a test template for Firebase connectivity testing.</p>',
+        fileName: 'test-template.html',
+        fileSize: 150,
+        uploadedBy: 'test@test.com',
+        uploadedAt: serverTimestamp(),
+        status: 'active'
+      };
+      
+      const docRef = await addDoc(templatesRef, testData);
+      console.log('✅ Firebase write successful, document ID:', docRef.id);
+      
+      // Test 5: Delete the test document
+      const { deleteDoc, doc } = await import('firebase/firestore');
+      await deleteDoc(doc(db, 'templates', docRef.id));
+      console.log('✅ Test document deleted successfully');
+      
+      alert('✅ Firebase connection is working perfectly!\n\nAll tests passed:\n- Config loaded\n- Firestore accessible\n- Read operation successful\n- Write operation successful\n- Delete operation successful\n\nTemplates should now save to Firebase properly.');
+      
+    } catch (error: any) {
+      console.error('❌ Firebase test failed:', error);
+      
+      let errorMessage = 'Firebase connection failed:\n\n';
+      
+      if (error.code === 'permission-denied') {
+        errorMessage += '❌ Permission denied\n- Check Firebase security rules\n- Make sure you are authenticated';
+      } else if (error.code === 'unavailable') {
+        errorMessage += '❌ Service unavailable\n- Check internet connection\n- Firebase might be down';
+      } else if (error.code === 'unauthenticated') {
+        errorMessage += '❌ Not authenticated\n- You need to be logged in';
+      } else if (error.message?.includes('network')) {
+        errorMessage += '❌ Network error\n- Check internet connection\n- Firebase might be blocked';
+      } else {
+        errorMessage += `❌ Unknown error: ${error.message}`;
+      }
+      
+      alert(errorMessage);
+    }
+  };
+
+  const createSimpleTestTemplate = async () => {
+    try {
+      console.log('Creating simple test template...');
+      
+      const testContent = `
+        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+          <h1 style="color: #2563eb; text-align: center; margin-bottom: 30px;">Simple Test Template</h1>
+          
+          <div style="background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 25px;">
+            <h2 style="color: #1e293b; margin-bottom: 15px;">✅ Test Content</h2>
+            <p style="color: #475569; margin-bottom: 10px; line-height: 1.6;">
+              This is a simple test template to verify that upload and preview work without any errors.
+            </p>
+            <p style="color: #64748b; font-size: 14px; margin-bottom: 0;">
+              No problematic libraries or DOM manipulation involved.
+            </p>
+          </div>
+          
+          <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 12px; padding: 20px; margin-bottom: 25px;">
+            <h3 style="color: #92400e; margin-bottom: 10px;">🎯 Test Features</h3>
+            <ul style="color: #92400e; line-height: 1.8; margin: 0; padding-left: 20px;">
+              <li>Simple HTML content</li>
+              <li>Basic styling</li>
+              <li>No external dependencies</li>
+              <li>Safe DOM operations</li>
+            </ul>
+          </div>
+          
+          <div style="background: #ecfdf5; border: 2px solid #10b981; border-radius: 12px; padding: 20px;">
+            <h3 style="color: #065f46; margin-bottom: 10px;">✨ Expected Results</h3>
+            <p style="color: #065f46; margin: 0;">
+              This template should upload successfully and preview without any removeChild errors.
+            </p>
+          </div>
+        </div>
+      `;
+      
+      const templateData = {
+        title: 'Simple Test Template',
+        description: 'A simple test template to verify upload and preview functionality',
+        category: 'assignment',
+        content: testContent,
+        fileName: 'simple-test.html',
+        fileSize: testContent.length,
+        uploadedBy: 'test@test.com'
+      };
+      
+      console.log('Template data created:', templateData);
+      
+      // Try to upload using the existing upload function
+      const success = await uploadTemplate(templateData);
+      
+      if (success) {
+        alert('✅ Simple test template created successfully!\n\nNow:\n1. Go to template selection\n2. Find "Simple Test Template"\n3. Click Preview\n4. Should work without any errors');
+      } else {
+        alert('❌ Failed to create test template. Check console for details.');
+      }
+      
+    } catch (error) {
+      console.error('Error creating simple test template:', error);
+      alert('❌ Error creating test template: ' + error);
+    }
+  };
 
 
   if (!isAuthenticatedState) {
@@ -404,36 +569,9 @@ export default function AdminTemplateUpload() {
               </button>
               <button
                 className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                onClick={async () => {
-                  try {
-                    console.log('=== TESTING FIREBASE CONNECTION ===');
-                    const testData = {
-                      title: 'Test Template',
-                      description: 'Test description',
-                      category: 'test',
-                      content: '<p>Test content</p>',
-                      fileName: 'test.html',
-                      fileSize: 100,
-                      uploadedBy: 'test@test.com'
-                    };
-                    
-                    const { uploadTemplate: firebaseUpload } = await import('../../firebase/templates');
-                    const result = await firebaseUpload(testData);
-                    
-                    if (result) {
-                      alert('✅ Firebase connection working! Template uploaded successfully.');
-                      console.log('Firebase test successful, ID:', result);
-                    } else {
-                      alert('❌ Firebase connection failed. Templates will be saved locally.');
-                      console.log('Firebase test failed');
-                    }
-                  } catch (error: any) {
-                    alert('❌ Firebase connection failed: ' + error.message + '\n\nTemplates will be saved locally.');
-                    console.error('Firebase test error:', error);
-                  }
-                }}
+                onClick={testFirebaseConnection}
               >
-                Test Firebase Connection
+                🔥 Test Firebase
               </button>
               
               <button
@@ -451,6 +589,20 @@ export default function AdminTemplateUpload() {
                 }}
               >
                 🔄 Clear Cache & Retry
+              </button>
+              
+              <button
+                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                onClick={checkStorageQuota}
+              >
+                📊 Check Storage
+              </button>
+              
+              <button
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                onClick={clearAllLocalStorage}
+              >
+                🗑️ Clear Storage
               </button>
               <button
                 onClick={async () => {
@@ -488,218 +640,218 @@ export default function AdminTemplateUpload() {
                 Create Test Template
               </button>
               <button
-                onClick={async () => {
-                  try {
-                    console.log('=== CREATING DEBUG TEMPLATE ===');
-                    
-                    // Create a test template that mimics the user's book cover
-                    const debugContent = `
-<div style="position: relative; width: 100%; height: 500px; background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460); border-radius: 15px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
-  
-  <!-- Background Image (Starry Sky) -->
-  <img src="https://via.placeholder.com/800x500/1a1a2e/ffffff?text=Starry+Night+Sky" 
-       style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Starry Sky">
-  
-  <!-- Dark overlay for better text readability -->
-  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.2);"></div>
-  
-  <!-- Tree silhouette at bottom -->
-  <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 150px; background: linear-gradient(to top, #000000, transparent);"></div>
-  
-  <!-- "A Novel" text at top -->
-  <div style="position: absolute; top: 40px; left: 50%; transform: translateX(-50%); text-align: center;">
-    <p style="color: white; font-family: 'Georgia', serif; font-size: 18px; font-style: italic; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">
-      A Novel
-    </p>
-  </div>
-  
-  <!-- Main title "STORIES OF THE NIGHT SKY" -->
-  <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-    <h1 style="color: white; font-family: 'Arial Black', 'Helvetica Bold', sans-serif; font-size: 36px; font-weight: 900; margin: 0; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); line-height: 1.2; letter-spacing: 2px;">
-      STORIES<br>OF THE<br>NIGHT SKY
-    </h1>
-  </div>
-  
-  <!-- Author name "AHMAD" at bottom -->
-  <div style="position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); text-align: center;">
-    <p style="color: white; font-family: 'Arial', sans-serif; font-size: 24px; font-weight: bold; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.7); letter-spacing: 1px;">
-      AHMAD
-    </p>
-  </div>
-  
-  <!-- Decorative stars -->
-  <div style="position: absolute; top: 100px; right: 80px; color: white; font-size: 20px;">⭐</div>
-  <div style="position: absolute; top: 150px; left: 60px; color: white; font-size: 16px;">✨</div>
-  <div style="position: absolute; top: 200px; right: 120px; color: white; font-size: 18px;">🌟</div>
-  
-</div>
-                    `.trim();
-                    
-                    console.log('Debug content created:', debugContent);
-                    
-                    // Create a file with this content
-                    const testFile = new File([debugContent], 'debug-template.html', { type: 'text/html' });
-                    
-                    console.log('Test file created:', testFile.name, testFile.size, testFile.type);
-                    
-                    const success = await uploadTemplate(
-                      testFile, 
-                      'Debug Template', 
-                      'This is a debug template to test loading functionality', 
-                      'assignment'
-                    );
-                    
-                    if (success) {
-                      console.log('Debug template created successfully!');
-                      alert('Debug template created successfully! Check the template library.');
-                      // Refresh the list
-                      const updatedTemplates = await getTemplates();
-                      setTemplates(updatedTemplates);
-                    } else {
-                      console.error('Debug template creation failed');
-                      alert('Debug template creation failed');
-                    }
-                  } catch (error) {
-                    console.error('Debug template creation failed:', error);
-                    alert(`Debug template creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-                  }
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                Create Debug Template
-              </button>
-              <button
+                className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 transition-colors"
                 onClick={() => {
-                  console.log('Manual template creation...');
-                  const testTemplate = {
-                    id: 'manual_test_' + Date.now(),
-                    title: 'Manual Test Template',
-                    description: 'This template was created manually for testing',
-                    category: 'assignment',
-                    content: 'Manual test content',
-                    fileName: 'manual-test.txt',
-                    fileSize: 1024,
-                    uploadedAt: new Date().toISOString(),
-                    uploadedBy: 'admin',
-                    status: 'active'
-                  };
-                  
-                  const newTemplates = [...templates, testTemplate];
-                  setTemplates(newTemplates);
-                  
-                  // Save to localStorage
-                  try {
-                    localStorage.setItem('localTemplates', JSON.stringify(newTemplates));
-                    console.log('Saved manual template to localStorage');
-                  } catch (error) {
-                    console.error('Failed to save to localStorage:', error);
-                  }
-                  
-                  alert('Manual test template created!');
-                }}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                Manual Test Template
-              </button>
-              <button
-                onClick={() => {
-                  console.log('=== FIREBASE TROUBLESHOOTING ===');
-                  console.log('1. Check if Firebase is blocked by browser extensions');
-                  console.log('2. Try disabling ad blockers or privacy extensions');
-                  console.log('3. Check if Brave Shields are blocking Firebase');
-                  console.log('4. Try using a different browser (Chrome, Firefox)');
-                  
-                  alert(`Firebase Connection Troubleshooting:
+                  // Create a simple HTML file for testing
+                  const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Template</title>
+</head>
+<body>
+    <div style="position: relative; width: 100%; height: 300px; background: #1a1a2e; border-radius: 10px; overflow: hidden;">
+      
+      <!-- Background Image -->
+      <img src="https://via.placeholder.com/600x300/4a90e2/ffffff?text=Background+Image" 
+           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Background">
+      
+      <!-- Dark overlay -->
+      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
+      
+      <!-- Main title positioned over image -->
+      <h1 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 32px; font-weight: bold; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); text-align: center;">
+        STORIES OF THE NIGHT SKY
+      </h1>
+      
+      <!-- Subtitle positioned over image -->
+      <p style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; font-size: 18px; font-weight: bold; margin: 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
+        AHMAD
+      </p>
+      
+      <!-- Test text in corners -->
+      <div style="position: absolute; top: 20px; left: 20px; color: white; font-size: 14px; background: rgba(255,0,0,0.8); padding: 5px 10px; border-radius: 5px;">
+        TOP LEFT
+      </div>
+      
+      <div style="position: absolute; top: 20px; right: 20px; color: white; font-size: 14px; background: rgba(0,255,0,0.8); padding: 5px 10px; border-radius: 5px;">
+        TOP RIGHT
+      </div>
+      
+      <div style="position: absolute; bottom: 20px; left: 20px; color: white; font-size: 14px; background: rgba(0,0,255,0.8); padding: 5px 10px; border-radius: 5px;">
+        BOTTOM LEFT
+      </div>
+      
+      <div style="position: absolute; bottom: 20px; right: 20px; color: white; font-size: 14px; background: rgba(255,255,0,0.8); padding: 5px 10px; border-radius: 5px;">
+        BOTTOM RIGHT
+      </div>
+      
+    </div>
 
-1. Disable Brave Shields for this site
-2. Disable ad blockers or privacy extensions
-3. Try using Chrome or Firefox instead
-4. Check if your firewall is blocking Firebase
-
-The template will still be saved locally and work in your browser.`);
-                }}
-                className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                🔧 Firebase Troubleshooting
-              </button>
-              <button
-                onClick={() => {
-                  try {
-                    console.log('=== CLEARING OLD TEMPLATES ===');
+    <div style="margin-top: 20px; text-align: center;">
+      <p style="color: #333; font-size: 16px;">
+        If you can see <span style="color: red; font-weight: bold;">red text</span>, 
+        <span style="color: blue; font-weight: bold;">blue text</span>, and 
+        <span style="color: green; font-weight: bold;">green text</span>, 
+        then the preview is working correctly!
+      </p>
+    </div>
+</body>
+</html>`;
                     
-                    // Clear localStorage templates
-                    localStorage.removeItem('localTemplates');
-                    
-                    // Clear global store
-                    globalTemplateStore.clearTemplates();
-                    
-                    // Reset state
-                    setTemplates([]);
-                    
-                    console.log('Old templates cleared successfully');
-                    alert('Old templates cleared! Now upload new templates to use the improved parser.');
-                  } catch (error) {
-                    console.error('Failed to clear templates:', error);
-                    alert('Failed to clear templates: ' + error);
-                  }
-                }}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                🗑️ Clear Old Templates
-              </button>
-              <button
-                onClick={logoutAdmin}
-                className="bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                Logout
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    console.log('=== TESTING FILE PARSER ===');
-                    
-                    // Create test files of different types
-                    const testFiles = [
-                      {
-                        name: 'test.txt',
-                        content: 'This is a test text file.\n\nIt has multiple lines.\n\nAnd some formatting.',
-                        type: 'text/plain'
-                      },
-                      {
-                        name: 'test.html',
-                        content: '<h1>Test HTML File</h1><p>This is a test HTML file with <strong>formatting</strong>.</p><ul><li>Item 1</li><li>Item 2</li></ul>',
-                        type: 'text/html'
+                    // Create and download the HTML file
+                    const blob = new Blob([htmlContent], { type: 'text/html' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'test-template.html';
+                    document.body.appendChild(a);
+                    a.click();
+                    // Safe removal with error handling
+                    try {
+                      if (a.parentNode) {
+                        document.body.removeChild(a);
                       }
-                    ];
-                    
-                    for (const testFile of testFiles) {
-                      console.log(`Testing parser with ${testFile.name}...`);
-                      
-                      const file = new File([testFile.content], testFile.name, { type: testFile.type });
-                      
-                      // Import the parser dynamically
-                      const { parseFile } = await import('../../utils/docxParser');
-                      const result = await parseFile(file);
-                      
-                      console.log(`Parser result for ${testFile.name}:`, result);
-                      
-                      if (result.error) {
-                        console.error(`Parser failed for ${testFile.name}:`, result.error);
-                      } else {
-                        console.log(`Parser succeeded for ${testFile.name}. Content length:`, result.content.length);
-                      }
+                    } catch (error) {
+                      console.warn('Could not remove download link:', error);
                     }
+                    URL.revokeObjectURL(url);
                     
-                    alert('File parser test completed! Check console for results.');
-                  } catch (error) {
-                    console.error('File parser test failed:', error);
-                    alert('File parser test failed: ' + error);
-                  }
-                }}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
-              >
-                🧪 Test File Parser
-              </button>
+                    alert('✅ Test HTML file created and downloaded!\n\nNow:\n1. Upload this HTML file\n2. Preview it\n3. It should show EXACTLY the same as the file\n\nThis will test if raw HTML preservation is working.');
+                  }}
+                >
+                  📄 Create Test HTML File
+                </button>
+                <button
+                  className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                  onClick={() => {
+                    // Create a test DOCX file for testing
+                    const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType } = require('docx');
+                    
+                    const doc = new Document({
+                      sections: [{
+                        properties: {},
+                        children: [
+                          new Paragraph({
+                            text: "STORIES OF THE NIGHT SKY",
+                            heading: HeadingLevel.HEADING_1,
+                            alignment: AlignmentType.CENTER,
+                            children: [
+                              new TextRun({
+                                text: "STORIES OF THE NIGHT SKY",
+                                bold: true,
+                                size: 32,
+                                color: "000000"
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "A Novel by AHMAD",
+                            alignment: AlignmentType.CENTER,
+                            children: [
+                              new TextRun({
+                                text: "A Novel by AHMAD",
+                                italic: true,
+                                size: 18,
+                                color: "666666"
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "",
+                            spacing: { before: 400 }
+                          }),
+                          new Paragraph({
+                            text: "This is a test DOCX template with proper formatting.",
+                            children: [
+                              new TextRun({
+                                text: "This is a test DOCX template with ",
+                                size: 14
+                              }),
+                              new TextRun({
+                                text: "proper formatting",
+                                bold: true,
+                                color: "0000FF",
+                                size: 14
+                              }),
+                              new TextRun({
+                                text: ".",
+                                size: 14
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "Features:",
+                            children: [
+                              new TextRun({
+                                text: "Features:",
+                                bold: true,
+                                size: 16,
+                                color: "FF0000"
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "• Exact font preservation",
+                            children: [
+                              new TextRun({
+                                text: "• Exact font preservation",
+                                size: 12
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "• Color and styling",
+                            children: [
+                              new TextRun({
+                                text: "• Color and styling",
+                                size: 12
+                              })
+                            ]
+                          }),
+                          new Paragraph({
+                            text: "• Layout and alignment",
+                            children: [
+                              new TextRun({
+                                text: "• Layout and alignment",
+                                size: 12
+                              })
+                            ]
+                          })
+                        ]
+                      }]
+                    });
+                    
+                    // Generate the DOCX file
+                    Packer.toBlob(doc).then(blob => {
+                      // Create download link
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = 'test-template.docx';
+                      document.body.appendChild(a);
+                      a.click();
+                      // Safe removal with error handling
+                      try {
+                        if (a.parentNode) {
+                          document.body.removeChild(a);
+                        }
+                      } catch (error) {
+                        console.warn('Could not remove download link:', error);
+                      }
+                      URL.revokeObjectURL(url);
+                      
+                      alert('✅ Test DOCX file created and downloaded!\n\nNow:\n1. Upload this DOCX file\n2. Preview it\n3. It should show EXACT formatting with fonts, colors, and layout\n\nThis will test the DOCX preview functionality.');
+                    });
+                  }}
+                >
+                  📄 Create Test DOCX File
+                </button>
+                <button
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                  onClick={createSimpleTestTemplate}
+                >
+                  🧪 Create Simple Test Template
+                </button>
             </div>
           </div>
         </div>

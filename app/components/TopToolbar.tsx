@@ -1887,9 +1887,33 @@ const TopToolbar = forwardRef<{ insertGPTResponse: (response: string) => void },
                 selection.addRange(range);
                 console.log('Text inserted via DOM manipulation');
               } else {
-                // No selection, append to end
-                editorElement.appendChild(document.createTextNode(text + ' '));
-                console.log('Text appended to end via DOM');
+                // No selection, append to end using Lexical methods instead of direct DOM manipulation
+                try {
+                  const root = $getRoot();
+                  const lastChild = root.getLastChild();
+                  if (lastChild && lastChild.getType() === 'paragraph') {
+                    const textNode = $createTextNode(text + ' ');
+                    lastChild.append(textNode);
+                    textNode.select();
+                  } else {
+                    const paragraph = $createParagraphNode();
+                    const textNode = $createTextNode(text + ' ');
+                    paragraph.append(textNode);
+                    root.append(paragraph);
+                    textNode.select();
+                  }
+                  console.log('Text appended using Lexical methods');
+                } catch (lexicalError) {
+                  console.error('Lexical insertion failed:', lexicalError);
+                  // Fallback: try to use editor commands
+                  try {
+                    editor.dispatchCommand(INSERT_TEXT_COMMAND, text + ' ');
+                    console.log('Text inserted via editor command');
+                  } catch (commandError) {
+                    console.error('Editor command failed:', commandError);
+                    alert('Failed to insert voice text. Please try typing manually or refresh the page.');
+                  }
+                }
               }
             }
           } catch (domError) {

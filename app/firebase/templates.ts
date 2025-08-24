@@ -22,6 +22,7 @@ export interface Template {
   fileName: string;
   fileSize: number;
   frontImage?: string; // Base64 encoded image or URL
+  originalFile?: File | ArrayBuffer | string; // Original file for DOCX rendering
   uploadedAt: any;
   uploadedBy: string;
   status: 'active' | 'inactive';
@@ -35,6 +36,7 @@ export interface TemplateUploadData {
   fileName: string;
   fileSize: number;
   frontImage?: string; // Base64 encoded image or URL
+  originalFile?: File | ArrayBuffer | string; // Optional - for local DOCX rendering only
   uploadedBy: string;
 }
 
@@ -42,11 +44,23 @@ export interface TemplateUploadData {
 export const uploadTemplate = async (templateData: TemplateUploadData): Promise<string | null> => {
   try {
     console.log('=== FIREBASE UPLOAD START ===');
-    console.log('Firebase: Template data received:', templateData);
+    console.log('Firebase: Template data received:', {
+      title: templateData.title,
+      description: templateData.description,
+      category: templateData.category,
+      fileName: templateData.fileName,
+      fileSize: templateData.fileSize,
+      contentLength: templateData.content?.length || 0,
+      hasFrontImage: !!templateData.frontImage,
+      uploadedBy: templateData.uploadedBy
+    });
     console.log('Firebase: Adding to collection "templates"');
     
+    // Remove originalFile from data to be uploaded (it can't be serialized)
+    const { originalFile, ...uploadData } = templateData;
+    
     const docRef = await addDoc(collection(db, 'templates'), {
-      ...templateData,
+      ...uploadData,
       uploadedAt: serverTimestamp(),
       status: 'active'
     });
@@ -56,6 +70,11 @@ export const uploadTemplate = async (templateData: TemplateUploadData): Promise<
     return docRef.id;
   } catch (error) {
     console.error('Firebase: Error uploading template:', error);
+    console.error('Firebase: Error details:', {
+      code: (error as any)?.code,
+      message: (error as any)?.message,
+      stack: (error as any)?.stack
+    });
     console.log('=== FIREBASE UPLOAD FAILED ===');
     return null;
   }

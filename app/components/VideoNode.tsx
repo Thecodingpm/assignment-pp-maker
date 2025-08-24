@@ -581,12 +581,7 @@ function VideoEditor({
                   console.error('❌ Node not found:', nodeKey);
                 }
               });
-              // Fallback: remove DOM element if still present
-              setTimeout(() => {
-                if (containerRef.current && containerRef.current.isConnected) {
-                  containerRef.current.remove();
-                }
-              }, 0);
+              // Removed problematic fallback DOM removal that was causing removeChild error
             }}
             style={{
               position: 'absolute',

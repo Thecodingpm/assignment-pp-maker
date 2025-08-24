@@ -107,30 +107,60 @@ export function AdminProvider({ children }: { children: ReactNode }) {
       
       let content: string;
       let extractedTitle = title;
+      let originalFile: File | ArrayBuffer | string | undefined;
       
-      // Parse all file types using the universal parser
-      console.log('Processing file with universal parser...');
+      // Check if this is a DOCX file
+      const isDocxFile = file.name.toLowerCase().endsWith('.docx');
       
-      try {
-        const parsedDoc = await parseFile(file);
+      if (isDocxFile) {
+        // For DOCX files, store the original file for exact rendering
+        console.log('DOCX file detected - storing original file for exact formatting');
+        originalFile = file;
         
-        if (parsedDoc.error) {
-          console.error('File parsing error:', parsedDoc.error);
+        // Also parse for basic content extraction with error handling
+        try {
+          console.log('Parsing DOCX file for content extraction...');
+          const parsedDoc = await parseFile(file);
+          if (parsedDoc.error) {
+            console.error('DOCX parsing error:', parsedDoc.error);
+            // Still proceed with original file for rendering, but use fallback content
+            content = `<p>DOCX Template: ${file.name}</p><p>Note: Content extraction failed, but original file is preserved for exact rendering.</p>`;
+          } else {
+            content = parsedDoc.content;
+            if (parsedDoc.title && title === file.name.replace(/\.[^/.]+$/, '')) {
+              extractedTitle = parsedDoc.title;
+            }
+          }
+        } catch (parseError) {
+          console.error('Failed to parse DOCX file:', parseError);
+          // Still proceed with original file for rendering
+          content = `<p>DOCX Template: ${file.name}</p><p>Note: Content extraction failed, but original file is preserved for exact rendering.</p>`;
+        }
+      } else {
+        // Parse all other file types using the universal parser
+        console.log('Processing file with universal parser...');
+        
+        try {
+          const parsedDoc = await parseFile(file);
+          
+          if (parsedDoc.error) {
+            console.error('File parsing error:', parsedDoc.error);
+            return false;
+          }
+          
+          content = parsedDoc.content;
+          if (parsedDoc.title && title === file.name.replace(/\.[^/.]+$/, '')) {
+            extractedTitle = parsedDoc.title;
+          }
+          
+          console.log('File content extracted, length:', content.length);
+          console.log('Extracted title:', extractedTitle);
+          console.log('Content preview:', content.substring(0, 200) + '...');
+          
+        } catch (parseError) {
+          console.error('Failed to parse file:', parseError);
           return false;
         }
-        
-        content = parsedDoc.content;
-        if (parsedDoc.title && title === file.name.replace(/\.[^/.]+$/, '')) {
-          extractedTitle = parsedDoc.title;
-        }
-        
-        console.log('File content extracted, length:', content.length);
-        console.log('Extracted title:', extractedTitle);
-        console.log('Content preview:', content.substring(0, 200) + '...');
-        
-      } catch (parseError) {
-        console.error('Failed to parse file:', parseError);
-        return false;
       }
       
       const templateData: TemplateUploadData = {
@@ -142,26 +172,112 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         fileSize: file.size,
         frontImage,
         uploadedBy: user?.email || 'unknown'
+        // Note: originalFile is not included in Firebase upload as it can't be serialized
+        // It will be stored locally for DOCX rendering
       };
       
       console.log('Created template data:', templateData);
       
-      // Try Firebase first, fallback to localStorage
+      // Store original file locally for DOCX rendering if needed
+      if (isDocxFile && originalFile) {
+        try {
+          // Store the original file in localStorage for DOCX rendering
+          const fileKey = `docx_file_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+          localStorage.setItem(fileKey, JSON.stringify({
+            fileName: file.name,
+            fileSize: file.size,
+            uploadTime: Date.now()
+          }));
+          console.log('Original DOCX file reference stored locally:', fileKey);
+        } catch (localStorageError) {
+          console.warn('Could not store DOCX file reference locally:', localStorageError);
+        }
+      }
+      
+      // Try Firebase upload FIRST - this is the primary storage
       let templateId: string | null = null;
+      let firebaseError: any = null;
       
       try {
-        console.log('Trying Firebase upload...');
+        console.log('Attempting Firebase upload...');
         templateId = await firebaseUploadTemplate(templateData);
-        console.log('Firebase upload result:', templateId);
-      } catch (firebaseError) {
-        console.error('Firebase upload failed:', firebaseError);
-        console.log('Firebase blocked or failed, using localStorage fallback...');
+        console.log('Firebase upload successful, ID:', templateId);
         
-        // Create a local template ID
+        if (templateId) {
+          // Clear any Firebase blocked flag
+          localStorage.removeItem('firebase_blocked');
+          console.log('Firebase upload successful, cleared blocked flag');
+        }
+        
+      } catch (error: any) {
+        firebaseError = error;
+        console.error('Firebase upload failed:', error);
+        
+        // Set Firebase blocked flag
+        localStorage.setItem('firebase_blocked', Date.now().toString());
+        
+        // Check specific error types
+        if (error.code === 'permission-denied') {
+          console.error('Firebase permission denied - check rules');
+          alert('❌ Firebase permission denied. Please check Firebase security rules.');
+          return false;
+        } else if (error.code === 'quota-exceeded') {
+          console.error('Firebase quota exceeded');
+          alert('❌ Firebase quota exceeded. Please upgrade your Firebase plan.');
+          return false;
+        } else if (error.code === 'resource-exhausted') {
+          console.error('Firebase resource exhausted');
+          alert('❌ Firebase storage full. Please clear some data or upgrade plan.');
+          return false;
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+          console.error('Network error - Firebase might be blocked');
+          alert('❌ Network error. Firebase might be blocked by browser or network.');
+        }
+        
+        console.log('Firebase failed, will try localStorage fallback...');
+      }
+      
+      // If Firebase failed, try localStorage fallback with quota management
+      if (!templateId) {
+        console.log('Creating local template ID...');
         templateId = 'local_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
         
-        // Store in localStorage immediately
         try {
+          // Check localStorage quota before attempting to save
+          const templateSize = JSON.stringify(templateData).length;
+          console.log('Template data size:', templateSize, 'bytes');
+          
+          // Try to estimate available space
+          let availableSpace = 0;
+          try {
+            // Test localStorage capacity
+            const testKey = 'storage_test_' + Date.now();
+            const testData = 'x'.repeat(1024); // 1KB test
+            localStorage.setItem(testKey, testData);
+            localStorage.removeItem(testKey);
+            availableSpace = 1024; // At least 1KB available
+          } catch (quotaError) {
+            console.error('localStorage quota check failed:', quotaError);
+            availableSpace = 0;
+          }
+          
+          if (availableSpace < templateSize) {
+            // Try to clear old templates to make space
+            console.log('localStorage space low, clearing old templates...');
+            try {
+              const existingTemplates = localStorage.getItem('localTemplates');
+              if (existingTemplates) {
+                const templates = JSON.parse(existingTemplates);
+                // Keep only the 5 most recent templates
+                const recentTemplates = templates.slice(-5);
+                localStorage.setItem('localTemplates', JSON.stringify(recentTemplates));
+                console.log('Cleared old templates, kept 5 most recent');
+              }
+            } catch (clearError) {
+              console.error('Failed to clear old templates:', clearError);
+            }
+          }
+          
           const existingTemplates = localStorage.getItem('localTemplates');
           const templates = existingTemplates ? JSON.parse(existingTemplates) : [];
           
@@ -175,9 +291,48 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           templates.push(newTemplate);
           localStorage.setItem('localTemplates', JSON.stringify(templates));
           console.log('Template saved to localStorage as fallback');
-        } catch (localStorageError) {
-          console.error('localStorage fallback also failed:', localStorageError);
-          return false;
+          
+          // Show warning to user
+          if (firebaseError) {
+            alert(`⚠️ Template saved locally because Firebase failed:\n\n${firebaseError.message}\n\nTemplate is only available on this device.`);
+          }
+          
+        } catch (localStorageError: any) {
+          console.error('localStorage fallback failed:', localStorageError);
+          
+          // Check if it's a quota error
+          if (localStorageError.name === 'QuotaExceededError' || 
+              localStorageError.message?.includes('quota') ||
+              localStorageError.message?.includes('exceeded')) {
+            
+            alert('❌ Storage quota exceeded. Please:\n\n1. Clear browser data\n2. Try uploading a smaller template\n3. Check if Firebase is working');
+            
+            // Try to clear all localStorage and retry once
+            try {
+              console.log('Attempting to clear all localStorage and retry...');
+              localStorage.clear();
+              const newTemplate = {
+                id: templateId,
+                ...templateData,
+                uploadedAt: new Date().toISOString(),
+                status: 'active'
+              };
+              localStorage.setItem('localTemplates', JSON.stringify([newTemplate]));
+              console.log('Successfully saved after clearing localStorage');
+              
+              if (firebaseError) {
+                alert(`⚠️ Template saved locally (after clearing storage) because Firebase failed:\n\n${firebaseError.message}\n\nTemplate is only available on this device.`);
+              }
+              
+            } catch (retryError) {
+              console.error('Even clearing localStorage failed:', retryError);
+              alert('❌ Failed to save template. Storage is completely full. Please clear browser data or try a smaller template.');
+              return false;
+            }
+          } else {
+            alert('❌ Failed to save template locally: ' + localStorageError.message);
+            return false;
+          }
         }
       }
       
@@ -199,12 +354,22 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         globalTemplateStore.addTemplate(newTemplate);
         console.log('Added to global store for all users');
         
-        // Save to localStorage as backup
-        try {
-          localStorage.setItem('localTemplates', JSON.stringify(currentTemplates));
-          console.log('Saved to localStorage as backup');
-        } catch (localStorageError) {
-          console.error('Failed to save to localStorage:', localStorageError);
+        // Only save to localStorage as backup if Firebase succeeded
+        if (!firebaseError) {
+          try {
+            const existingTemplates = localStorage.getItem('localTemplates');
+            const localTemplates = existingTemplates ? JSON.parse(existingTemplates) : [];
+            
+            // Remove any existing template with same ID to avoid duplicates
+            const filteredTemplates = localTemplates.filter((t: any) => t.id !== templateId);
+            filteredTemplates.push(newTemplate);
+            
+            localStorage.setItem('localTemplates', JSON.stringify(filteredTemplates));
+            console.log('Saved to localStorage as backup');
+          } catch (localStorageError) {
+            console.error('Failed to save to localStorage backup:', localStorageError);
+            // Don't fail the upload if backup fails
+          }
         }
         
         console.log('=== ADMINCONTEXT UPLOAD SUCCESS ===');
