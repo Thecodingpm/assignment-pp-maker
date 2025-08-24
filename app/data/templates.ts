@@ -58,59 +58,61 @@ export const templateContents: TemplateContent[] = [
     id: 'research-paper',
     name: 'Research Paper',
     category: 'Academic',
-    content: `<h1>Research Paper Title</h1>
-<p style="text-align: center; font-style: italic; color: #6b7280; margin-bottom: 2rem;">[Subtitle or additional context]</p>
+    content: `<div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; font-family: 'Times New Roman', serif; line-height: 1.6; color: #333;">
+  <h1 style="text-align: center; font-size: 24px; font-weight: bold; margin-bottom: 10px; color: #1a1a1a;">Research Paper Title</h1>
+  <p style="text-align: center; font-style: italic; color: #6b7280; margin-bottom: 30px; font-size: 16px;">[Subtitle or additional context]</p>
 
-<div style="margin-bottom: 2rem;">
-  <h2>Abstract</h2>
-  <p style="text-align: justify; line-height: 1.6;">[Brief summary of your research, findings, and conclusions. This should be approximately 150-250 words and provide a comprehensive overview of the entire paper.]</p>
-</div>
+  <div style="margin-bottom: 30px; padding: 20px; background-color: #f9fafb; border-left: 4px solid #3b82f6; border-radius: 4px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937;">Abstract</h2>
+    <p style="text-align: justify; line-height: 1.6; margin: 0; color: #374151;">[Brief summary of your research, findings, and conclusions. This should be approximately 150-250 words and provide a comprehensive overview of the entire paper.]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>1. Introduction</h2>
-  <p>[Background information and context for your research]</p>
-  <p>[Statement of the research problem or question]</p>
-  <p>[Objectives and significance of the study]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">1. Introduction</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Background information and context for your research]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Statement of the research problem or question]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Objectives and significance of the study]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>2. Literature Review</h2>
-  <p>[Summary of existing research and theories related to your topic]</p>
-  <p>[Critical analysis of previous studies]</p>
-  <p>[Identification of research gaps]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">2. Literature Review</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Summary of existing research and theories related to your topic]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Critical analysis of previous studies]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Identification of research gaps]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>3. Methodology</h2>
-  <p>[Description of research design and approach]</p>
-  <p>[Data collection methods and procedures]</p>
-  <p>[Analysis techniques and tools used]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">3. Methodology</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Description of research design and approach]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Data collection methods and procedures]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Analysis techniques and tools used]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>4. Results</h2>
-  <p>[Presentation of findings and data analysis]</p>
-  <p>[Key results and statistical findings]</p>
-  <p>[Visual representations (tables, charts, graphs)]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">4. Results</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Presentation of findings and data analysis]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Key results and statistical findings]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Visual representations (tables, charts, graphs)]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>5. Discussion</h2>
-  <p>[Interpretation of results and their implications]</p>
-  <p>[Comparison with existing literature]</p>
-  <p>[Limitations and future research directions]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">5. Discussion</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Interpretation of results and their implications]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Comparison with existing literature]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Limitations and future research directions]</p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <h2>6. Conclusion</h2>
-  <p>[Summary of key findings and contributions]</p>
-  <p>[Practical implications and recommendations]</p>
-  <p>[Future research directions]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">6. Conclusion</h2>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Summary of key findings and contributions]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Practical implications and recommendations]</p>
+    <p style="margin-bottom: 10px; text-indent: 20px;">[Future research directions]</p>
+  </div>
 
-<div style="margin-top: 3rem;">
-  <h2>References</h2>
-  <p style="font-size: 0.875rem; color: #6b7280;">[List of sources in proper citation format (APA, MLA, Chicago, etc.)]</p>
+  <div style="margin-top: 40px; padding-top: 20px; border-top: 2px solid #e5e7eb;">
+    <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 15px; color: #1f2937;">References</h2>
+    <p style="font-size: 14px; color: #6b7280; margin: 0;">[List of sources in proper citation format (APA, MLA, Chicago, etc.)]</p>
+  </div>
 </div>`,
     description: 'Complete research paper structure with sections',
     icon: '📚',
@@ -157,52 +159,72 @@ export const templateContents: TemplateContent[] = [
     id: 'business-letter',
     name: 'Business Letter',
     category: 'Business',
-    content: `<h1>Business Letter</h1>
+    content: `<div style="max-width: 600px; margin: 0 auto; padding: 40px 20px; font-family: 'Times New Roman', serif; line-height: 1.6; color: #333;">
+  <h1 style="text-align: center; font-size: 20px; font-weight: bold; margin-bottom: 30px; color: #1a1a1a;">Business Letter</h1>
 
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Your Name]</strong><br>
-  [Your Address]<br>
-  [City, State ZIP Code]<br>
-  [Your Email]<br>
-  [Your Phone]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <p style="margin: 0; line-height: 1.4;">
+      <strong style="color: #1f2937;">[Your Name]</strong><br>
+      <span style="color: #374151;">[Your Address]</span><br>
+      <span style="color: #374151;">[City, State ZIP Code]</span><br>
+      <span style="color: #374151;">[Your Email]</span><br>
+      <span style="color: #374151;">[Your Phone]</span>
+    </p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Date]</strong></p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <p style="margin: 0;">
+      <strong style="color: #1f2937;">[Date]</strong>
+    </p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Recipient's Name]</strong><br>
-  [Recipient's Title]<br>
-  [Company Name]<br>
-  [Company Address]<br>
-  [City, State ZIP Code]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <p style="margin: 0; line-height: 1.4;">
+      <strong style="color: #1f2937;">[Recipient's Name]</strong><br>
+      <span style="color: #374151;">[Recipient's Title]</span><br>
+      <span style="color: #374151;">[Company Name]</span><br>
+      <span style="color: #374151;">[Company Address]</span><br>
+      <span style="color: #374151;">[City, State ZIP Code]</span>
+    </p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <p><strong>Subject: [Brief Description of Letter Purpose]</strong></p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <p style="margin: 0;">
+      <strong style="color: #1f2937;">Subject: [Brief Description of Letter Purpose]</strong>
+    </p>
+  </div>
 
-<div style="margin-bottom: 2rem;">
-  <p>Dear [Recipient's Name],</p>
-</div>
+  <div style="margin-bottom: 20px;">
+    <p style="margin: 0;">
+      Dear <strong style="color: #1f2937;">[Recipient's Name]</strong>,
+    </p>
+  </div>
 
-<div style="margin-bottom: 1.5rem;">
-  <p>[Opening paragraph - introduce yourself and state the purpose of the letter]</p>
-</div>
+  <div style="margin-bottom: 20px; text-indent: 20px;">
+    <p style="margin: 0; text-align: justify;">
+      [Opening paragraph - introduce yourself and state the purpose of the letter]
+    </p>
+  </div>
 
-<div style="margin-bottom: 1.5rem;">
-  <p>[Body paragraph(s) - provide details, background, and supporting information]</p>
-</div>
+  <div style="margin-bottom: 20px; text-indent: 20px;">
+    <p style="margin: 0; text-align: justify;">
+      [Body paragraph(s) - provide details, background, and supporting information]
+    </p>
+  </div>
 
-<div style="margin-bottom: 1.5rem;">
-  <p>[Closing paragraph - summarize key points and state next steps or desired outcome]</p>
-</div>
+  <div style="margin-bottom: 20px; text-indent: 20px;">
+    <p style="margin: 0; text-align: justify;">
+      [Closing paragraph - summarize key points and state next steps or desired outcome]
+    </p>
+  </div>
 
-<div style="margin-top: 2rem;">
-  <p>Sincerely,<br>
-  <strong>[Your Name]</strong><br>
-  [Your Title]</p>
+  <div style="margin-top: 40px;">
+    <p style="margin: 0; line-height: 1.4;">
+      Sincerely,<br>
+      <strong style="color: #1f2937;">[Your Name]</strong><br>
+      <span style="color: #374151;">[Your Title]</span>
+    </p>
+  </div>
 </div>`,
     description: 'Formal business letter with proper formatting',
     icon: '💼',
@@ -248,49 +270,64 @@ export const templateContents: TemplateContent[] = [
     id: 'modern-cv',
     name: 'Modern CV',
     category: 'Resume',
-    content: `<h1>[Your Full Name]</h1>
-<p style="font-size: 1.25rem; color: #6b7280; margin-bottom: 1rem;">[Professional Title]</p>
-<p style="margin-bottom: 2rem;">[Email] • [Phone] • [Location] • [LinkedIn]</p>
+    content: `<div style="max-width: 800px; margin: 0 auto; padding: 40px 20px; font-family: 'Arial', sans-serif; line-height: 1.6; color: #333; background-color: #ffffff;">
+  <h1 style="text-align: center; font-size: 28px; font-weight: bold; margin-bottom: 10px; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1px;">[Your Full Name]</h1>
+  <p style="text-align: center; font-size: 18px; color: #6b7280; margin-bottom: 15px; font-weight: 500;">[Professional Title]</p>
+  <p style="text-align: center; margin-bottom: 30px; color: #374151; font-size: 14px;">[Email] • [Phone] • [Location] • [LinkedIn]</p>
 
-<h2>Professional Summary</h2>
-<p style="margin-bottom: 2rem;">[2-3 sentence overview of your professional background and key strengths]</p>
+  <div style="margin-bottom: 30px; padding: 20px; background-color: #f8fafc; border-left: 4px solid #3b82f6; border-radius: 4px;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 15px; color: #1f2937; text-transform: uppercase; letter-spacing: 0.5px;">Professional Summary</h2>
+    <p style="margin: 0; color: #374151; line-height: 1.6;">[2-3 sentence overview of your professional background and key strengths]</p>
+  </div>
 
-<h2>Work Experience</h2>
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Job Title]</strong> | [Company Name] | [Dates]</p>
-  <ul>
-    <li>[Key achievement or responsibility]</li>
-    <li>[Key achievement or responsibility]</li>
-    <li>[Key achievement or responsibility]</li>
-  </ul>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1f2937; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">Work Experience</h2>
+    
+    <div style="margin-bottom: 25px;">
+      <p style="margin: 0 0 10px 0; font-weight: bold; color: #1f2937; font-size: 16px;">[Job Title] | [Company Name] | [Dates]</p>
+      <ul style="margin: 0; padding-left: 20px; color: #374151;">
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+      </ul>
+    </div>
 
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Job Title]</strong> | [Company Name] | [Dates]</p>
-  <ul>
-    <li>[Key achievement or responsibility]</li>
-    <li>[Key achievement or responsibility]</li>
-    <li>[Key achievement or responsibility]</li>
-  </ul>
-</div>
+    <div style="margin-bottom: 25px;">
+      <p style="margin: 0 0 10px 0; font-weight: bold; color: #1f2937; font-size: 16px;">[Job Title] | [Company Name] | [Dates]</p>
+      <ul style="margin: 0; padding-left: 20px; color: #374151;">
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+        <li style="margin-bottom: 5px;">[Key achievement or responsibility]</li>
+      </ul>
+    </div>
+  </div>
 
-<h2>Education</h2>
-<div style="margin-bottom: 2rem;">
-  <p><strong>[Degree]</strong> | [University] | [Graduation Year]</p>
-  <p>[Relevant coursework or achievements]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1f2937; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">Education</h2>
+    <div style="margin-bottom: 15px;">
+      <p style="margin: 0 0 5px 0; font-weight: bold; color: #1f2937; font-size: 16px;">[Degree] | [University] | [Graduation Year]</p>
+      <p style="margin: 0; color: #374151; font-size: 14px;">[Relevant coursework or achievements]</p>
+    </div>
+  </div>
 
-<h2>Skills</h2>
-<div style="margin-bottom: 1rem;">
-  <p><strong>Technical Skills:</strong> [Skill 1], [Skill 2], [Skill 3]</p>
-</div>
-<div style="margin-bottom: 2rem;">
-  <p><strong>Soft Skills:</strong> [Skill 1], [Skill 2], [Skill 3]</p>
-</div>
+  <div style="margin-bottom: 30px;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1f2937; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">Skills</h2>
+    <div style="margin-bottom: 15px;">
+      <p style="margin: 0 0 5px 0; font-weight: bold; color: #1f2937;">Technical Skills:</p>
+      <p style="margin: 0; color: #374151;">[Skill 1], [Skill 2], [Skill 3]</p>
+    </div>
+    <div style="margin-bottom: 15px;">
+      <p style="margin: 0 0 5px 0; font-weight: bold; color: #1f2937;">Soft Skills:</p>
+      <p style="margin: 0; color: #374151;">[Skill 1], [Skill 2], [Skill 3]</p>
+    </div>
+  </div>
 
-<h2>Certifications</h2>
-<p>[Certification 1] - [Issuing Organization] - [Year]</p>
-<p>[Certification 2] - [Issuing Organization] - [Year]</p>`,
+  <div style="margin-top: 30px;">
+    <h2 style="font-size: 20px; font-weight: bold; margin-bottom: 20px; color: #1f2937; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e5e7eb; padding-bottom: 5px;">Certifications</h2>
+    <p style="margin: 0 0 5px 0; color: #374151;">[Certification 1] - [Issuing Organization] - [Year]</p>
+    <p style="margin: 0; color: #374151;">[Certification 2] - [Issuing Organization] - [Year]</p>
+  </div>
+</div>`,
     description: 'Clean, modern resume layout',
     icon: '👔',
     color: 'bg-blue-50',

@@ -255,20 +255,17 @@ function FocusManagementPlugin({ editorId }: { editorId: string }) {
   return null;
 }
 
-// Simple Initial Content Plugin
+// Enhanced Initial Content Plugin with proper HTML parsing
 function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
   const [editor] = useLexicalComposerContext();
-  const initializedRef = useRef(false);
   const contentSetRef = useRef(false);
   
   useEffect(() => {
-    console.log('=== INITIAL CONTENT PLUGIN ===');
+    console.log('=== ENHANCED INITIAL CONTENT PLUGIN ===');
     console.log('Initial content received:', initialContent);
-    console.log('Initialized ref:', initializedRef.current);
-    console.log('Content set ref:', contentSetRef.current);
     
     if (initialContent !== undefined && !contentSetRef.current) {
-      console.log('Setting up content initialization...');
+      console.log('Setting up enhanced content initialization...');
       
       // Use a delay to ensure editor is fully initialized
       const timer = setTimeout(() => {
@@ -284,140 +281,54 @@ function InitialContentPlugin({ initialContent }: { initialContent?: string }) {
             (currentContent.trim() === '' || !contentSetRef.current);
           
           if (shouldSetContent) {
-            console.log('Setting initial content...');
+            console.log('Setting enhanced initial content...');
             contentSetRef.current = true;
             
             try {
               // Clear existing content first
               root.clear();
               
-              // Create a temporary container to parse HTML
-              const tempContainer = document.createElement('div');
-              tempContainer.innerHTML = initialContent;
+              // Use Lexical's built-in HTML parser for better results
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(initialContent, 'text/html');
               
-              console.log('Parsed HTML container:', tempContainer.innerHTML);
+              console.log('Parsed HTML document:', doc.body.innerHTML);
               
-              // Process each child node and create appropriate Lexical nodes
-              Array.from(tempContainer.children).forEach((child) => {
-                const tagName = child.tagName.toLowerCase();
-                const textContent = child.textContent || '';
-                const innerHTML = child.innerHTML;
-                
-                console.log('Processing element:', tagName, textContent);
-                
-                if (tagName === 'h1' || tagName === 'h2' || tagName === 'h3' || tagName === 'h4' || tagName === 'h5' || tagName === 'h6') {
-                  const paragraphNode = $createParagraphNode();
-                  paragraphNode.append($createTextNode(textContent));
-                  root.append(paragraphNode);
-                  
-                  // Apply styles after node is created
-                  setTimeout(() => {
-                    const headingElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`) as HTMLElement;
-                    if (headingElement) {
-                      headingElement.style.color = '#2563eb';
-                      headingElement.style.textAlign = 'center';
-                      headingElement.style.marginBottom = '20px';
-                    }
-                  }, 100);
-                  
-                } else if (tagName === 'p') {
-                  const paragraphNode = $createParagraphNode();
-                  paragraphNode.append($createTextNode(textContent));
-                  root.append(paragraphNode);
-                  
-                  // Apply paragraph styles
-                  setTimeout(() => {
-                    const paragraphElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`) as HTMLElement;
-                    if (paragraphElement) {
-                      paragraphElement.style.fontSize = '16px';
-                      paragraphElement.style.lineHeight = '1.6';
-                      paragraphElement.style.marginBottom = '15px';
-                      
-                      // Apply specific styles based on content
-                      if (textContent.includes('bold')) {
-                        paragraphElement.style.fontWeight = 'bold';
-                        paragraphElement.style.color = '#059669';
-                      }
-                      if (textContent.includes('centered')) {
-                        paragraphElement.style.textAlign = 'center';
-                        paragraphElement.style.fontStyle = 'italic';
-                        paragraphElement.style.color = '#6b7280';
-                      }
-                      if (textContent.includes('right-aligned')) {
-                        paragraphElement.style.textAlign = 'right';
-                        paragraphElement.style.fontWeight = 'bold';
-                        paragraphElement.style.color = '#ea580c';
-                      }
-                    }
-                  }, 100);
-                  
-                } else if (tagName === 'ul') {
-                  // Handle unordered lists
-                  Array.from(child.children).forEach((listItem) => {
-                    if (listItem.tagName.toLowerCase() === 'li') {
-                      const listItemNode = $createListItemNode();
-                      listItemNode.append($createTextNode(listItem.textContent || ''));
-                      root.append(listItemNode);
-                    }
-                  });
-                  
-                } else if (tagName === 'ol') {
-                  // Handle ordered lists
-                  Array.from(child.children).forEach((listItem) => {
-                    if (listItem.tagName.toLowerCase() === 'li') {
-                      const listItemNode = $createListItemNode();
-                      listItemNode.append($createTextNode(listItem.textContent || ''));
-                      root.append(listItemNode);
-                    }
-                  });
-                  
-                } else if (tagName === 'div') {
-                  // Handle div elements (like the note box)
-                  const paragraphNode = $createParagraphNode();
-                  paragraphNode.append($createTextNode(textContent));
-                  root.append(paragraphNode);
-                  
-                  // Apply div styles
-                  setTimeout(() => {
-                    const divElement = document.querySelector(`[data-lexical-key="${paragraphNode.getKey()}"]`);
-                    if (divElement) {
-                      divElement.style.backgroundColor = '#f3f4f6';
-                      divElement.style.padding = '15px';
-                      divElement.style.borderRadius = '8px';
-                      divElement.style.borderLeft = '4px solid #3b82f6';
-                      divElement.style.margin = '20px 0';
-                      divElement.style.color = '#374151';
-                    }
-                  }, 100);
-                  
-                } else {
-                  // Default to paragraph for unknown elements
+              // Convert the parsed HTML to Lexical nodes
+              const nodes = $generateNodesFromDOM(editor, doc);
+              
+              if (nodes && nodes.length > 0) {
+                console.log('Generated Lexical nodes:', nodes.length);
+                nodes.forEach(node => {
+                  root.append(node);
+                });
+              } else {
+                console.log('No nodes generated, falling back to text content');
+                // Fallback: create a simple paragraph with the text content
+                const textContent = initialContent.replace(/<[^>]*>/g, '').trim();
+                if (textContent) {
                   const paragraphNode = $createParagraphNode();
                   paragraphNode.append($createTextNode(textContent));
                   root.append(paragraphNode);
                 }
-              });
+              }
               
-              console.log('Content set successfully with manual parsing and styling');
+              console.log('Enhanced initial content set successfully');
               
             } catch (error) {
-              console.warn('Failed to parse initial content:', error);
+              console.error('Error setting enhanced initial content:', error);
               
-              // Fallback to plain text
+              // Fallback: create a simple paragraph with the text content
               const textContent = initialContent.replace(/<[^>]*>/g, '').trim();
-              console.log('Error occurred, using plain text fallback:', textContent);
               if (textContent) {
-                const paragraph = $createParagraphNode();
-                paragraph.append($createTextNode(textContent));
-                root.append(paragraph);
-                console.log('Content set successfully with error fallback');
+                const paragraphNode = $createParagraphNode();
+                paragraphNode.append($createTextNode(textContent));
+                root.append(paragraphNode);
               }
             }
-          } else {
-            console.log('Skipping content set - conditions not met');
           }
         });
-      }, 300); // Increased delay to ensure editor is fully ready
+      }, 200); // Increased delay for better initialization
       
       return () => clearTimeout(timer);
     }

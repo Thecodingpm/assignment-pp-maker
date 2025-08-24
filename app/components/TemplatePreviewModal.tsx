@@ -68,12 +68,13 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <title>Template Preview - ${template?.name || 'Template'}</title>
                 <style>
-                  /* MINIMAL STYLES - NO INTERFERENCE */
+                  /* ENHANCED STYLES FOR BETTER TEMPLATE DISPLAY */
                   body {
                     margin: 0;
                     padding: 20px;
                     background: #f5f5f5;
-                    font-family: Arial, sans-serif;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                    line-height: 1.6;
                   }
                   
                   .template-container {
@@ -90,12 +91,62 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                     padding: 30px;
                     position: relative;
                     z-index: 1;
+                    font-family: inherit;
+                    line-height: 1.6;
+                    color: #333;
                   }
                   
                   /* PRESERVE ALL ORIGINAL STYLES */
                   .template-content * {
                     /* Allow all original styles to take precedence */
                   }
+                  
+                  /* Enhanced typography */
+                  .template-content h1 {
+                    font-size: 24px;
+                    font-weight: bold;
+                    margin-bottom: 16px;
+                    color: #1a1a1a;
+                  }
+                  
+                  .template-content h2 {
+                    font-size: 20px;
+                    font-weight: bold;
+                    margin-bottom: 12px;
+                    color: #1f2937;
+                  }
+                  
+                  .template-content h3 {
+                    font-size: 18px;
+                    font-weight: bold;
+                    margin-bottom: 10px;
+                    color: #374151;
+                  }
+                  
+                  .template-content p {
+                    margin-bottom: 12px;
+                    line-height: 1.6;
+                  }
+                  
+                  .template-content ul {
+                    margin-bottom: 12px;
+                    padding-left: 20px;
+                  }
+                  
+                  .template-content li {
+                    margin-bottom: 6px;
+                  }
+                  
+                  .template-content strong {
+                    font-weight: bold;
+                    color: #1f2937;
+                  }
+                  
+                  /* Preserve text alignment */
+                  .text-center { text-align: center; }
+                  .text-left { text-align: left; }
+                  .text-right { text-align: right; }
+                  .text-justify { text-align: justify; }
                   
                   /* Debug info styles */
                   .debug-info {
@@ -139,17 +190,25 @@ export default function TemplatePreviewModal({ template, isOpen, onClose }: Temp
                       const positionedElements = document.querySelectorAll('[style*="position:"]');
                       const styledElements = document.querySelectorAll('[style]');
                       const images = document.querySelectorAll('img');
+                      const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+                      const paragraphs = document.querySelectorAll('p');
+                      const lists = document.querySelectorAll('ul, ol');
                       
                       console.log('Template content analysis:');
                       console.log('- Text content length:', textContent.length);
                       console.log('- Positioned elements:', positionedElements.length);
                       console.log('- Styled elements:', styledElements.length);
                       console.log('- Images:', images.length);
+                      console.log('- Headings:', headings.length);
+                      console.log('- Paragraphs:', paragraphs.length);
+                      console.log('- Lists:', lists.length);
                       
                       const debugInfo = document.getElementById('rendered-info');
                       if (debugInfo) {
                         debugInfo.innerHTML = \`
-                          <p><strong>Positioned Elements:</strong> <span class="\${positionedElements.length > 0 ? 'success' : 'error'}">\${positionedElements.length}</span></p>
+                          <p><strong>Headings:</strong> <span class="\${headings.length > 0 ? 'success' : 'error'}">\${headings.length}</span></p>
+                          <p><strong>Paragraphs:</strong> <span class="\${paragraphs.length > 0 ? 'success' : 'error'}">\${paragraphs.length}</span></p>
+                          <p><strong>Lists:</strong> <span class="\${lists.length > 0 ? 'success' : 'error'}">\${lists.length}</span></p>
                           <p><strong>Styled Elements:</strong> <span class="\${styledElements.length > 0 ? 'success' : 'error'}">\${styledElements.length}</span></p>
                           <p><strong>Images:</strong> <span class="\${images.length > 0 ? 'success' : 'error'}">\${images.length}</span></p>
                           <p><strong>Text Content:</strong> <span class="\${textContent.length > 0 ? 'success' : 'error'}">\${textContent.length} chars</span></p>
