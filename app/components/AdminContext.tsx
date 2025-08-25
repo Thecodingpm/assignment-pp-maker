@@ -2,9 +2,12 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useAuth } from './AuthContext';
-import { Template, TemplateUploadData, uploadTemplate as firebaseUploadTemplate, getTemplates as firebaseGetTemplates, updateTemplate as firebaseUpdateTemplate, deleteTemplate as firebaseDeleteTemplate } from '../firebase/templates';
+import { Template, TemplateUploadData, uploadTemplate as firebaseUploadTemplate, uploadStructuredTemplate as firebaseUploadStructuredTemplate, getTemplates as firebaseGetTemplates, updateTemplate as firebaseUpdateTemplate, updateStructuredTemplate as firebaseUpdateStructuredTemplate, deleteTemplate as firebaseDeleteTemplate } from '../firebase/templates';
 import { globalTemplateStore } from '../utils/globalTemplateStore';
 import { parseFile } from '../utils/docxParser';
+import { parseDocumentToBlocks } from '../utils/documentParser';
+import { StructuredDocument } from '../types/document';
+import mammoth from 'mammoth';
 
 interface AdminContextType {
   isAdmin: boolean;
@@ -14,6 +17,7 @@ interface AdminContextType {
   checkAdminStatus: () => boolean;
   isCurrentUserAdmin: () => boolean;
   uploadTemplate: (file: File, title: string, description: string, category: string) => Promise<boolean>;
+  uploadStructuredTemplate: (file: File, title: string, description: string, category: string) => Promise<boolean>;
   createTestTemplate: (templateData: {
     title: string;
     description: string;
@@ -23,6 +27,7 @@ interface AdminContextType {
   }) => Promise<boolean>;
   getTemplates: () => Promise<Template[]>;
   updateTemplate: (id: string, updates: Partial<Template>) => Promise<boolean>;
+  updateStructuredTemplate: (id: string, structuredDocument: StructuredDocument, changes: string) => Promise<boolean>;
   deleteTemplate: (id: string) => Promise<boolean>;
 }
 
@@ -450,6 +455,209 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  // Upload a structured document template
+  const uploadStructuredTemplate = async (file: File, title: string, description: string, category: string, frontImage?: string): Promise<boolean> => {
+    try {
+      console.log('=== ADMINCONTEXT STRUCTURED TEMPLATE UPLOAD START ===');
+      console.log('File:', file.name, 'Size:', file.size, 'Type:', file.type);
+      console.log('Title:', title, 'Description:', description, 'Category:', category);
+      
+      // Validate inputs
+      if (!file || !title || !description || !category) {
+        console.error('Missing required fields:', { file: !!file, title: !!title, description: !!description, category: !!category });
+        return false;
+      }
+      
+      // Parse file to structured document format
+      console.log('Parsing file to structured document format...');
+      let structuredDocument: StructuredDocument;
+      let originalContent = '';
+      
+      try {
+        structuredDocument = await parseDocumentToBlocks(file, file.name);
+        console.log('File parsed successfully to structured document');
+        console.log('Structured document blocks:', structuredDocument.blocks.length);
+        console.log('Document title:', structuredDocument.title);
+        
+        // Also extract original content for exact formatting preservation
+        if (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+          // For DOCX files, convert to HTML to preserve formatting
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.convertToHtml({ arrayBuffer });
+          originalContent = result.value;
+        } else if (file.type === 'text/html' || file.name.endsWith('.html')) {
+          // For HTML files, use the content directly
+          originalContent = await file.text();
+        } else {
+          // For other files, use the text content
+          originalContent = await file.text();
+        }
+        
+        console.log('Original content extracted for formatting preservation');
+      } catch (parseError) {
+        console.error('Failed to parse file to structured document:', parseError);
+        return false;
+      }
+      
+      const templateData: TemplateUploadData = {
+        title: structuredDocument.title || title,
+        description,
+        category,
+        content: originalContent, // Store original content for exact formatting preservation
+        fileName: file.name,
+        fileSize: file.size,
+        frontImage,
+        uploadedBy: user?.email || 'unknown',
+        originalFileName: file.name,
+        hasImages: structuredDocument.blocks.some(block => block.type === 'image'),
+        documentType: 'structured',
+        structuredDocument: structuredDocument,
+        version: 1
+      };
+      
+      console.log('=== STRUCTURED TEMPLATE DATA TO BE STORED ===');
+      console.log('Template title:', templateData.title);
+      console.log('Template description:', templateData.description);
+      console.log('Template category:', templateData.category);
+      console.log('Structured document blocks:', templateData.structuredDocument?.blocks.length);
+      console.log('Template file name:', templateData.fileName);
+      console.log('Template file size:', templateData.fileSize);
+      console.log('Template uploaded by:', templateData.uploadedBy);
+      console.log('Document type:', templateData.documentType);
+      
+      // Try Firebase upload FIRST - this is the primary storage
+      let templateId: string | null = null;
+      let firebaseError: any = null;
+      
+      try {
+        console.log('Attempting Firebase structured template upload...');
+        templateId = await firebaseUploadStructuredTemplate(templateData);
+        console.log('Firebase structured template upload successful, ID:', templateId);
+        
+        if (templateId) {
+          // Clear any Firebase blocked flag
+          localStorage.removeItem('firebase_blocked');
+          console.log('Firebase structured template upload successful, cleared blocked flag');
+        }
+        
+      } catch (error: any) {
+        firebaseError = error;
+        console.error('Firebase structured template upload failed:', error);
+        
+        // Set Firebase blocked flag
+        localStorage.setItem('firebase_blocked', Date.now().toString());
+        
+        // Check specific error types
+        if (error.code === 'permission-denied') {
+          console.error('Firebase permission denied - check rules');
+          alert('❌ Firebase permission denied. Please check Firebase security rules.');
+          return false;
+        } else if (error.code === 'quota-exceeded') {
+          console.error('Firebase quota exceeded');
+          alert('❌ Firebase quota exceeded. Please upgrade your Firebase plan.');
+          return false;
+        } else if (error.code === 'resource-exhausted') {
+          console.error('Firebase resource exhausted');
+          alert('❌ Firebase storage full. Please clear some data or upgrade plan.');
+          return false;
+        } else if (error.message?.includes('network') || error.message?.includes('fetch')) {
+          console.error('Network error - Firebase might be blocked');
+          alert('❌ Network error. Firebase might be blocked by browser or network.');
+        }
+        
+        console.log('Firebase failed for structured template, will try localStorage fallback...');
+      }
+      
+      // If Firebase failed, try localStorage fallback
+      if (!templateId) {
+        console.log('Creating local structured template ID...');
+        templateId = 'local_structured_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        try {
+          const existingTemplates = localStorage.getItem('localTemplates');
+          const localTemplates = existingTemplates ? JSON.parse(existingTemplates) : [];
+          
+          // Check storage quota
+          const quotaCheck = checkStorageQuota();
+          if (!quotaCheck.canStore) {
+            alert('❌ Local storage is full. Please clear some data and try again.');
+            return false;
+          }
+          
+          // Remove any existing template with same ID to avoid duplicates
+          const filteredTemplates = localTemplates.filter((t: any) => t.id !== templateId);
+          filteredTemplates.push({
+            id: templateId,
+            ...templateData,
+            uploadedAt: new Date().toISOString(),
+            status: 'active'
+          });
+          
+          localStorage.setItem('localTemplates', JSON.stringify(filteredTemplates));
+          console.log('Structured template saved to localStorage as fallback');
+          
+        } catch (localStorageError: any) {
+          console.error('Failed to save structured template to localStorage:', localStorageError);
+          
+          if (localStorageError.name === 'QuotaExceededError') {
+            alert('❌ Local storage is full. Please clear some data and try again.');
+            return false;
+          } else {
+            alert('❌ Failed to save structured template locally: ' + localStorageError.message);
+            return false;
+          }
+        }
+      }
+      
+      if (templateId) {
+        console.log('Structured template uploaded successfully with ID:', templateId);
+        
+        // Add to local state immediately
+        const newTemplate: Template = {
+          id: templateId,
+          ...templateData,
+          uploadedAt: new Date().toISOString(),
+          status: 'active'
+        };
+        
+        const currentTemplates = [...templates, newTemplate];
+        setTemplates(currentTemplates);
+        
+        // Add to global store for all users to access
+        globalTemplateStore.addTemplate(newTemplate);
+        console.log('Added structured template to global store for all users');
+        
+        // Only save to localStorage as backup if Firebase succeeded
+        if (!firebaseError) {
+          try {
+            const existingTemplates = localStorage.getItem('localTemplates');
+            const localTemplates = existingTemplates ? JSON.parse(existingTemplates) : [];
+            
+            // Remove any existing template with same ID to avoid duplicates
+            const filteredTemplates = localTemplates.filter((t: any) => t.id !== templateId);
+            filteredTemplates.push(newTemplate);
+            
+            localStorage.setItem('localTemplates', JSON.stringify(filteredTemplates));
+            console.log('Saved structured template to localStorage as backup');
+          } catch (localStorageError) {
+            console.error('Failed to save structured template to localStorage backup:', localStorageError);
+            // Don't fail the upload if backup fails
+          }
+        }
+        
+        console.log('=== ADMINCONTEXT STRUCTURED TEMPLATE UPLOAD SUCCESS ===');
+        return true;
+      } else {
+        console.error('Failed to get structured template ID from upload');
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('=== ADMINCONTEXT STRUCTURED TEMPLATE UPLOAD FAILED ===', error);
+      return false;
+    }
+  };
+
   // Function to create test templates directly (for testing purposes)
   const createTestTemplate = async (templateData: {
     title: string;
@@ -711,6 +919,66 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const updateStructuredTemplate = async (id: string, structuredDocument: StructuredDocument, changes: string): Promise<boolean> => {
+    try {
+      console.log('Updating structured template:', id);
+      console.log('Changes:', changes);
+      console.log('Structured document blocks:', structuredDocument.blocks.length);
+      
+      // Update in Firebase if possible
+      let success = false;
+      try {
+        success = await firebaseUpdateStructuredTemplate(id, structuredDocument, user?.email || 'unknown', changes);
+      } catch (firebaseError) {
+        console.log('Firebase structured template update failed, using localStorage');
+      }
+      
+      if (success) {
+        console.log('Structured template updated in Firebase successfully');
+      }
+      
+      // Update local state
+      const updatedTemplates = templates.map(template => 
+        template.id === id ? { 
+          ...template, 
+          structuredDocument: structuredDocument,
+          version: (template.version || 1) + 1,
+          lastEdited: new Date().toISOString()
+        } : template
+      );
+      setTemplates(updatedTemplates);
+      
+      // Update global store
+      const templateToUpdate = templates.find(t => t.id === id);
+      if (templateToUpdate) {
+        globalTemplateStore.updateTemplate(id, {
+          structuredDocument: structuredDocument,
+          version: (templateToUpdate.version || 1) + 1,
+          lastEdited: new Date().toISOString()
+        });
+        console.log('Updated structured template in global store');
+      }
+      
+      // Save to localStorage
+      try {
+        localStorage.setItem('localTemplates', JSON.stringify(updatedTemplates));
+        
+        // Dispatch custom event to notify other components
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('localStorageChange'));
+        }
+      } catch (localError) {
+        console.log('localStorage save failed:', localError);
+      }
+      
+      return true;
+      
+    } catch (error) {
+      console.error('Error updating structured template:', error);
+      return false;
+    }
+  };
+
   const deleteTemplate = async (id: string): Promise<boolean> => {
     try {
       console.log('Deleting template:', id);
@@ -766,9 +1034,11 @@ export function AdminProvider({ children }: { children: ReactNode }) {
     checkAdminStatus,
     isCurrentUserAdmin,
     uploadTemplate,
+    uploadStructuredTemplate,
     createTestTemplate,
     getTemplates,
     updateTemplate,
+    updateStructuredTemplate,
     deleteTemplate
   };
 

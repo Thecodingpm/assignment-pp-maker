@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAdmin } from '../../components/AdminContext';
 import AdminAuth from '../../components/AdminAuth';
 import { Template } from '../../firebase/templates';
@@ -9,7 +10,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 export default function AdminTemplateUpload() {
-  const { isAdmin, logoutAdmin, uploadTemplate, createTestTemplate, getTemplates, updateTemplate, deleteTemplate } = useAdmin();
+  const router = useRouter();
+  const { isAdmin, logoutAdmin, uploadTemplate, uploadStructuredTemplate, createTestTemplate, getTemplates, updateTemplate, deleteTemplate } = useAdmin();
   const [isAuthenticatedState, setIsAuthenticatedState] = useState(false);
   const [templates, setTemplates] = useState<Template[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -33,6 +35,11 @@ export default function AdminTemplateUpload() {
   const [expandedPreviews, setExpandedPreviews] = useState<Set<string>>(new Set());
   const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(new Set());
   const [originalFileViewer, setOriginalFileViewer] = useState<{template: Template, isOpen: boolean} | null>(null);
+  const [isStructuredTemplate, setIsStructuredTemplate] = useState(false);
+  const [selectedTemplates, setSelectedTemplates] = useState<Set<string>>(new Set());
+  const [isSelectMode, setIsSelectMode] = useState(false);
+  const [uploadStartTime, setUploadStartTime] = useState<Date | null>(null);
+  const [uploadEndTime, setUploadEndTime] = useState<Date | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Generate profile photo based on template name
@@ -211,6 +218,7 @@ export default function AdminTemplateUpload() {
 
     setIsUploading(true);
     setUploadProgress(0);
+    setUploadStartTime(new Date());
 
     try {
       console.log('=== UPLOAD PROCESS START ===');
@@ -236,9 +244,17 @@ export default function AdminTemplateUpload() {
         console.log('Front image processed');
       }
       
-      // Use real template upload function
-      console.log('Calling uploadTemplate function...');
-      const success = await uploadTemplate(file, templateName, templateDescription, selectedCategory, frontImageBase64);
+      // Use appropriate template upload function based on type
+      console.log('Template type:', isStructuredTemplate ? 'structured' : 'legacy');
+      let success: boolean;
+      
+      if (isStructuredTemplate) {
+        console.log('Calling uploadStructuredTemplate function...');
+        success = await uploadStructuredTemplate(file, templateName, templateDescription, selectedCategory, frontImageBase64);
+      } else {
+        console.log('Calling uploadTemplate function...');
+        success = await uploadTemplate(file, templateName, templateDescription, selectedCategory, frontImageBase64);
+      }
       console.log('Upload result:', success);
       
       if (success) {
@@ -252,6 +268,7 @@ export default function AdminTemplateUpload() {
         setTemplateName('');
         setTemplateDescription('');
         setSelectedCategory('assignment');
+        setIsStructuredTemplate(false);
         setFrontImagePreview(null);
         setFrontImageFile(null);
         setShowUploadForm(false);
@@ -261,6 +278,7 @@ export default function AdminTemplateUpload() {
         setUploadMessage('Template uploaded successfully! (Saved locally due to Firebase connection issues)');
         setTimeout(() => setUploadMessage(''), 5000);
         
+        setUploadEndTime(new Date());
         console.log('=== UPLOAD PROCESS COMPLETE ===');
       } else {
         console.error('Upload returned false');
@@ -275,6 +293,57 @@ export default function AdminTemplateUpload() {
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
+    }
+  };
+
+  // Bulk selection functions
+  const toggleSelectMode = () => {
+    setIsSelectMode(!isSelectMode);
+    if (isSelectMode) {
+      setSelectedTemplates(new Set());
+    }
+  };
+
+  const toggleTemplateSelection = (templateId: string) => {
+    const newSelected = new Set(selectedTemplates);
+    if (newSelected.has(templateId)) {
+      newSelected.delete(templateId);
+    } else {
+      newSelected.add(templateId);
+    }
+    setSelectedTemplates(newSelected);
+  };
+
+  const selectAllTemplates = () => {
+    const allIds = templates.map(t => t.id!);
+    setSelectedTemplates(new Set(allIds));
+  };
+
+  const deselectAllTemplates = () => {
+    setSelectedTemplates(new Set());
+  };
+
+  const deleteSelectedTemplates = async () => {
+    if (selectedTemplates.size === 0) return;
+
+    const confirmed = confirm(`Are you sure you want to delete ${selectedTemplates.size} template(s)?`);
+    if (!confirmed) return;
+
+    try {
+      const deletePromises = Array.from(selectedTemplates).map(id => deleteTemplate(id));
+      await Promise.all(deletePromises);
+      
+      // Refresh templates
+      await refreshTemplates();
+      setSelectedTemplates(new Set());
+      setIsSelectMode(false);
+      
+      setUploadMessage(`Successfully deleted ${selectedTemplates.size} template(s)`);
+      setTimeout(() => setUploadMessage(''), 3000);
+    } catch (error) {
+      console.error('Error deleting templates:', error);
+      setUploadMessage('Error deleting templates');
+      setTimeout(() => setUploadMessage(''), 3000);
     }
   };
 
@@ -1644,159 +1713,12 @@ export default function AdminTemplateUpload() {
                 + Upload Template
               </button>
               <button
-                className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
-                onClick={testFirebaseConnection}
-              >
-                🔥 Test Firebase
-              </button>
-              
-              <button
-                className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition-colors"
-                onClick={() => {
-                  // Clear Firebase cache and retry
-                  if (typeof window !== 'undefined') {
-                    // Clear any cached Firebase data
-                    localStorage.removeItem('firebase_cache');
-                    sessionStorage.clear();
-                    
-                    // Reload the page to reset Firebase connection
-                    window.location.reload();
-                  }
-                }}
-              >
-                🔄 Clear Cache & Retry
-              </button>
-              
-              <button
-                className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
-                onClick={checkStorageQuota}
-              >
-                📊 Check Storage
-              </button>
-              
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                onClick={clearAllLocalStorage}
-              >
-                🗑️ Clear Storage
-              </button>
-              <button
-                onClick={async () => {
-                  try {
-                    console.log('Creating simple test template...');
-                    const testContent = 'This is a simple test template content for debugging purposes.';
-                    const testFile = new File([testContent], 'test-template.txt', { type: 'text/plain' });
-                    
-                    console.log('Test file created:', testFile.name, testFile.size, testFile.type);
-                    
-                    const success = await uploadTemplate(
-                      testFile, 
-                      'Test Template', 
-                      'This is a test template for debugging', 
-                      'assignment'
-                    );
-                    
-                    if (success) {
-                      console.log('Test template created successfully!');
-                      alert('Test template created successfully!');
-                      // Refresh the list
-                      const updatedTemplates = await getTemplates();
-                      setTemplates(updatedTemplates);
-                    } else {
-                      console.error('Test template creation failed');
-                      alert('Test template creation failed');
-                    }
-                  } catch (error) {
-                    console.error('Test template creation failed:', error);
-                    alert(`Test template creation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
-                  }
-                }}
+                onClick={() => router.push('/admin/template-editor')}
                 className="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg font-medium transition-colors"
               >
-                Create Test Template
+                ✏️ Edit Templates
               </button>
-              <button
-                className="px-4 py-2 bg-teal-500 text-white rounded hover:bg-teal-600 transition-colors"
-                onClick={() => {
-                  // Create a simple HTML file for testing
-                  const htmlContent = `<!DOCTYPE html>
-<html>
-<head>
-    <title>Test Template</title>
-</head>
-<body>
-    <div style="position: relative; width: 100%; height: 300px; background: #1a1a2e; border-radius: 10px; overflow: hidden;">
-      
-      <!-- Background Image -->
-      <img src="https://via.placeholder.com/600x300/4a90e2/ffffff?text=Background+Image" 
-           style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;" alt="Background">
-      
-      <!-- Dark overlay -->
-      <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4);"></div>
-      
-      <!-- Main title positioned over image -->
-      <h1 style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 32px; font-weight: bold; margin: 0; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); text-align: center;">
-        STORIES OF THE NIGHT SKY
-      </h1>
-      
-      <!-- Subtitle positioned over image -->
-      <p style="position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); color: white; font-size: 18px; font-weight: bold; margin: 0; text-shadow: 1px 1px 2px rgba(0,0,0,0.8);">
-        AHMAD
-      </p>
-      
-      <!-- Test text in corners -->
-      <div style="position: absolute; top: 20px; left: 20px; color: white; font-size: 14px; background: rgba(255,0,0,0.8); padding: 5px 10px; border-radius: 5px;">
-        TOP LEFT
-      </div>
-      
-      <div style="position: absolute; top: 20px; right: 20px; color: white; font-size: 14px; background: rgba(0,255,0,0.8); padding: 5px 10px; border-radius: 5px;">
-        TOP RIGHT
-      </div>
-      
-      <div style="position: absolute; bottom: 20px; left: 20px; color: white; font-size: 14px; background: rgba(0,0,255,0.8); padding: 5px 10px; border-radius: 5px;">
-        BOTTOM LEFT
-      </div>
-      
-      <div style="position: absolute; bottom: 20px; right: 20px; color: white; font-size: 14px; background: rgba(255,255,0,0.8); padding: 5px 10px; border-radius: 5px;">
-        BOTTOM RIGHT
-      </div>
-      
-    </div>
 
-    <div style="margin-top: 20px; text-align: center;">
-      <p style="color: #333; font-size: 16px;">
-        If you can see <span style="color: red; font-weight: bold;">red text</span>, 
-        <span style="color: blue; font-weight: bold;">blue text</span>, and 
-        <span style="color: green; font-weight: bold;">green text</span>, 
-        then the preview is working correctly!
-      </p>
-    </div>
-</body>
-</html>`;
-                    
-                    // Create and download the HTML file
-                    const blob = new Blob([htmlContent], { type: 'text/html' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'test-template.html';
-                    document.body.appendChild(a);
-                    a.click();
-                    // Safe removal with error handling
-                    try {
-                      if (a.parentNode) {
-                        document.body.removeChild(a);
-                      }
-                    } catch (error) {
-                      console.warn('Could not remove download link:', error);
-                    }
-                    URL.revokeObjectURL(url);
-                    
-                    alert('✅ Test HTML file created and downloaded!\n\nNow:\n1. Upload this HTML file\n2. Preview it\n3. It should show EXACTLY the same as the file\n\nThis will test if raw HTML preservation is working.');
-                  }}
-                >
-                  📄 Create Test HTML File
-                </button>
                 <button
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
                   onClick={() => {
@@ -2157,6 +2079,9 @@ export default function AdminTemplateUpload() {
                 <span className={`flex items-center ${fileInputRef.current?.files?.[0] ? 'text-green-600' : 'text-gray-400'}`}>
                   {fileInputRef.current?.files?.[0] ? '✅' : '⭕'} File Selected
                 </span>
+                <span className={`flex items-center ${isStructuredTemplate ? 'text-blue-600' : 'text-gray-400'}`}>
+                  {isStructuredTemplate ? '✨' : '📄'} {isStructuredTemplate ? 'Structured' : 'Legacy'} Template
+                </span>
                 <span className={`flex items-center ${frontImageFile ? 'text-green-600' : 'text-blue-400'}`}>
                   {frontImageFile ? '✅' : '🖼️'} Cover Photo
                 </span>
@@ -2235,6 +2160,50 @@ export default function AdminTemplateUpload() {
                     className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
                     placeholder="Describe your template..."
                   />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Template Type
+                  </label>
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="templateType"
+                        value="legacy"
+                        checked={!isStructuredTemplate}
+                        onChange={() => setIsStructuredTemplate(false)}
+                        className="text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Legacy Template
+                        </span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Simple HTML content (backward compatible)
+                        </p>
+                      </div>
+                    </label>
+                    <label className="flex items-center space-x-3 cursor-pointer">
+                      <input
+                        type="radio"
+                        name="templateType"
+                        value="structured"
+                        checked={isStructuredTemplate}
+                        onChange={() => setIsStructuredTemplate(true)}
+                        className="text-blue-600 focus:ring-blue-500"
+                      />
+                      <div>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Structured Template ✨
+                        </span>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Advanced block-based editing with rich text features
+                        </p>
+                      </div>
+                    </label>
+                  </div>
                 </div>
 
                 <div>
@@ -2379,15 +2348,63 @@ export default function AdminTemplateUpload() {
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                   Manage all uploaded templates
                 </p>
+                {/* Upload timing info */}
+                {uploadStartTime && uploadEndTime && (
+                  <div className="mt-2 text-xs text-green-600 dark:text-green-400">
+                    ⏱️ Last upload completed in {Math.round((uploadEndTime.getTime() - uploadStartTime.getTime()) / 1000)}s
+                  </div>
+                )}
               </div>
-              <button
-                onClick={refreshTemplates}
-                disabled={isLoadingTemplates}
-                className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                title="Refresh templates"
-              >
-                {isLoadingTemplates ? '⏳' : '🔄'} Refresh
-              </button>
+              <div className="flex items-center space-x-2">
+                {/* Bulk selection controls */}
+                {isSelectMode && (
+                  <div className="flex items-center space-x-2 mr-4">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {selectedTemplates.size} selected
+                    </span>
+                    <button
+                      onClick={selectAllTemplates}
+                      className="px-2 py-1 text-xs bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300 rounded transition-colors"
+                    >
+                      Select All
+                    </button>
+                    <button
+                      onClick={deselectAllTemplates}
+                      className="px-2 py-1 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded transition-colors"
+                    >
+                      Deselect All
+                    </button>
+                    <button
+                      onClick={deleteSelectedTemplates}
+                      disabled={selectedTemplates.size === 0}
+                      className="px-2 py-1 text-xs bg-red-100 hover:bg-red-200 dark:bg-red-900 dark:hover:bg-red-800 text-red-700 dark:text-red-300 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Delete Selected ({selectedTemplates.size})
+                    </button>
+                  </div>
+                )}
+                
+                <button
+                  onClick={toggleSelectMode}
+                  className={`px-3 py-2 text-sm rounded-lg transition-colors ${
+                    isSelectMode 
+                      ? 'bg-blue-100 hover:bg-blue-200 dark:bg-blue-900 dark:hover:bg-blue-800 text-blue-700 dark:text-blue-300'
+                      : 'bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300'
+                  }`}
+                  title={isSelectMode ? 'Exit selection mode' : 'Enter selection mode'}
+                >
+                  {isSelectMode ? '✕' : '☑️'} {isSelectMode ? 'Exit' : 'Select'}
+                </button>
+                
+                <button
+                  onClick={refreshTemplates}
+                  disabled={isLoadingTemplates}
+                  className="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  title="Refresh templates"
+                >
+                  {isLoadingTemplates ? '⏳' : '🔄'} Refresh
+                </button>
+              </div>
             </div>
           </div>
 
@@ -2428,10 +2445,23 @@ export default function AdminTemplateUpload() {
           ) : (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTemplates.map((template) => (
-                <div key={template.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                <div key={template.id} className={`p-6 transition-colors ${
+                  isSelectMode && selectedTemplates.has(template.id!) 
+                    ? 'bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500' 
+                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                }`}>
                   {/* Template Header */}
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
+                      {/* Selection Checkbox */}
+                      {isSelectMode && (
+                        <input
+                          type="checkbox"
+                          checked={selectedTemplates.has(template.id!)}
+                          onChange={() => toggleTemplateSelection(template.id!)}
+                          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                        />
+                      )}
                       {/* Front Image or Profile Photo */}
                       {template.frontImage ? (
                         <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
@@ -2465,7 +2495,14 @@ export default function AdminTemplateUpload() {
                             {template.fileSize ? (template.fileSize / 1024).toFixed(1) + 'KB' : 'Unknown'}
                           </span>
                           <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
-                            {template.uploadedAt ? new Date(template.uploadedAt).toLocaleDateString() : 'Unknown'}
+                            {template.uploadedAt ? (() => {
+                              try {
+                                const date = new Date(template.uploadedAt);
+                                return isNaN(date.getTime()) ? 'Unknown' : date.toLocaleDateString();
+                              } catch {
+                                return 'Unknown';
+                              }
+                            })() : 'Unknown'}
                           </span>
                         </div>
                         
@@ -2492,11 +2529,24 @@ export default function AdminTemplateUpload() {
                         <div className="mt-2 flex flex-wrap gap-1">
                           {template.documentType && (
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                              template.documentType === 'formatted' 
+                              template.documentType === 'structured'
+                                ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200'
+                                : template.documentType === 'formatted' 
                                 ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
                                 : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
                             }`}>
-                              {template.documentType === 'formatted' ? '🎨 Formatted' : '📝 Plain'}
+                              {template.documentType === 'structured' ? '✨ Structured' : 
+                               template.documentType === 'formatted' ? '🎨 Formatted' : '📝 Plain'}
+                            </span>
+                          )}
+                          {template.documentType === 'structured' && template.structuredDocument && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                              📦 {template.structuredDocument.blocks?.length || 0} blocks
+                            </span>
+                          )}
+                          {template.version && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                              v{template.version}
                             </span>
                           )}
                           {template.hasImages && (

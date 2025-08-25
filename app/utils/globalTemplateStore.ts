@@ -4,13 +4,24 @@ export interface GlobalTemplate {
   title: string;
   description: string;
   category: string;
-  content: string;
+  content: string; // Legacy HTML content for backward compatibility
   fileName: string;
   fileSize: number;
   frontImage?: string;
   uploadedAt: string;
   uploadedBy: string;
   status: 'active' | 'inactive';
+  // New structured document fields
+  documentType?: 'formatted' | 'plain' | 'structured';
+  structuredDocument?: any; // StructuredDocument type
+  version?: number;
+  lastEdited?: string;
+  editHistory?: Array<{
+    version: number;
+    timestamp: any;
+    editedBy: string;
+    changes: string;
+  }>;
 }
 
 class GlobalTemplateStore {
@@ -98,6 +109,14 @@ class GlobalTemplateStore {
 
   public getTemplatesByCategory(category: string): GlobalTemplate[] {
     return this.templates.filter(t => t.category === category);
+  }
+
+  public getStructuredTemplates(): GlobalTemplate[] {
+    return this.templates.filter(t => t.documentType === 'structured' && t.structuredDocument);
+  }
+
+  public getLegacyTemplates(): GlobalTemplate[] {
+    return this.templates.filter(t => t.documentType !== 'structured');
   }
 
   public clearTemplates(): void {
