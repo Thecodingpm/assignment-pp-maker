@@ -26,6 +26,10 @@ export interface Template {
   uploadedAt: any;
   uploadedBy: string;
   status: 'active' | 'inactive';
+  originalFileName?: string;
+  hasImages?: boolean;
+  documentType?: 'formatted' | 'plain';
+  extractedImages?: string[];
 }
 
 export interface TemplateUploadData {
@@ -38,6 +42,10 @@ export interface TemplateUploadData {
   frontImage?: string; // Base64 encoded image or URL
   originalFile?: File | ArrayBuffer | string; // Optional - for local DOCX rendering only
   uploadedBy: string;
+  originalFileName?: string;
+  hasImages?: boolean;
+  documentType?: 'formatted' | 'plain';
+  extractedImages?: string[];
 }
 
 // Upload a new template

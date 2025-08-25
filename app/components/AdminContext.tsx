@@ -130,12 +130,23 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           const parsedDoc = await parseFile(file);
           if (parsedDoc.error) {
             console.error('DOCX parsing error:', parsedDoc.error);
+            console.log('Using fallback content for DOCX file');
             // Still proceed with original file for rendering, but use fallback content
             content = `<p>DOCX Template: ${file.name}</p><p>Note: Content extraction failed, but original file is preserved for exact rendering.</p>`;
+            console.log('Fallback content length:', content.length);
+            console.log('Fallback content:', content);
           } else {
             content = parsedDoc.content;
+            console.log('DOCX content extracted successfully');
+            console.log('DOCX content length:', content.length);
+            console.log('DOCX content preview (first 500 chars):', content.substring(0, 500));
+            console.log('DOCX content preview (last 200 chars):', content.substring(Math.max(0, content.length - 200)));
+            console.log('DOCX content contains HTML tags:', content.includes('<') && content.includes('>'));
+            console.log('DOCX content contains styling:', content.includes('style=') || content.includes('class='));
+            
             if (parsedDoc.title && title === file.name.replace(/\.[^/.]+$/, '')) {
               extractedTitle = parsedDoc.title;
+              console.log('Title extracted from DOCX:', extractedTitle);
             }
           }
         } catch (parseError) {
@@ -162,11 +173,39 @@ export function AdminProvider({ children }: { children: ReactNode }) {
           
           console.log('File content extracted, length:', content.length);
           console.log('Extracted title:', extractedTitle);
-          console.log('Content preview:', content.substring(0, 200) + '...');
+          console.log('Content preview (first 500 chars):', content.substring(0, 500));
+          console.log('Content preview (last 200 chars):', content.substring(Math.max(0, content.length - 200)));
+          console.log('Content contains HTML tags:', content.includes('<') && content.includes('>'));
+          console.log('Content contains styling:', content.includes('style=') || content.includes('class='));
           
         } catch (parseError) {
           console.error('Failed to parse file:', parseError);
           return false;
+        }
+      }
+      
+      // Get additional metadata from parsed document
+      let hasImages = false;
+      let documentType: 'formatted' | 'plain' = 'plain';
+      let extractedImages: string[] = [];
+      
+      if (isDocxFile) {
+        try {
+          const parsedDoc = await parseFile(file);
+          hasImages = parsedDoc.hasImages || false;
+          documentType = parsedDoc.documentType || 'plain';
+          extractedImages = parsedDoc.extractedImages || [];
+        } catch (error) {
+          console.log('Could not extract additional metadata from DOCX:', error);
+        }
+      } else {
+        try {
+          const parsedDoc = await parseFile(file);
+          hasImages = parsedDoc.hasImages || false;
+          documentType = parsedDoc.documentType || 'plain';
+          extractedImages = parsedDoc.extractedImages || [];
+        } catch (error) {
+          console.log('Could not extract additional metadata:', error);
         }
       }
       
@@ -178,12 +217,31 @@ export function AdminProvider({ children }: { children: ReactNode }) {
         fileName: file.name,
         fileSize: file.size,
         frontImage,
-        uploadedBy: user?.email || 'unknown'
+        uploadedBy: user?.email || 'unknown',
+        originalFileName: file.name,
+        hasImages: hasImages,
+        documentType: documentType,
+        extractedImages: extractedImages
         // Note: originalFile is not included in Firebase upload as it can't be serialized
         // It will be stored locally for DOCX rendering
       };
       
-      console.log('Created template data:', templateData);
+      console.log('=== TEMPLATE DATA TO BE STORED ===');
+      console.log('Template title:', templateData.title);
+      console.log('Template description:', templateData.description);
+      console.log('Template category:', templateData.category);
+      console.log('Template content length:', templateData.content.length);
+      console.log('Template content preview (first 1000 chars):', templateData.content.substring(0, 1000));
+      console.log('Template content preview (last 500 chars):', templateData.content.substring(Math.max(0, templateData.content.length - 500)));
+      console.log('Template file name:', templateData.fileName);
+      console.log('Template file size:', templateData.fileSize);
+      console.log('Template uploaded by:', templateData.uploadedBy);
+      console.log('📊 Template Metadata:');
+      console.log('   Original file name:', templateData.originalFileName);
+      console.log('   Has images:', templateData.hasImages);
+      console.log('   Document type:', templateData.documentType);
+      console.log('   Extracted images count:', templateData.extractedImages?.length || 0);
+      console.log('Full template data object:', templateData);
       
       // Store original file locally for DOCX rendering if needed
       if (isDocxFile && originalFile) {

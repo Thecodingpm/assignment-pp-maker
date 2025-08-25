@@ -1,0 +1,13 @@
+{
+  "id": "template_1756080478031",
+  "name": "Ahmad",
+  "description": "123",
+  "fileName": "Text.docx",
+  "filePath": "/public/uploads/templates/1756080478031_Text.docx",
+  "fileSize": 669738,
+  "fileType": ".docx",
+  "content": "<h1>Error</h1><p>Failed to parse DOCX file: file.arrayBuffer is not a function</p><p>Please try uploading a different DOCX file or convert your document to a different format.</p>",
+  "extractedFiles": [],
+  "uploadedAt": "2025-08-25T00:07:58.083Z",
+  "status": "active"
+}

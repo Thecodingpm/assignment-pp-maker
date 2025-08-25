@@ -30,6 +30,9 @@ export default function AdminTemplateUpload() {
   const [editFrontImageFile, setEditFrontImageFile] = useState<File | null>(null);
   const [frontImagePreview, setFrontImagePreview] = useState<string | null>(null);
   const [frontImageFile, setFrontImageFile] = useState<File | null>(null);
+  const [expandedPreviews, setExpandedPreviews] = useState<Set<string>>(new Set());
+  const [loadingPreviews, setLoadingPreviews] = useState<Set<string>>(new Set());
+  const [originalFileViewer, setOriginalFileViewer] = useState<{template: Template, isOpen: boolean} | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Generate profile photo based on template name
@@ -349,6 +352,37 @@ export default function AdminTemplateUpload() {
     }
   };
 
+  const togglePreviewExpansion = (templateId: string) => {
+    // Add loading state
+    setLoadingPreviews(prev => new Set(prev).add(templateId));
+    
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      setExpandedPreviews(prev => {
+        const newSet = new Set(prev);
+        if (newSet.has(templateId)) {
+          newSet.delete(templateId);
+        } else {
+          newSet.add(templateId);
+        }
+        return newSet;
+      });
+      setLoadingPreviews(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(templateId);
+        return newSet;
+      });
+    }, 100);
+  };
+
+  const openOriginalFile = (template: Template) => {
+    setOriginalFileViewer({ template, isOpen: true });
+  };
+
+  const closeOriginalFile = () => {
+    setOriginalFileViewer(null);
+  };
+
   // Manual refresh function
   const refreshTemplates = async () => {
     try {
@@ -558,7 +592,7 @@ export default function AdminTemplateUpload() {
       console.log('Creating advanced test template with positioning...');
       
       const testContent = `
-        <div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; position: relative;">
+        <div class="docx-content" style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 20px; position: relative;">
           <!-- Header with background image and overlaid text -->
           <div style="position: relative; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; margin-bottom: 30px; overflow: hidden;">
             <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: white; z-index: 2;">
@@ -650,33 +684,19 @@ export default function AdminTemplateUpload() {
       
       const templateData = {
         title: 'Advanced Test Template',
-        description: 'A comprehensive test template with positioning, alignment, and styling',
-        category: 'assignment',
+        description: 'Template with proper alignment and positioning preservation',
+        category: 'test',
         content: testContent,
-        fileName: 'advanced-test.html',
-        fileSize: testContent.length,
-        uploadedBy: 'test@test.com'
+        fileName: 'advanced-test-template.html'
       };
       
-      console.log('Advanced template data created:', templateData);
-      
-      // Try to upload using the new test template function
       const success = await createTestTemplate(templateData);
-      
       if (success) {
-        console.log('Template created successfully, refreshing list...');
-        
-        // Add a small delay to ensure Firebase operations complete
-        setTimeout(async () => {
-          // Refresh the templates list
-          await refreshTemplates();
-        }, 1000);
-        
-        alert('✅ Advanced test template created successfully!\n\nThis template includes:\n• Absolute positioning\n• Different text alignments\n• Floating elements\n• Grid layouts\n• Mixed styling\n\nPreview it to see if all formatting is preserved!');
+        alert('✅ Advanced test template created successfully!');
+        getTemplates(); // Refresh the list
       } else {
-        alert('❌ Failed to create advanced test template. Check console for details.');
+        alert('❌ Failed to create advanced test template');
       }
-      
     } catch (error) {
       console.error('Error creating advanced test template:', error);
       alert('❌ Error creating advanced test template: ' + error);
@@ -940,6 +960,667 @@ export default function AdminTemplateUpload() {
     }
   };
 
+  const createHtmlTestTemplate = async () => {
+    try {
+      console.log('Creating HTML test template with alignment preservation...');
+      
+      const testContent = `
+        <div class="docx-content" style="font-family: 'Times New Roman', serif; max-width: 800px; margin: 0 auto; padding: 20px;">
+          <h1 style="text-align: center; color: #2c3e50; margin-bottom: 30px;">HTML Template with Alignment</h1>
+          
+          <!-- Different text alignments -->
+          <div style="margin-bottom: 30px;">
+            <h2 style="color: #34495e; margin-bottom: 15px;">Text Alignment Examples</h2>
+            
+            <p style="text-align: left; background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <strong>Left Aligned:</strong> This text is aligned to the left side of the container.
+            </p>
+            
+            <p style="text-align: center; background: #d5f4e6; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <strong>Center Aligned:</strong> This text is centered within the container.
+            </p>
+            
+            <p style="text-align: right; background: #fdf2e9; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+              <strong>Right Aligned:</strong> This text is aligned to the right side.
+            </p>
+            
+            <p style="text-align: justify; background: #e8f4fd; padding: 15px; border-radius: 8px;">
+              <strong>Justified:</strong> This text is justified, meaning it spreads out to fill the entire width of the container, creating even margins on both sides.
+            </p>
+          </div>
+          
+          <!-- Positioned elements -->
+          <div style="position: relative; height: 200px; background: #f8f9fa; border: 2px solid #dee2e6; border-radius: 12px; margin-bottom: 30px; overflow: hidden;">
+            <h2 style="text-align: center; color: #495057; margin: 20px 0;">Positioned Elements</h2>
+            
+            <div style="position: absolute; top: 20px; left: 20px; background: #007bff; color: white; padding: 10px; border-radius: 6px;">
+              Top Left
+            </div>
+            
+            <div style="position: absolute; top: 20px; right: 20px; background: #28a745; color: white; padding: 10px; border-radius: 6px;">
+              Top Right
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; left: 20px; background: #dc3545; color: white; padding: 10px; border-radius: 6px;">
+              Bottom Left
+            </div>
+            
+            <div style="position: absolute; bottom: 20px; right: 20px; background: #ffc107; color: #212529; padding: 10px; border-radius: 6px;">
+              Bottom Right
+            </div>
+            
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #6f42c1; color: white; padding: 10px; border-radius: 6px;">
+              Center
+            </div>
+          </div>
+          
+          <!-- Table with alignment -->
+          <div style="margin-bottom: 30px;">
+            <h2 style="color: #34495e; margin-bottom: 15px;">Table Alignment</h2>
+            <table style="width: 100%; border-collapse: collapse; border: 2px solid #dee2e6;">
+              <thead>
+                <tr style="background: #f8f9fa;">
+                  <th style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">Left Aligned</th>
+                  <th style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Center Aligned</th>
+                  <th style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">Right Aligned</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">Content left</td>
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">Content center</td>
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">Content right</td>
+                </tr>
+                <tr style="background: #f8f9fa;">
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: left;">More left</td>
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: center;">More center</td>
+                  <td style="border: 1px solid #dee2e6; padding: 12px; text-align: right;">More right</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Mixed content -->
+          <div style="background: #e9ecef; padding: 20px; border-radius: 12px; text-align: center;">
+            <h2 style="color: #495057; margin-bottom: 15px;">Mixed Content Section</h2>
+            <p style="margin-bottom: 20px; line-height: 1.6;">
+              This section contains mixed content with different alignments and positioning.
+            </p>
+            <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px;">
+              <button style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Left Button</button>
+              <button style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Center Button</button>
+              <button style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer;">Right Button</button>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      const templateData = {
+        title: 'HTML Alignment Template',
+        description: 'HTML template demonstrating proper alignment and positioning preservation',
+        category: 'test',
+        content: testContent,
+        fileName: 'html-alignment-template.html'
+      };
+      
+      const success = await createTestTemplate(templateData);
+      if (success) {
+        alert('✅ HTML alignment template created successfully!');
+        getTemplates(); // Refresh the list
+      } else {
+        alert('❌ Failed to create HTML alignment template');
+      }
+    } catch (error) {
+      console.error('Error creating HTML alignment template:', error);
+      alert('❌ Error creating HTML alignment template: ' + error);
+    }
+  };
+
+  const createRawHtmlTemplate = async () => {
+    try {
+      console.log('Creating raw HTML template with exact preservation...');
+      
+      const testContent = `
+<div style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f9f9f9;">
+  <h1 style="text-align: center; color: #333; margin-bottom: 30px; font-size: 32px;">Raw HTML Template</h1>
+  
+  <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;">Text Alignment Test</h2>
+    
+    <p style="text-align: left; background: #ecf0f1; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #3498db;">
+      <strong>Left Aligned:</strong> This text is aligned to the left side of the container.
+    </p>
+    
+    <p style="text-align: center; background: #d5f4e6; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #27ae60;">
+      <strong>Center Aligned:</strong> This text is centered within the container.
+    </p>
+    
+    <p style="text-align: right; background: #fdf2e9; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #e67e22;">
+      <strong>Right Aligned:</strong> This text is aligned to the right side.
+    </p>
+    
+    <p style="text-align: justify; background: #e8f4fd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #9b59b6;">
+      <strong>Justified:</strong> This text is justified, meaning it spreads out to fill the entire width of the container, creating even margins on both sides.
+    </p>
+  </div>
+  
+  <div style="margin-top: 30px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; height: 200px;">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;">Positioned Elements Test</h2>
+    
+    <div style="position: absolute; top: 20px; left: 20px; background: #3498db; color: white; padding: 10px; border-radius: 6px; font-weight: bold;">
+      Top Left
+    </div>
+    
+    <div style="position: absolute; top: 20px; right: 20px; background: #e74c3c; color: white; padding: 10px; border-radius: 6px; font-weight: bold;">
+      Top Right
+    </div>
+    
+    <div style="position: absolute; bottom: 20px; left: 20px; background: #f39c12; color: white; padding: 10px; border-radius: 6px; font-weight: bold;">
+      Bottom Left
+    </div>
+    
+    <div style="position: absolute; bottom: 20px; right: 20px; background: #9b59b6; color: white; padding: 10px; border-radius: 6px; font-weight: bold;">
+      Bottom Right
+    </div>
+    
+    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1abc9c; color: white; padding: 10px; border-radius: 6px; font-weight: bold;">
+      Center
+    </div>
+  </div>
+  
+  <div style="margin-top: 30px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+    <h2 style="color: #2c3e50; margin-bottom: 20px;">Table Alignment Test</h2>
+    <table style="width: 100%; border-collapse: collapse; border: 2px solid #bdc3c7;">
+      <thead>
+        <tr style="background: #ecf0f1;">
+          <th style="border: 1px solid #bdc3c7; padding: 12px; text-align: left; color: #2c3e50;">Left Aligned</th>
+          <th style="border: 1px solid #bdc3c7; padding: 12px; text-align: center; color: #2c3e50;">Center Aligned</th>
+          <th style="border: 1px solid #bdc3c7; padding: 12px; text-align: right; color: #2c3e50;">Right Aligned</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: left;">Content left</td>
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: center;">Content center</td>
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: right;">Content right</td>
+        </tr>
+        <tr style="background: #f8f9fa;">
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: left;">More left</td>
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: center;">More center</td>
+          <td style="border: 1px solid #bdc3c7; padding: 12px; text-align: right;">More right</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+      `;
+      
+      const templateData = {
+        title: 'Raw HTML Template',
+        description: 'Template with exact content preservation - no modifications',
+        category: 'test',
+        content: testContent,
+        fileName: 'raw-html-template.html'
+      };
+      
+      const success = await createTestTemplate(templateData);
+      if (success) {
+        alert('✅ Raw HTML template created successfully! Preview it to see exact preservation.');
+        getTemplates(); // Refresh the list
+      } else {
+        alert('❌ Failed to create raw HTML template');
+      }
+    } catch (error) {
+      console.error('Error creating raw HTML template:', error);
+      alert('❌ Error creating raw HTML template: ' + error);
+    }
+  };
+
+  const createResumeTemplate = async () => {
+    try {
+      console.log('Creating professional resume template...');
+      
+      const testContent = `
+<div class="docx-enhanced" style="font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; background: white;">
+  <!-- Header with blue background and profile picture -->
+  <div style="position: relative; background: #2c3e50; color: white; padding: 30px 20px; border-radius: 8px 8px 0 0;">
+    <div style="position: absolute; top: 20px; left: 20px; width: 80px; height: 80px; background: #ecf0f1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #2c3e50;">
+      👤
+    </div>
+    <div style="margin-left: 120px;">
+      <h1 style="margin: 0; font-size: 32px; font-weight: bold;">ANDREA GILLIS</h1>
+      <h2 style="margin: 5px 0 0 0; font-size: 18px; font-weight: normal; opacity: 0.9;">WEBSITE DESIGNER</h2>
+    </div>
+  </div>
+  
+  <!-- Tagline -->
+  <div style="background: #ecf0f1; padding: 15px 20px; text-align: center; color: #7f8c8d; font-weight: bold; letter-spacing: 2px;">
+    PROFESSIONAL • FOCUSED • COLLABORATIVE
+  </div>
+  
+  <!-- Two Column Layout -->
+  <div style="display: flex; gap: 20px; padding: 20px;">
+    <!-- Left Column -->
+    <div style="flex: 1;">
+      <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #3498db; padding-bottom: 5px;">PROFESSIONAL PROFILE</h3>
+      <p style="color: #34495e; line-height: 1.6; margin-bottom: 20px;">
+        I am an experienced designer with a proven track record for creating and maintaining functional, attractive, and responsive websites for a range of businesses.
+      </p>
+      
+      <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #3498db; padding-bottom: 5px;">COMPETENCIES</h3>
+      <ul style="color: #34495e; line-height: 1.6; margin-bottom: 20px;">
+        <li>Coding Languages Marketing software</li>
+        <li>Various design programs Drawing programs</li>
+        <li>UX/UI Design principles</li>
+        <li>Responsive web design</li>
+      </ul>
+      
+      <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #3498db; padding-bottom: 5px;">EDUCATIONAL TRAINING</h3>
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #2c3e50;">ANYTOWN UNIVERSITY</strong><br>
+        <span style="color: #34495e;">Master of Computer Sciences 2019</span>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #2c3e50;">ANYTOWN UNIVERSITY</strong><br>
+        <span style="color: #34495e;">Bachelor of Science 2017</span>
+      </div>
+      <div style="margin-bottom: 15px;">
+        <strong style="color: #2c3e50;">ANYTOWN UNIVERSITY</strong><br>
+        <span style="color: #34495e;">Associate Degree 2015</span>
+      </div>
+    </div>
+    
+    <!-- Right Column -->
+    <div style="flex: 1;">
+      <h3 style="color: #2c3e50; margin-bottom: 15px; font-size: 18px; border-bottom: 2px solid #3498db; padding-bottom: 5px;">CAREER SUMMARY</h3>
+      
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 16px;">LEAD SITE DESIGNER</h4>
+        <p style="color: #e74c3c; margin: 0 0 10px 0; font-weight: bold;">Anywhere Labs</p>
+        <ul style="color: #34495e; line-height: 1.6; margin: 0; padding-left: 20px;">
+          <li>Planned site designs</li>
+          <li>Lead UX Reviewer</li>
+          <li>Raised UX scores by 66%</li>
+        </ul>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 16px;">WEBSITE DEVELOPER</h4>
+        <p style="color: #e74c3c; margin: 0 0 10px 0; font-weight: bold;">Anytown Designs</p>
+        <ul style="color: #34495e; line-height: 1.6; margin: 0; padding-left: 20px;">
+          <li>Managed typography and branding</li>
+          <li>Built wireframes & prototypes</li>
+          <li>Collaborated with design teams</li>
+        </ul>
+      </div>
+      
+      <div style="margin-bottom: 20px;">
+        <h4 style="color: #2c3e50; margin: 0 0 5px 0; font-size: 16px;">WEBSITE DEVELOPER</h4>
+        <p style="color: #e74c3c; margin: 0 0 10px 0; font-weight: bold;">Anytown Designs</p>
+        <ul style="color: #34495e; line-height: 1.6; margin: 0; padding-left: 20px;">
+          <li>Developed responsive websites</li>
+          <li>Optimized for performance</li>
+          <li>Maintained existing projects</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+      `;
+      
+      const templateData = {
+        title: 'Professional Resume Template',
+        description: 'Professional resume template with proper styling and layout preservation',
+        category: 'test',
+        content: testContent,
+        fileName: 'professional-resume-template.html'
+      };
+      
+      const success = await createTestTemplate(templateData);
+      if (success) {
+        alert('✅ Professional Resume template created successfully! Preview it to see proper styling preservation.');
+        getTemplates(); // Refresh the list
+      } else {
+        alert('❌ Failed to create Professional Resume template');
+      }
+    } catch (error) {
+      console.error('Error creating Professional Resume template:', error);
+      alert('❌ Error creating Professional Resume template: ' + error);
+    }
+  };
+
+  const createDynamicDesignTemplate = async () => {
+    try {
+      console.log('Creating dynamic design template with comprehensive styling...');
+      
+      const testContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dynamic Design Template</title>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Poppins', sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4);
+      animation: rainbow 3s ease-in-out infinite;
+    }
+    
+    @keyframes rainbow {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(100%); }
+    }
+    
+    .header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 10px;
+      animation: fadeInUp 1s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .header p {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      margin-bottom: 30px;
+    }
+    
+    .feature-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+    }
+    
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .feature-card h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    
+    .feature-card p {
+      color: #666;
+      line-height: 1.6;
+    }
+    
+    .stats {
+      display: flex;
+      justify-content: space-around;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 15px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    
+    .stat-item {
+      text-align: center;
+      position: relative;
+    }
+    
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block;
+      animation: countUp 2s ease-out;
+    }
+    
+    @keyframes countUp {
+      from {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      color: #666;
+      margin-top: 10px;
+    }
+    
+    .cta-section {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    
+    .cta-button {
+      display: inline-block;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px 40px;
+      border-radius: 50px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.6);
+    }
+    
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    
+    .cta-button:hover::before {
+      left: 100%;
+    }
+    
+    @media (max-width: 768px) {
+      .header h1 {
+        font-size: 2rem;
+      }
+      
+      .stats {
+        flex-direction: column;
+        gap: 20px;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Dynamic Design Template</h1>
+      <p>Experience the power of modern web design with gradients, animations, and responsive layouts</p>
+    </div>
+    
+    <div class="features">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-palette"></i>
+        </div>
+        <h3>Beautiful Gradients</h3>
+        <p>Stunning gradient backgrounds and text effects that create visual depth and modern appeal.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-magic"></i>
+        </div>
+        <h3>Smooth Animations</h3>
+        <p>Elegant animations and transitions that bring your content to life with subtle motion effects.</p>
+      </div>
+      
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+        <h3>Responsive Design</h3>
+        <p>Fully responsive layout that adapts beautifully to all screen sizes and devices.</p>
+      </div>
+    </div>
+    
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-number">100%</span>
+        <div class="stat-label">Design Preservation</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">50+</span>
+        <div class="stat-label">Font Families</div>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">∞</span>
+        <div class="stat-label">Possibilities</div>
+      </div>
+    </div>
+    
+    <div class="cta-section">
+      <h2 style="font-size: 2rem; margin-bottom: 20px; color: #333;">Ready to Create?</h2>
+      <p style="font-size: 1.1rem; margin-bottom: 30px; color: #666;">Start building your next amazing project with our dynamic template system.</p>
+      <a href="#" class="cta-button">Get Started Now</a>
+    </div>
+  </div>
+</body>
+</html>
+      `;
+      
+      const templateData = {
+        title: 'Dynamic Design Template',
+        description: 'Comprehensive template demonstrating dynamic design preservation with gradients, animations, and modern styling',
+        category: 'test',
+        content: testContent,
+        fileName: 'dynamic-design-template.html'
+      };
+      
+      const success = await createTestTemplate(templateData);
+      if (success) {
+        alert('✅ Dynamic Design template created successfully! Preview it to see comprehensive design preservation.');
+        getTemplates(); // Refresh the list
+      } else {
+        alert('❌ Failed to create Dynamic Design template');
+      }
+    } catch (error) {
+      console.error('Error creating Dynamic Design template:', error);
+      alert('❌ Error creating Dynamic Design template: ' + error);
+    }
+  };
 
   if (!isAuthenticatedState) {
     return <AdminAuth onAuth={() => setIsAuthenticatedState(true)} />;
@@ -1265,6 +1946,37 @@ export default function AdminTemplateUpload() {
                 >
                   📥 Download Test Template
                 </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  onClick={createHtmlTestTemplate}
+                >
+                  📄 Create HTML Test Template
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  onClick={createRawHtmlTemplate}
+                >
+                  📄 Create Raw HTML Template
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  onClick={createResumeTemplate}
+                >
+                  📄 Create Resume Template
+                </button>
+                <button
+                  className="px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 transition-colors"
+                  onClick={createDynamicDesignTemplate}
+                >
+                  📄 Create Dynamic Design Template
+                </button>
+            </div>
+            
+            <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <h3 className="text-sm font-semibold text-blue-800 mb-2">✨ Comprehensive File Type Support</h3>
+              <p className="text-sm text-blue-700">
+                Templates now render <strong>exactly as designed</strong> - supporting HTML, DOCX, PPTX, JSON files with all original styling, fonts, and layout preserved. Like Canva's preview system!
+              </p>
             </div>
           </div>
         </div>
@@ -1716,12 +2428,13 @@ export default function AdminTemplateUpload() {
           ) : (
             <div className="divide-y divide-gray-200 dark:divide-gray-700">
               {filteredTemplates.map((template) => (
-                <div key={template.id} className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                  <div className="flex items-center justify-between">
+                <div key={template.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                  {/* Template Header */}
+                  <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       {/* Front Image or Profile Photo */}
                       {template.frontImage ? (
-                        <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
                           <img
                             src={template.frontImage}
                             alt={template.title}
@@ -1729,17 +2442,17 @@ export default function AdminTemplateUpload() {
                           />
                         </div>
                       ) : (
-                        <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
+                        <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-lg">
                           {template.title ? template.title.charAt(0).toUpperCase() : 'T'}
                         </div>
                       )}
                       
                       {/* Template Info */}
                       <div className="flex-1">
-                        <h3 className="text-base font-medium text-gray-900 dark:text-white">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                           {template.title || 'Untitled Template'}
                         </h3>
-                        <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                           {template.description || 'No description'}
                         </p>
                         
@@ -1762,11 +2475,92 @@ export default function AdminTemplateUpload() {
                             📝 {template.category || 'assignment'}
                           </span>
                         </div>
+                        
+                        {/* Content Summary */}
+                        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                          <span className="inline-flex items-center">
+                            📄 {template.content?.length || 0} chars
+                          </span>
+                          {template.content && template.content.length > 1000 && (
+                            <span className="ml-2 inline-flex items-center text-blue-600 dark:text-blue-400">
+                              ⚡ Long content
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Document Metadata */}
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {template.documentType && (
+                            <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                              template.documentType === 'formatted' 
+                                ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                            }`}>
+                              {template.documentType === 'formatted' ? '🎨 Formatted' : '📝 Plain'}
+                            </span>
+                          )}
+                          {template.hasImages && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                              🖼️ Has Images
+                            </span>
+                          )}
+                          {template.extractedImages && template.extractedImages.length > 0 && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200">
+                              📸 {template.extractedImages.length} Images
+                            </span>
+                          )}
+                          {template.originalFileName && template.originalFileName !== template.fileName && (
+                            <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                              📁 {template.originalFileName}
+                            </span>
+                          )}
+                        </div>
+                        
+                        {/* Content Preview */}
+                        {template.content && template.id && !expandedPreviews.has(template.id) && (
+                          <div className="mt-2 p-2 bg-gray-50 dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700">
+                            <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">
+                              Content preview:
+                            </div>
+                            <div className="text-xs text-gray-700 dark:text-gray-300 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                              {template.content.replace(/<[^>]*>/g, '').substring(0, 150)}
+                              {template.content.length > 150 && '...'}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     
                     {/* Action Buttons */}
                     <div className="flex items-center space-x-2 ml-4">
+                      <button
+                        onClick={() => togglePreviewExpansion(template.id!)}
+                        disabled={!!(template.id && loadingPreviews.has(template.id))}
+                        className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                          template.id && loadingPreviews.has(template.id)
+                            ? 'bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed'
+                            : template.id && expandedPreviews.has(template.id)
+                            ? 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'
+                            : 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800'
+                        }`}
+                        title={template.id && loadingPreviews.has(template.id) ? 'Loading...' : template.id && expandedPreviews.has(template.id) ? 'Hide preview' : 'Show preview'}
+                      >
+                        {template.id && loadingPreviews.has(template.id) 
+                          ? '⏳ Loading...' 
+                          : template.id && expandedPreviews.has(template.id) 
+                          ? '👁️ Hide Preview' 
+                          : '👁️ Preview'
+                        }
+                      </button>
+                      {template.fileName?.toLowerCase().endsWith('.docx') && template.originalFileName && (
+                        <button
+                          onClick={() => openOriginalFile(template)}
+                          className="px-3 py-1 text-xs font-medium rounded-lg transition-colors bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-800"
+                          title="View original DOCX formatting"
+                        >
+                          📄 Original
+                        </button>
+                      )}
                       <button
                         onClick={() => handleEditTemplate(template)}
                         className="text-blue-500 hover:text-blue-700 dark:hover:text-blue-300 transition-colors p-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20"
@@ -1783,12 +2577,268 @@ export default function AdminTemplateUpload() {
                       </button>
                     </div>
                   </div>
+
+                  {/* Content Preview Section - Collapsible */}
+                  {template.id && expandedPreviews.has(template.id) && (
+                    <div className="mt-4 animate-in slide-in-from-top-2 duration-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Content Preview
+                        </h4>
+                        <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
+                          <span>Content Length: {template.content?.length || 0} chars</span>
+                          <span>•</span>
+                          <span>File: {template.fileName || 'Unknown'}</span>
+                        </div>
+                      </div>
+                      
+                      {/* HTML Content Preview */}
+                      <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden shadow-sm">
+                        <div className="bg-gray-50 dark:bg-gray-700 px-4 py-2 border-b border-gray-200 dark:border-gray-600">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Rendered HTML Preview
+                              </span>
+                              {template.documentType && (
+                                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                                  template.documentType === 'formatted' 
+                                    ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
+                                    : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                                }`}>
+                                  {template.documentType === 'formatted' ? '🎨 Formatted' : '📝 Plain'}
+                                </span>
+                              )}
+                              {template.hasImages && (
+                                <span className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                  🖼️ Has Images
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {template.content ? '✅ Content Available' : '❌ No Content'}
+                              </span>
+                              {template.content && template.content.length > 1000 && (
+                                <button
+                                  onClick={() => togglePreviewExpansion(template.id!)}
+                                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium"
+                                >
+                                  {expandedPreviews.has(template.id!) ? 'Collapse' : 'Expand'}
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div className="p-4">
+                          {template.content ? (
+                            <div className={`overflow-y-auto ${expandedPreviews.has(template.id!) ? 'max-h-none' : 'max-h-64'}`}>
+                              <div 
+                                className={`template-content-preview prose prose-lg max-w-none ${
+                                  template.documentType === 'formatted' ? 'formatted-content' : 'plain-content'
+                                }`}
+                                style={{ 
+                                  fontFamily: template.documentType === 'formatted' 
+                                    ? 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+                                    : 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+                                  lineHeight: '1.6',
+                                  color: '#333',
+                                  fontSize: '14px',
+                                  padding: '16px',
+                                  backgroundColor: '#ffffff',
+                                  borderRadius: '8px',
+                                  border: '1px solid #e5e7eb',
+                                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                                  ...(template.hasImages && {
+                                    backgroundImage: 'linear-gradient(45deg, #f8fafc 25%, transparent 25%), linear-gradient(-45deg, #f8fafc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f8fafc 75%), linear-gradient(-45deg, transparent 75%, #f8fafc 75%)',
+                                    backgroundSize: '20px 20px',
+                                    backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px'
+                                  })
+                                }}
+                                dangerouslySetInnerHTML={{ 
+                                  __html: expandedPreviews.has(template.id!) 
+                                    ? template.content 
+                                    : (template.content.length > 1000 
+                                        ? template.content.substring(0, 1000) + '...' 
+                                        : template.content)
+                                }}
+                              />
+                              {template.content.length > 1000 && !expandedPreviews.has(template.id!) && (
+                                <div className="mt-3 p-2 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded text-xs text-blue-700 dark:text-blue-300">
+                                  <strong>Preview truncated.</strong> Content is {template.content.length} characters long. 
+                                  <button
+                                    onClick={() => togglePreviewExpansion(template.id!)}
+                                    className="ml-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium underline"
+                                  >
+                                    Click to expand
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                              <div className="text-2xl mb-2">📄</div>
+                              <p className="text-sm">No content available for preview</p>
+                              <p className="text-xs mt-1">This template may not have been processed correctly</p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Raw HTML Toggle */}
+                      <div className="mt-3">
+                        <details className="group">
+                          <summary className="cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+                            <span className="group-open:hidden">🔽 Show Raw HTML</span>
+                            <span className="hidden group-open:inline">🔼 Hide Raw HTML</span>
+                          </summary>
+                          <div className="mt-2 p-3 bg-gray-900 text-green-400 rounded-lg font-mono text-xs overflow-x-auto">
+                            <pre className="whitespace-pre-wrap break-words">
+                              {template.content || 'No content available'}
+                            </pre>
+                          </div>
+                        </details>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
           )}
         </div>
       </div>
+
+      {/* Original File Viewer Modal */}
+      {originalFileViewer && originalFileViewer.isOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-6xl w-full max-h-[90vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Original DOCX Formatting
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {originalFileViewer.template.title} - {originalFileViewer.template.fileName}
+                </p>
+              </div>
+              <button
+                onClick={closeOriginalFile}
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="flex-1 p-6 overflow-hidden">
+              <div className="h-full flex flex-col">
+                {/* Viewer Options */}
+                <div className="mb-4 flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Viewer:</span>
+                    <select 
+                      className="text-sm border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                      defaultValue="iframe"
+                    >
+                      <option value="iframe">Microsoft Office Online</option>
+                      <option value="google">Google Docs</option>
+                      <option value="download">Download File</option>
+                    </select>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      File: {originalFileViewer.template.fileName}
+                    </span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">
+                      Size: {(originalFileViewer.template.fileSize / 1024).toFixed(1)} KB
+                    </span>
+                  </div>
+                </div>
+
+                {/* Document Viewer */}
+                <div className="flex-1 bg-gray-100 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  <div className="h-full flex items-center justify-center">
+                    <div className="text-center p-8">
+                      <div className="text-4xl mb-4">📄</div>
+                      <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                        DOCX Document Viewer
+                      </h4>
+                      <p className="text-gray-600 dark:text-gray-400 mb-4">
+                        This feature allows you to view the original DOCX file with full formatting preserved.
+                      </p>
+                      
+                      {/* Viewer Options */}
+                      <div className="space-y-3">
+                        <button
+                          onClick={() => {
+                            // Open in Microsoft Office Online
+                            const fileName = originalFileViewer.template.fileName;
+                            const fileUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(window.location.origin + '/api/documents/' + fileName)}`;
+                            window.open(fileUrl, '_blank');
+                          }}
+                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                          🌐 Open in Microsoft Office Online
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            // Open in Google Docs
+                            const fileName = originalFileViewer.template.fileName;
+                            const fileUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(window.location.origin + '/api/documents/' + fileName)}&embedded=true`;
+                            window.open(fileUrl, '_blank');
+                          }}
+                          className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+                        >
+                          📝 Open in Google Docs
+                        </button>
+                        
+                        <button
+                          onClick={() => {
+                            // Download the file
+                            const fileName = originalFileViewer.template.fileName;
+                            const link = document.createElement('a');
+                            link.href = `/api/documents/${fileName}`;
+                            link.download = fileName;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }}
+                          className="w-full px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                        >
+                          💾 Download Original File
+                        </button>
+                      </div>
+                      
+                      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <p className="text-sm text-blue-800 dark:text-blue-200">
+                          <strong>Note:</strong> To view the original DOCX formatting, you'll need to either:
+                        </p>
+                        <ul className="text-sm text-blue-700 dark:text-blue-300 mt-2 list-disc list-inside">
+                          <li>Open the file in Microsoft Word or compatible software</li>
+                          <li>Use Microsoft Office Online viewer</li>
+                          <li>Upload to Google Docs for online viewing</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                          <strong>Important:</strong> The original DOCX file must be available in the server's upload directory for this feature to work. 
+                          If you see a "File not found" error, the original file may not have been preserved during upload.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
