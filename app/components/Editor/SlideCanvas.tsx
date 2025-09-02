@@ -3,11 +3,11 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
-import { TextElement } from '../../types/editor';
+import { TextElement, EditorElement, ShapeElement } from '../../types/editor';
 import TextElementComponent from './TextElement';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
-import { GuideRenderer } from './GuideRenderer';
+import { snapToGuides } from '../../utils/magneticSnapping';
 
 interface SlideCanvasProps {
   width?: number;
@@ -35,66 +35,322 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
   const canvasRef = useRef<HTMLDivElement>(null);
   const currentSlide = slides[currentSlideIndex];
   const [draggingElement, setDraggingElement] = useState<EditorElement | null>(null);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [visualGuides, setVisualGuides] = useState<VisualGuide[]>([]);
+
+  // Visual guide types
+  interface VisualGuide {
+    id: string;
+    type: 'horizontal' | 'vertical';
+    position: number;
+    color: string;
+    opacity: number;
+    guideType: string;
+  }
 
   // Set canvas size on mount
   useEffect(() => {
     setCanvasSize({ width, height });
   }, [width, height, setCanvasSize]);
 
+  // Clear visual guides when not dragging
+  useEffect(() => {
+    if (!draggingElement) {
+      setVisualGuides([]);
+    }
+  }, [draggingElement]);
+
+  // Improved guide generation with proper deduplication
+  const generateCleanGuides = (
+    mouseX: number,
+    mouseY: number,
+    draggingElement: EditorElement,
+    allElements: EditorElement[]
+  ): VisualGuide[] => {
+    if (!draggingElement) return [];
+
+    const guides: VisualGuide[] = [];
+    const SNAP_THRESHOLD = 15;
+    const seenPositions = new Map<string, { distance: number; guideType: string }>();
+
+    // Helper function to add unique guide
+    const addUniqueGuide = (
+      type: 'horizontal' | 'vertical',
+      position: number,
+      distance: number,
+      guideType: string,
+      color: string = '#FFD700'
+    ) => {
+      const key = `${type}-${Math.round(position)}`;
+      const existing = seenPositions.get(key);
+      
+      // Only add if this is closer or higher priority
+      if (!existing || distance < existing.distance || 
+          (distance === existing.distance && getPriority(guideType) > getPriority(existing.guideType))) {
+        
+        seenPositions.set(key, { distance, guideType });
+        
+        // Remove existing guide with same key
+        const existingIndex = guides.findIndex(g => g.id === key);
+        if (existingIndex >= 0) {
+          guides.splice(existingIndex, 1);
+        }
+        
+        // Add new guide
+        guides.push({
+          id: key,
+          type,
+          position: Math.round(position),
+          color,
+          opacity: Math.max(0.4, 1 - (distance / SNAP_THRESHOLD)),
+          guideType
+        });
+      }
+    };
+
+    // Guide type priority (higher = more important)
+    const getPriority = (guideType: string): number => {
+      switch (guideType) {
+        case 'slide-center': return 4;
+        case 'element-alignment': return 3;
+        case 'margin': return 2;
+        case 'spacing': return 1;
+        default: return 0;
+      }
+    };
+
+    // Canvas center guides
+    const centerX = canvasSize.width / 2;
+    const centerY = canvasSize.height / 2;
+    const elementCenterX = mouseX + draggingElement.width / 2;
+    const elementCenterY = mouseY + draggingElement.height / 2;
+
+    const centerDistanceX = Math.abs(elementCenterX - centerX);
+    const centerDistanceY = Math.abs(elementCenterY - centerY);
+
+    if (centerDistanceX <= SNAP_THRESHOLD) {
+      addUniqueGuide('vertical', centerX, centerDistanceX, 'slide-center');
+    }
+
+    if (centerDistanceY <= SNAP_THRESHOLD) {
+      addUniqueGuide('horizontal', centerY, centerDistanceY, 'slide-center');
+    }
+
+    // Margin guides
+    const margins = [20, 40];
+    margins.forEach(margin => {
+      // Left margin
+      if (Math.abs(mouseX - margin) <= SNAP_THRESHOLD) {
+        addUniqueGuide('vertical', margin, Math.abs(mouseX - margin), 'margin');
+      }
+      
+      // Right margin
+      const rightMarginPos = canvasSize.width - margin;
+      if (Math.abs(mouseX + draggingElement.width - rightMarginPos) <= SNAP_THRESHOLD) {
+        addUniqueGuide('vertical', rightMarginPos, Math.abs(mouseX + draggingElement.width - rightMarginPos), 'margin');
+      }
+      
+      // Top margin
+      if (Math.abs(mouseY - margin) <= SNAP_THRESHOLD) {
+        addUniqueGuide('horizontal', margin, Math.abs(mouseY - margin), 'margin');
+      }
+      
+      // Bottom margin
+      const bottomMarginPos = canvasSize.height - margin;
+      if (Math.abs(mouseY + draggingElement.height - bottomMarginPos) <= SNAP_THRESHOLD) {
+        addUniqueGuide('horizontal', bottomMarginPos, Math.abs(mouseY + draggingElement.height - bottomMarginPos), 'margin');
+      }
+    });
+
+    // Element alignment guides
+    allElements.forEach((element) => {
+      if (element.id === draggingElement.id) return;
+
+      const elementLeft = element.x;
+      const elementRight = element.x + element.width;
+      const elementTop = element.y;
+      const elementBottom = element.y + element.height;
+      const elementCenterX = element.x + element.width / 2;
+      const elementCenterY = element.y + element.height / 2;
+
+      const draggingLeft = mouseX;
+      const draggingRight = mouseX + draggingElement.width;
+      const draggingTop = mouseY;
+      const draggingBottom = mouseY + draggingElement.height;
+      const draggingCenterX = mouseX + draggingElement.width / 2;
+      const draggingCenterY = mouseY + draggingElement.height / 2;
+
+      // Vertical alignment checks
+      const alignments = [
+        { pos: elementLeft, dragPos: draggingLeft, type: 'left-left' },
+        { pos: elementRight, dragPos: draggingRight, type: 'right-right' },
+        { pos: elementCenterX, dragPos: draggingCenterX, type: 'center-center' },
+        { pos: elementLeft, dragPos: draggingRight, type: 'left-right' },
+        { pos: elementRight, dragPos: draggingLeft, type: 'right-left' }
+      ];
+
+      alignments.forEach(({ pos, dragPos, type }) => {
+        const distance = Math.abs(dragPos - pos);
+        if (distance <= SNAP_THRESHOLD) {
+          addUniqueGuide('vertical', pos, distance, 'element-alignment');
+        }
+      });
+
+      // Horizontal alignment checks
+      const vAlignments = [
+        { pos: elementTop, dragPos: draggingTop, type: 'top-top' },
+        { pos: elementBottom, dragPos: draggingBottom, type: 'bottom-bottom' },
+        { pos: elementCenterY, dragPos: draggingCenterY, type: 'center-center' },
+        { pos: elementTop, dragPos: draggingBottom, type: 'top-bottom' },
+        { pos: elementBottom, dragPos: draggingTop, type: 'bottom-top' }
+      ];
+
+      vAlignments.forEach(({ pos, dragPos, type }) => {
+        const distance = Math.abs(dragPos - pos);
+        if (distance <= SNAP_THRESHOLD) {
+          addUniqueGuide('horizontal', pos, distance, 'element-alignment');
+        }
+      });
+    });
+
+    return guides;
+  };
+
+  // Handle dragging with magnetic snapping
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (draggingElement && canvasRef.current) {
+        const rect = canvasRef.current.getBoundingClientRect();
+        const rawX = (e.clientX - rect.left) / zoom - dragOffset.x;
+        const rawY = (e.clientY - rect.top) / zoom - dragOffset.y;
+        
+        // Apply magnetic snapping using the enhanced system
+        const currentSlideElements = slides[currentSlideIndex]?.elements || [];
+        console.log('🔍 Magnetic snapping input:', {
+          rawPosition: { x: rawX, y: rawY },
+          draggingElement: { id: draggingElement.id, width: draggingElement.width, height: draggingElement.height },
+          otherElements: currentSlideElements.filter(el => el.id !== draggingElement.id).length,
+          canvasSize
+        });
+        
+        const snappedPosition = snapToGuides(
+          { x: rawX, y: rawY },
+          draggingElement,
+          currentSlideElements.filter(el => el.id !== draggingElement.id),
+          canvasSize
+        );
+        
+        // DEBUG: Log magnetic snapping results
+        console.log('🔍 Magnetic snapping output:', {
+          original: { x: rawX, y: rawY },
+          snapped: { x: snappedPosition.x, y: snappedPosition.y },
+          isSnapped: snappedPosition.isSnapped,
+          snapStrength: snappedPosition.snapStrength
+        });
+        
+        if (snappedPosition.isSnapped) {
+          console.log('🎯 MAGNETIC SNAPPING ACTIVE!', {
+            original: { x: rawX, y: rawY },
+            snapped: { x: snappedPosition.x, y: snappedPosition.y },
+            strength: snappedPosition.snapStrength,
+            isSnapped: snappedPosition.isSnapped
+          });
+        }
+        
+        // Generate clean visual guides based on SNAPPED position
+        const guides = generateCleanGuides(
+          snappedPosition.x,
+          snappedPosition.y,
+          draggingElement,
+          currentSlideElements.filter(el => el.id !== draggingElement.id)
+        );
+        
+        setVisualGuides(guides);
+        
+        // Use the SNAPPED position for the element (this is the key!)
+        const finalX = snappedPosition.x;
+        const finalY = snappedPosition.y;
+        
+        // Ensure position is within canvas bounds
+        const boundedX = Math.max(0, Math.min(finalX, canvasSize.width - draggingElement.width));
+        const boundedY = Math.max(0, Math.min(finalY, canvasSize.height - draggingElement.height));
+        
+        // Update element position in store with SNAPPED coordinates
+        const { updateElement } = useEditorStore.getState();
+        updateElement(currentSlide.id, draggingElement.id, { x: boundedX, y: boundedY });
+        
+        // Update local dragging element state with SNAPPED coordinates
+        setDraggingElement({
+          ...draggingElement,
+          x: boundedX,
+          y: boundedY
+        });
+      }
+    };
+
+    const handleMouseUp = () => {
+      if (draggingElement) {
+        setDraggingElement(null);
+        setDragOffset({ x: 0, y: 0 });
+        setVisualGuides([]);
+      }
+    };
+
+    if (draggingElement) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [draggingElement, currentSlideIndex, slides, zoom, dragOffset, canvasSize]);
+
   // Handle canvas click to create text box
   const handleCanvasClick = useCallback((e: React.MouseEvent) => {
-    // Don't create text box if we're dragging an element
     if (isDraggingElement) return;
     
-    // Add a small delay to prevent accidental creation during quick movements
-    setTimeout(() => {
-      if (isDraggingElement) return;
+    if (e.target === canvasRef.current) {
+      deselectAll();
       
-      if (e.target === canvasRef.current) {
-        const rect = canvasRef.current.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / zoom;
-        const y = (e.clientY - rect.top) / zoom;
+      setTimeout(() => {
+        if (isDraggingElement) return;
         
-        // Create new text element at click position
-        const newTextElement: Omit<TextElement, 'id' | 'selected'> = {
-          type: 'text',
-          x,
-          y,
-          width: 200,
-          height: 60,
-          rotation: 0,
-          zIndex: 1,
-          content: 'Add text',
-          fontSize: 24,
-          fontFamily: 'Inter',
-          fontWeight: '400',
-          color: '#000000',
-          textAlign: 'left',
-          lineHeight: 1.2,
-          isEditing: false,
-        };
-        
-        addElement(currentSlide.id, newTextElement);
-        deselectAll();
-        
-        // Don't automatically start editing - let user click to see popup first
-        // setTimeout(() => {
-        //   const newElementId = currentSlide.elements[currentSlide.elements.length - 1]?.id;
-        //   if (newElementId) {
-        //     startTextEditing(newElementId);
-        //   }
-        // }, 100);
-      }
-    }, 50);
+        const rect = canvasRef.current?.getBoundingClientRect();
+        if (rect) {
+          const x = (e.clientX - rect.left) / zoom;
+          const y = (e.clientY - rect.top) / zoom;
+          
+          const newTextElement: Omit<TextElement, 'id' | 'selected'> = {
+            type: 'text',
+            x,
+            y,
+            width: 200,
+            height: 60,
+            rotation: 0,
+            zIndex: 1,
+            content: 'Add text',
+            fontSize: 24,
+            fontFamily: 'Inter',
+            fontWeight: '400',
+            color: '#000000',
+            textAlign: 'left',
+            lineHeight: 1.2,
+            isEditing: false,
+          };
+          
+          addElement(currentSlide.id, newTextElement);
+        }
+      }, 50);
+    }
   }, [currentSlide, zoom, addElement, deselectAll, startTextEditing, isDraggingElement]);
 
   // Handle keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Delete' && selectedElementIds.length > 0) {
-        // Delete selected elements
         selectedElementIds.forEach(elementId => {
-          // This would need to be implemented in the store
           console.log('Delete element:', elementId);
         });
       }
@@ -147,19 +403,24 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
           }}
           onClick={handleCanvasClick}
         >
-          {/* Invisible overlay for better click detection */}
-          <div 
-            className="absolute inset-0 z-0 pointer-events-none"
-          />
           {/* Background */}
           <div 
-            className="w-full h-full"
-            style={{ backgroundColor: currentSlide.backgroundColor }}
+            className="w-full h-full relative"
+            style={{ 
+              backgroundColor: currentSlide.backgroundColor,
+              backgroundImage: currentSlide.backgroundImage ? `url(${currentSlide.backgroundImage})` : 'none',
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              backgroundRepeat: 'no-repeat'
+            }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                deselectAll();
+              }
+            }}
           >
             {/* Elements */}
             {currentSlide.elements.map((element) => {
-              console.log('SlideCanvas: rendering element', { id: element.id, type: element.type, isEditing: element.type === 'text' ? (element as any).isEditing : 'N/A' });
-              
               if (element.type === 'text') {
                 return (
                   <TextElementComponent
@@ -168,39 +429,251 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                     isSelected={selectedElementIds.includes(element.id)}
                     onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
                     onDragStart={(element) => {
-                      console.log('SlideCanvas: onDragStart called', element.id);
-                      setDraggingElement(element);
-                    }}
-                    onDragMove={(element) => {
-                      console.log('SlideCanvas: onDragMove called', element.id, 'at', element.x, element.y);
                       setDraggingElement(element);
                     }}
                     onDragEnd={() => {
-                      console.log('SlideCanvas: onDragEnd called');
                       setDraggingElement(null);
-                      // Ensure guides are cleared when drag ends
-                      console.log('SlideCanvas: clearing drag state');
                     }}
                   />
                 );
               }
+              
+              if (element.type === 'shape') {
+                const shapeElement = element as ShapeElement;
+                return (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move select-none ${
+                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    style={{
+                      left: element.x,
+                      top: element.y,
+                      width: element.width,
+                      height: element.height,
+                      transform: `rotate(${element.rotation}deg)`,
+                      zIndex: element.zIndex,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectElement(element.id, e.shiftKey);
+                    }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const canvasRect = canvasRef.current?.getBoundingClientRect();
+                      if (canvasRect) {
+                        const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                        const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                        setDragOffset({ x: offsetX, y: offsetY });
+                      }
+                      setDraggingElement(element);
+                    }}
+                  >
+                    {/* Render shape types */}
+                    {shapeElement.shapeType === 'rectangle' && (
+                      <div
+                        className="w-full h-full"
+                        style={{
+                          backgroundColor: shapeElement.fillColor,
+                          border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                          borderRadius: '0.5rem',
+                        }}
+                      />
+                    )}
+                    
+                    {shapeElement.shapeType === 'circle' && (
+                      <div
+                        className="w-full h-full rounded-full"
+                        style={{
+                          backgroundColor: shapeElement.fillColor,
+                          border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                        }}
+                      />
+                    )}
+                    
+                    {shapeElement.shapeType === 'triangle' && (
+                      <div
+                        className="w-full h-full"
+                        style={{
+                          backgroundColor: shapeElement.fillColor,
+                          border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                          clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
+                        }}
+                      />
+                    )}
+                    
+                    {/* Resize handles for selected shapes */}
+                    {selectedElementIds.includes(element.id) && (
+                      <>
+                        <ResizeHandles
+                          element={element}
+                          onResize={(newWidth, newHeight) => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              width: newWidth, 
+                              height: newHeight 
+                            });
+                          }}
+                        />
+                        
+                        {/* Rotation handle */}
+                        <div
+                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startRotation = element.rotation;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaY = moveEvent.clientY - startY;
+                              const newRotation = startRotation + (deltaY * 0.5);
+                              
+                              const { updateElement } = useEditorStore.getState();
+                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              
+              if (element.type === 'image') {
+                return (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move select-none ${
+                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    style={{
+                      left: element.x,
+                      top: element.y,
+                      width: element.width,
+                      height: element.height,
+                      transform: `rotate(${element.rotation}deg)`,
+                      zIndex: element.zIndex,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectElement(element.id, e.shiftKey);
+                    }}
+                    onMouseDown={(e) => {
+                      if (e.target === e.currentTarget || e.target === e.currentTarget.querySelector('img')) {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const canvasRect = canvasRef.current?.getBoundingClientRect();
+                        if (canvasRect) {
+                          const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                          const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                          setDragOffset({ x: offsetX, y: offsetY });
+                        }
+                        setDraggingElement(element);
+                      }
+                    }}
+                  >
+                    <img
+                      src={element.src}
+                      alt={element.alt}
+                      className="w-full h-full object-cover rounded"
+                      style={{
+                        imageRendering: 'crisp-edges'
+                      }}
+                      loading="lazy"
+                      decoding="async"
+                      draggable={false}
+                    />
+                    
+                    {/* Credit display for selected images */}
+                    {selectedElementIds.includes(element.id) && element.credit && (
+                      <div className="absolute bottom-1 left-1 right-1 bg-black bg-opacity-70 text-white text-xs p-1 rounded">
+                        {element.credit}
+                      </div>
+                    )}
+                    
+                    {/* Resize handles for selected images */}
+                    {selectedElementIds.includes(element.id) && (
+                      <>
+                        <ResizeHandles
+                          element={element}
+                          onResize={(newWidth, newHeight) => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              width: newWidth, 
+                              height: newHeight 
+                            });
+                          }}
+                        />
+                        
+                        {/* Rotation handle */}
+                        <div
+                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startRotation = element.rotation;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaY = moveEvent.clientY - startY;
+                              const newRotation = startRotation + (deltaY * 0.5);
+                              
+                              const { updateElement } = useEditorStore.getState();
+                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              
               return null;
             })}
+            
+            {/* Clean Visual Guides - Single line system */}
+            {visualGuides.map((guide) => (
+              <div
+                key={guide.id}
+                className="absolute pointer-events-none"
+                style={{
+                  left: guide.type === 'vertical' ? guide.position - 1 : 0,
+                  top: guide.type === 'horizontal' ? guide.position - 1 : 0,
+                  width: guide.type === 'horizontal' ? canvasSize.width : 2,
+                  height: guide.type === 'vertical' ? canvasSize.height : 2,
+                  backgroundColor: guide.color,
+                  zIndex: 1000,
+                  opacity: guide.opacity,
+                  boxShadow: `0 0 4px ${guide.color}80`,
+                  borderRadius: '1px'
+                }}
+              />
+            ))}
           </div>
           
-          {/* Smart Guides - positioned relative to canvas */}
-          <GuideRenderer
-            key={`guides-${draggingElement?.id || 'none'}`}
-            draggingElement={draggingElement}
-            allElements={currentSlide.elements}
-            selectedElementIds={selectedElementIds}
-            canvasSize={canvasSize}
-            zoom={zoom}
-            isVisible={isDraggingElement}
-          />
-          
-
-
           {/* Selection Box for multi-select */}
           <SelectionBox />
         </motion.div>

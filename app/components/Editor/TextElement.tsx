@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
 import { TextElement as TextElementType } from '../../types/editor';
 import ResizeHandles from './ResizeHandles';
+import { snapToGuides, calculateVelocityReduction } from '../../utils/magneticSnapping';
 
 interface TextElementProps {
   element: TextElementType;
@@ -102,74 +103,95 @@ const TextElement: React.FC<TextElementProps> = ({
     }
   }, [element.content, element.id, updateTextContent, stopTextEditing]);
 
-  // Handle dragging
+  // Handle mouse down for dragging
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (element.isEditing) return;
-    
     e.preventDefault();
     e.stopPropagation();
     
-    // Set global dragging state
+    // Start dragging immediately
+    setIsDragging(true);
     setIsDraggingElement(true);
     
-    // Notify parent about drag start
+    // Calculate drag offset
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) {
+      const offsetX = e.clientX - rect.left;
+      const offsetY = e.clientY - rect.top;
+      setDragOffset({ x: offsetX, y: offsetY });
+    }
+    
+    // Handle selection
+    if (e.ctrlKey || e.metaKey) {
+      // Multi-select mode
+      onSelect(true);
+    } else {
+      // Single click - select and potentially start editing
+      onSelect(false);
+      
+      // If it's a text element and not already editing, start editing
+      if (element.type === 'text' && !element.isEditing) {
+        startTextEditing(element.id);
+      }
+    }
+    
+    // Call onDragStart if provided
     onDragStart?.(element);
-    
-    // Get the canvas element to calculate proper coordinates
-    const canvas = document.querySelector('[data-canvas]') as HTMLElement;
-    if (!canvas) return;
-    
-    const canvasRect = canvas.getBoundingClientRect();
-    const zoom = useEditorStore.getState().zoom;
-    
-    // Calculate position relative to canvas with zoom
-    const canvasX = (e.clientX - canvasRect.left) / zoom;
-    const canvasY = (e.clientY - canvasRect.top) / zoom;
-    
-    setDragOffset({
-      x: canvasX - element.x,
-      y: canvasY - element.y,
-    });
-    setIsDragging(true);
-  }, [element.isEditing, element.x, element.y, setIsDraggingElement, onDragStart, element]);
+  }, [element, onSelect, startTextEditing, onDragStart]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging || element.isEditing) return;
+    if (!isDragging) return;
     
+    // Get canvas for proper coordinate calculation
     const canvas = document.querySelector('[data-canvas]') as HTMLElement;
     if (!canvas) return;
     
     const canvasRect = canvas.getBoundingClientRect();
     const zoom = useEditorStore.getState().zoom;
     
-    // Calculate new position relative to canvas with zoom
-    const canvasX = (e.clientX - canvasRect.left) / zoom;
-    const canvasY = (e.clientY - canvasRect.top) / zoom;
+    // Calculate raw position
+    const rawX = (e.clientX - canvasRect.left) / zoom - dragOffset.x;
+    const rawY = (e.clientY - canvasRect.top) / zoom - dragOffset.y;
     
-    const newX = canvasX - dragOffset.x;
-    const newY = canvasY - dragOffset.y;
-    
-    // Constrain to canvas bounds
-    const constrainedX = Math.max(0, Math.min(newX, 1920 - element.width));
-    const constrainedY = Math.max(0, Math.min(newY, 1080 - element.height));
-    
-    const { slides, currentSlideIndex } = useEditorStore.getState();
+    // Get current slide and elements for magnetic snapping
+    const { slides, currentSlideIndex, updateElement } = useEditorStore.getState();
     const currentSlide = slides[currentSlideIndex];
-    if (currentSlide) {
-      updateElement(currentSlide.id, element.id, { 
-        x: constrainedX, 
-        y: constrainedY 
-      });
+    if (!currentSlide) return;
+    
+    // Calculate velocity to detect active dragging
+    const deltaX = e.movementX;
+    const deltaY = e.movementY;
+    const velocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    const isActivelyDragging = velocity > 3; // Same threshold as SlideCanvas
+    
+    let finalX = rawX;
+    let finalY = rawY;
+    
+    // Only apply magnetic snapping when not actively dragging
+    if (!isActivelyDragging) {
+      // Apply magnetic snapping with proper canvas size
+      const snappedPosition = snapToGuides(
+        { x: rawX, y: rawY },
+        element,
+        currentSlide.elements,
+        { width: 1920, height: 1080 } // Default canvas size
+      );
+      
+      // Use snapped position if available, otherwise use raw position
+      finalX = snappedPosition.isSnapped ? snappedPosition.x : rawX;
+      finalY = snappedPosition.isSnapped ? snappedPosition.y : rawY;
     }
-  }, [isDragging, element.isEditing, element.id, element.width, element.height, dragOffset, updateElement]);
+    
+    // Update element position
+    updateElement(currentSlide.id, element.id, { x: finalX, y: finalY });
+  }, [isDragging, dragOffset, element]);
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-    // Reset global dragging state
-    setIsDraggingElement(false);
-    // Notify parent about drag end
-    onDragEnd?.();
-  }, [setIsDraggingElement, onDragEnd]);
+    if (isDragging) {
+      setIsDragging(false);
+      setIsDraggingElement(false);
+      onDragEnd?.();
+    }
+  }, [isDragging, setIsDraggingElement, onDragEnd]);
 
   // Add/remove mouse event listeners
   useEffect(() => {
@@ -213,112 +235,85 @@ const TextElement: React.FC<TextElementProps> = ({
   return (
     <motion.div
       ref={containerRef}
-      className={`absolute select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+      className={`absolute cursor-move select-none ${
+        isSelected ? 'ring-2 ring-blue-500' : ''
+      }`}
       style={{
         left: element.x,
         top: element.y,
         width: element.width,
         height: element.height,
+        transform: `rotate(${element.rotation}deg)`,
         zIndex: element.zIndex,
       }}
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ 
-        opacity: 1, 
-        scale: isDragging ? 1.02 : 1,
-        boxShadow: isDragging ? '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)' : 'none'
-      }}
-      transition={{ duration: 0.15 }}
-      whileHover={{ scale: 1.01 }}
+      onClick={handleClick}
+      onMouseDown={handleMouseDown}
     >
-      {/* Text Container */}
-      <div
-        className={`w-full h-full relative ${
-          element.isEditing 
-            ? 'border border-blue-200 bg-blue-50' 
-            : isSelected 
-              ? 'border border-blue-300' 
-              : 'hover:border hover:border-blue-200'
-        }`}
-        onMouseDown={handleMouseDown}
-        onClick={handleClick}
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'flex-start',
-          alignItems: 'stretch',
-        }}
-      >
-        {element.isEditing ? (
-          // Editable textarea
-          <textarea
-            ref={textareaRef}
-            value={element.content}
-            onChange={handleTextChange}
-            onBlur={handleTextBlur}
-            onKeyDown={handleTextKeyDown}
-            className="w-full h-full bg-transparent border-none outline-none resize-none p-2 focus:ring-2 focus:ring-blue-300"
-            style={{
-              fontSize: element.fontSize,
-              fontFamily: element.fontFamily,
-              fontWeight: element.fontWeight,
-              color: element.color,
-              textAlign: element.textAlign as any,
-              lineHeight: element.lineHeight,
-              minHeight: '20px',
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word',
-              overflowWrap: 'break-word',
-              wordBreak: 'normal',
-              overflow: 'auto',
-              display: 'block',
-              direction: 'ltr',
-              flex: '1 1 auto',
-              resize: 'none',
-              maxWidth: '100%',
-              boxSizing: 'border-box',
-              height: '100%',
-            }}
-            placeholder="Type your text here..."
-          />
-        ) : (
-          // Display text
-          <div
-            className="w-full h-full p-2 cursor-text hover:bg-blue-50 hover:bg-opacity-30 transition-colors"
-            style={{
-              fontSize: element.fontSize,
-              fontFamily: element.fontFamily,
-              fontWeight: element.fontWeight,
-              color: element.content === 'Add text' ? '#9ca3af' : element.color,
-              textAlign: element.textAlign as any,
-              lineHeight: element.lineHeight,
-              whiteSpace: 'pre-wrap',
-              wordWrap: 'break-word',
-              overflowWrap: 'break-word',
-              wordBreak: 'normal',
-              overflow: 'auto',
-              display: 'block',
-              direction: 'ltr',
-              flex: '1 1 auto',
-              maxWidth: '100%',
-              boxSizing: 'border-box',
-            }}
-          >
-            {element.content}
-          </div>
-        )}
-      </div>
-
-      {/* Resize Handles */}
-      {isSelected && !element.isEditing && (
+      {element.isEditing ? (
+        <textarea
+          ref={textareaRef}
+          value={element.content}
+          onChange={handleTextChange}
+          onBlur={handleTextBlur}
+          onKeyDown={handleTextKeyDown}
+          className="w-full h-full resize-none border-none outline-none bg-transparent text-black p-2 font-sans"
+          style={{
+            fontSize: element.fontSize,
+            fontFamily: element.fontFamily,
+            fontWeight: element.fontWeight,
+            color: element.color,
+            textAlign: element.textAlign,
+            lineHeight: element.lineHeight,
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+            wordBreak: 'normal',
+            height: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            display: 'block',
+            flex: '1 1 auto',
+            direction: 'ltr',
+            overflow: 'auto'
+          }}
+        />
+      ) : (
+        <div
+          className="w-full h-full p-2 font-sans cursor-pointer"
+          style={{
+            fontSize: element.fontSize,
+            fontFamily: element.fontFamily,
+            fontWeight: element.fontWeight,
+            color: element.color,
+            textAlign: element.textAlign,
+            lineHeight: element.lineHeight,
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+            wordBreak: 'normal',
+            height: '100%',
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            display: 'block',
+            flex: '1 1 auto',
+            direction: 'ltr'
+          }}
+        >
+          {element.content}
+        </div>
+      )}
+      
+      {/* Resize handles for selected text elements */}
+      {isSelected && (
         <ResizeHandles
           element={element}
           onResize={(newWidth, newHeight) => {
-            const { slides, currentSlideIndex } = useEditorStore.getState();
+            const { slides, currentSlideIndex, updateElement } = useEditorStore.getState();
             const currentSlide = slides[currentSlideIndex];
             if (currentSlide) {
-              updateElement(currentSlide.id, element.id, {
-                width: newWidth,
-                height: newHeight,
+              updateElement(currentSlide.id, element.id, { 
+                width: newWidth, 
+                height: newHeight 
               });
             }
           }}

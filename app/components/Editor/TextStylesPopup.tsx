@@ -47,25 +47,16 @@ const TextStylesPopup: React.FC<TextStylesPopupProps> = ({
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Backdrop with proper z-index and full coverage */}
+          {/* Backdrop with higher z-index */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9998] bg-black bg-opacity-20"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-            }}
             onClick={onClose}
           />
           
-          {/* Popup with proper z-index and positioning */}
+          {/* Popup with highest z-index */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -73,16 +64,8 @@ const TextStylesPopup: React.FC<TextStylesPopupProps> = ({
             transition={{ duration: 0.15 }}
             className="fixed z-[9999] bg-white rounded-lg shadow-2xl border-2 border-blue-300 min-w-56 text-styles-popup"
             style={{
-              position: 'fixed',
               left: position.x,
               top: position.y,
-              zIndex: 9999,
-              backgroundColor: 'white',
-              minWidth: '14rem',
-              maxWidth: 'fit-content',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              border: '2px solid #93c5fd',
-              borderRadius: '0.5rem',
             }}
           >
             {/* Header */}

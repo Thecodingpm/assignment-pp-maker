@@ -38,6 +38,15 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   isDraggingElement: false,
 
   // Slide management
+  setSlides: (newSlides: Slide[]) => {
+    set({
+      slides: newSlides,
+      currentSlideIndex: 0,
+      selectedElementIds: [],
+      isEditingText: false,
+    });
+  },
+
   addSlide: () => {
     const { slides, currentSlideIndex } = get();
     const newSlide = createDefaultSlide();
@@ -171,17 +180,34 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     const { slides } = get();
     const slideIndex = slides.findIndex(slide => slide.id === slideId);
     
-    if (slideIndex === -1) return;
+    if (slideIndex === -1) {
+      console.warn('Store: updateElement - slide not found', { slideId, elementId });
+      return;
+    }
     
     const newSlides = [...slides];
     const elementIndex = newSlides[slideIndex].elements.findIndex(el => el.id === elementId);
     
-    if (elementIndex === -1) return;
+    if (elementIndex === -1) {
+      console.warn('Store: updateElement - element not found', { slideId, elementId, slideElements: newSlides[slideIndex].elements.length });
+      return;
+    }
+    
+    const oldElement = newSlides[slideIndex].elements[elementIndex];
+    const updatedElement = { ...oldElement, ...updates };
+    
+    console.log('Store: updateElement', { 
+      slideId, 
+      elementId, 
+      oldPosition: { x: oldElement.x, y: oldElement.y },
+      newPosition: { x: updatedElement.x, y: updatedElement.y },
+      updates 
+    });
     
     newSlides[slideIndex] = {
       ...newSlides[slideIndex],
       elements: newSlides[slideIndex].elements.map((el, index) =>
-        index === elementIndex ? { ...el, ...updates } : el
+        index === elementIndex ? updatedElement : el
       ) as (TextElement | ShapeElement | ImageElement)[],
     };
     

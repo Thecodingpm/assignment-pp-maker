@@ -167,15 +167,6 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9998] bg-black bg-opacity-20"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-            }}
             onClick={onClose}
           />
           
@@ -187,16 +178,8 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
             transition={{ duration: 0.15 }}
             className="fixed z-[9999] bg-white rounded-xl shadow-2xl border border-gray-200 min-w-[600px] max-w-[700px] shape-popup"
             style={{
-              position: 'fixed',
               left: position.x,
               top: position.y,
-              zIndex: 9999,
-              backgroundColor: 'white',
-              minWidth: '600px',
-              maxWidth: '700px',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              border: '1px solid #e5e7eb',
-              borderRadius: '0.75rem',
             }}
           >
             {/* Header */}
@@ -204,7 +187,10 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
               <h3 className="text-lg font-semibold text-gray-800">Shapes</h3>
               <button 
                 className="text-sm text-gray-600 hover:text-gray-800 transition-colors px-3 py-1 rounded-lg hover:bg-gray-100"
-                onClick={() => onShapeSelect('edit')}
+                onClick={() => {
+                  console.log('Edit shapes functionality coming soon...');
+                  // TODO: Implement shape editing functionality
+                }}
               >
                 Edit
               </button>

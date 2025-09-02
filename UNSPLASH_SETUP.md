@@ -49,3 +49,6 @@ After setting up the API key, you can:
 2. **Click category buttons** to see instant results
 3. **Select images** to see the data in your console
 4. **Integrate with your presentation editor** to actually insert images
+
+
+

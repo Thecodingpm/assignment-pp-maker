@@ -1,0 +1,37 @@
+{
+  "presentation": {
+    "title": "Startup Pitch Deck",
+    "subtitle": "Revolutionary Tagline Here",
+    "author": "Your Name",
+    "company": "Your Startup",
+    "date": "2024",
+    "theme": "startup-modern",
+    "transition": "fade",
+    "autoAdvance": false,
+    "autoAdvanceDelay": 5000
+  },
+  "display": {
+    "aspectRatio": "16:9",
+    "resolution": "1920x1080",
+    "showSlideNumbers": true,
+    "showProgressBar": true,
+    "showTimer": false,
+    "showNotes": false
+  },
+  "export": {
+    "formats": [
+      "pdf",
+      "pptx",
+      "html"
+    ],
+    "includeNotes": false,
+    "includeHiddenSlides": false,
+    "quality": "high"
+  },
+  "collaboration": {
+    "enabled": true,
+    "allowComments": true,
+    "allowEditing": true,
+    "requireApproval": false
+  }
+}

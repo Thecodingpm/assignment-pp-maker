@@ -34,6 +34,9 @@ export interface ImageElement extends EditorElement {
   type: 'image';
   src: string;
   alt: string;
+  credit?: string;
+  originalWidth?: number;
+  originalHeight?: number;
 }
 
 export interface Slide {
@@ -54,6 +57,7 @@ export interface EditorState {
 }
 
 export interface EditorActions {
+  setSlides: (slides: Slide[]) => void;
   addSlide: () => void;
   deleteSlide: (slideId: string) => void;
   duplicateSlide: (slideId: string) => void;

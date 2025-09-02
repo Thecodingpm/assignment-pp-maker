@@ -6,13 +6,14 @@ import { useEditorStore } from '../../stores/useEditorStore';
 
 interface ResizeHandlesProps {
   element: EditorElement;
-  onResize: (newWidth: number, newHeight: number) => void;
+  onResize: (newWidth: number, newHeight: number, newX?: number, newY?: number) => void;
 }
 
 const ResizeHandles: React.FC<ResizeHandlesProps> = ({ element, onResize }) => {
   const [isResizing, setIsResizing] = useState(false);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, width: 0, height: 0 });
   const [resizeHandle, setResizeHandle] = useState<string | null>(null);
+  const [lastResizeTime, setLastResizeTime] = useState(0);
 
   const handleMouseDown = useCallback((e: React.MouseEvent, handle: string) => {
     e.preventDefault();
@@ -42,26 +43,57 @@ const ResizeHandles: React.FC<ResizeHandlesProps> = ({ element, onResize }) => {
   const handleMouseMove = useCallback((e: MouseEvent) => {
     if (!isResizing || !resizeHandle) return;
     
-    const deltaX = e.clientX - resizeStart.x;
-    const deltaY = e.clientY - resizeStart.y;
+    // Throttle resize updates for smoother performance
+    const now = Date.now();
+    if (now - lastResizeTime < 16) { // ~60fps max
+      return;
+    }
+    setLastResizeTime(now);
+    
+    // Get canvas for proper coordinate calculation
+    const canvas = document.querySelector('[data-canvas]') as HTMLElement;
+    if (!canvas) return;
+    
+    const canvasRect = canvas.getBoundingClientRect();
+    const zoom = useEditorStore.getState().zoom;
+    
+    // Calculate current mouse position in canvas coordinates
+    const currentCanvasX = (e.clientX - canvasRect.left) / zoom;
+    const currentCanvasY = (e.clientY - canvasRect.top) / zoom;
+    
+    // Calculate deltas from start position with reduced sensitivity
+    const deltaX = (currentCanvasX - resizeStart.x) * 0.5; // Reduce sensitivity by half
+    const deltaY = (currentCanvasY - resizeStart.y) * 0.5; // Reduce sensitivity by half
+    
+    // Add minimum threshold to prevent tiny movements from causing large changes
+    const minDeltaThreshold = 2; // Minimum pixels to trigger resize
+    if (Math.abs(deltaX) < minDeltaThreshold && Math.abs(deltaY) < minDeltaThreshold) {
+      return; // Don't resize for tiny movements
+    }
     
     let newWidth = resizeStart.width;
     let newHeight = resizeStart.height;
+    let newX = element.x;
+    let newY = element.y;
     
     switch (resizeHandle) {
       case 'top-left':
         newWidth = Math.max(50, resizeStart.width - deltaX);
         newHeight = Math.max(30, resizeStart.height - deltaY);
+        // No position change - just resize
         break;
       case 'top-center':
         newHeight = Math.max(30, resizeStart.height - deltaY);
+        // No position change - just resize
         break;
       case 'top-right':
         newWidth = Math.max(50, resizeStart.width + deltaX);
         newHeight = Math.max(30, resizeStart.height - deltaY);
+        // No position change - just resize
         break;
       case 'middle-left':
         newWidth = Math.max(50, resizeStart.width - deltaX);
+        // No position change - just resize
         break;
       case 'middle-right':
         newWidth = Math.max(50, resizeStart.width + deltaX);
@@ -69,6 +101,7 @@ const ResizeHandles: React.FC<ResizeHandlesProps> = ({ element, onResize }) => {
       case 'bottom-left':
         newWidth = Math.max(50, resizeStart.width - deltaX);
         newHeight = Math.max(30, resizeStart.height + deltaY);
+        // No position change - just resize
         break;
       case 'bottom-center':
         newHeight = Math.max(30, resizeStart.height + deltaY);
@@ -80,7 +113,7 @@ const ResizeHandles: React.FC<ResizeHandlesProps> = ({ element, onResize }) => {
     }
     
     onResize(newWidth, newHeight);
-  }, [isResizing, resizeHandle, resizeStart, onResize]);
+  }, [isResizing, resizeHandle, resizeStart, element.x, element.y, onResize]);
 
   const handleMouseUp = useCallback(() => {
     setIsResizing(false);

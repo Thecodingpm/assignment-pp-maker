@@ -54,15 +54,6 @@ const ToolbarTextPopup: React.FC<ToolbarTextPopupProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[9998] bg-black bg-opacity-20"
-            style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              width: '100vw',
-              height: '100vh',
-            }}
             onClick={onClose}
           />
           
@@ -74,16 +65,8 @@ const ToolbarTextPopup: React.FC<ToolbarTextPopupProps> = ({
             transition={{ duration: 0.15 }}
             className="fixed z-[9999] bg-white rounded-lg shadow-2xl border-2 border-blue-300 min-w-48 max-w-56 toolbar-text-popup"
             style={{
-              position: 'fixed',
               left: position.x,
               top: position.y,
-              zIndex: 9999,
-              backgroundColor: 'white',
-              minWidth: '12rem',
-              maxWidth: '14rem',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-              border: '2px solid #93c5fd',
-              borderRadius: '0.5rem',
             }}
           >
             {/* Header */}

@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import ThemeToggle from '../components/ThemeToggle';
 import DashboardSidebar from '../components/DashboardSidebar';
+import AIPopup from '../components/AIPopup';
 import { moveToTrash, restoreDocument, getUserTrashDocuments } from '../firebase/documents';
 
 type TabType = 'assignments' | 'presentations' | 'trash' | 'analytics';
@@ -22,6 +23,7 @@ export default function DashboardPage() {
   const [trashDocs, setTrashDocs] = useState<typeof documents>([]);
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
+  const [isAIPopupOpen, setIsAIPopupOpen] = useState(false);
 
   const fetchTrash = async () => {
     if (!user) return;
@@ -82,7 +84,20 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <div className="flex-1 bg-gray-50 overflow-y-auto">
         <div className="p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-8">Recents</h1>
+          <div className="flex items-center justify-between mb-8">
+            <h1 className="text-2xl font-bold text-gray-900">Recents</h1>
+            
+            {/* Quick AI Generate Button */}
+            <button
+              onClick={() => setIsAIPopupOpen(true)}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              AI Generate
+            </button>
+          </div>
           
           {/* Action Buttons - Pitch.com Style */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
@@ -98,7 +113,7 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-600">Drag-and-drop text elements with formatting</p>
             </Link>
 
-            <button className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
+            <Link href="/presentation-editor" className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
                   <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,6 +123,24 @@ export default function DashboardPage() {
               </div>
               <h3 className="font-semibold text-gray-900 mb-1">Start new presentation</h3>
               <p className="text-sm text-gray-600">Start from a template or prompt</p>
+            </Link>
+
+            <button 
+              onClick={() => setIsAIPopupOpen(true)}
+              className="bg-gradient-to-r from-purple-500 to-pink-500 border border-purple-400 rounded-xl p-6 text-left hover:from-purple-600 hover:to-pink-600 transition-all duration-300 group transform hover:scale-105"
+            >
+              <div className="flex items-center space-x-3 mb-3">
+                <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                </div>
+              </div>
+              <h3 className="font-semibold text-white mb-1">AI Generate</h3>
+              <p className="text-purple-100 text-sm">Create presentations with AI</p>
+              <div className="mt-3 pt-3 border-t border-white/20">
+                <p className="text-xs text-purple-200">✨ Describe your idea and AI creates slides</p>
+              </div>
             </button>
 
             <button className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
@@ -147,6 +180,41 @@ export default function DashboardPage() {
 
           {/* Content Cards Grid - Pitch.com Style */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* AI Generate Box - Always First */}
+            <div 
+              onClick={() => setIsAIPopupOpen(true)}
+              className="bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl border border-purple-400 overflow-hidden hover:from-purple-600 hover:to-pink-600 transition-all duration-300 cursor-pointer group transform hover:scale-105 hover:shadow-xl relative"
+            >
+              {/* New Badge */}
+              <div className="absolute top-3 left-3 z-10">
+                <span className="bg-yellow-400 text-yellow-900 text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+                  NEW
+                </span>
+              </div>
+              
+              <div className="aspect-video flex items-center justify-center relative">
+                <div className="text-center text-white">
+                  <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-white/30 transition-colors">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">AI Generate</h3>
+                  <p className="text-purple-100 text-sm">Create presentations with AI</p>
+                </div>
+                <div className="absolute bottom-2 right-2">
+                  <svg className="w-4 h-4 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="p-4 bg-white">
+                <h3 className="font-medium text-gray-900 mb-1">AI Presentation Generator</h3>
+                <p className="text-sm text-gray-500 mb-2">Powered by OpenAI</p>
+                <p className="text-xs text-gray-400">Click to start</p>
+              </div>
+            </div>
+
             {currentDocuments.map((doc) => (
               <div
                 key={doc.id}
@@ -311,6 +379,12 @@ export default function DashboardPage() {
           </div>
           </div>
         </div>
+
+      {/* AI Popup */}
+      <AIPopup 
+        isOpen={isAIPopupOpen} 
+        onClose={() => setIsAIPopupOpen(false)} 
+      />
 
       {/* Analytics Modal */}
       {showAnalyticsModal && selectedDocument && (

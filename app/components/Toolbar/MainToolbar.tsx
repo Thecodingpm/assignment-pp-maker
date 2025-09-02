@@ -75,12 +75,37 @@ const MainToolbar: React.FC = () => {
         height: mediaData.height
       });
       
-      // Here you can add logic to insert the image into your presentation
-      // For example, you might want to add it to the current slide
-      // or open an image insertion dialog
-    } else if (type === 'giphy' && mediaData) {
-      // Handle Giphy GIF selection
-      console.log('Selected Giphy GIF:', {
+      // Add the image to the canvas
+      const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+      const currentSlide = slides[currentSlideIndex];
+      
+      if (currentSlide) {
+        // Calculate center position for new image element
+        const centerX = (canvasSize.width / 2) - 150; // Larger offset for bigger images
+        const centerY = (canvasSize.height / 2) - 112; // Larger offset for bigger images
+        
+        const newImageElement = {
+          type: 'image' as const,
+          x: centerX,
+          y: centerY,
+          width: 300, // Increased from 200 to 300
+          height: 225, // Increased from 150 to 225 (maintains aspect ratio)
+          rotation: 0,
+          zIndex: 1,
+          src: mediaData.url,
+          alt: mediaData.alt,
+          credit: mediaData.credit,
+          originalWidth: mediaData.width,
+          originalHeight: mediaData.height,
+        };
+        
+        addElement(currentSlide.id, newImageElement);
+        console.log('Added Unsplash image to canvas:', newImageElement);
+      }
+      
+    } else if (type === 'tenor' && mediaData) {
+      // Handle Tenor GIF selection
+      console.log('Selected Tenor GIF:', {
         id: mediaData.id,
         url: mediaData.url,
         alt: mediaData.alt,
@@ -90,9 +115,33 @@ const MainToolbar: React.FC = () => {
         type: mediaData.type
       });
       
-      // Here you can add logic to insert the GIF into your presentation
-      // For example, you might want to add it to the current slide
-      // or open a GIF insertion dialog
+      // Add the GIF to the canvas as an image element
+      const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+      const currentSlide = slides[currentSlideIndex];
+      
+      if (currentSlide) {
+        // Calculate center position for new GIF element
+        const centerX = (canvasSize.width / 2) - 150; // Larger offset for bigger GIFs
+        const centerY = (canvasSize.height / 2) - 112; // Larger offset for bigger GIFs
+        
+        const newGifElement = {
+          type: 'image' as const, // Treat GIFs as images
+          x: centerX,
+          y: centerY,
+          width: 300, // Increased from 200 to 300
+          height: 225, // Increased from 150 to 225 (maintains aspect ratio)
+          rotation: 0,
+          zIndex: 1,
+          src: mediaData.url,
+          alt: mediaData.alt,
+          credit: mediaData.credit,
+          originalWidth: mediaData.width,
+          originalHeight: mediaData.height,
+        };
+        
+        addElement(currentSlide.id, newGifElement);
+        console.log('Added Tenor GIF to canvas as image:', newGifElement);
+      }
     }
     
     // Handle other media types here
@@ -101,7 +150,66 @@ const MainToolbar: React.FC = () => {
   const handleShapeSelect = (shapeType: string) => {
     setShowShapePopup(false);
     console.log('Shape selected:', shapeType);
-    // Handle different shape types here
+
+    // Get current slide and canvas size
+    const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+    const currentSlide = slides[currentSlideIndex];
+    
+    if (currentSlide) {
+      // Map shape types to editor shape types
+      let mappedShapeType: 'rectangle' | 'circle' | 'triangle';
+      let width = 150;
+      let height = 100;
+      
+      switch (shapeType) {
+        case 'rectangle':
+          mappedShapeType = 'rectangle';
+          width = 150;
+          height = 100;
+          break;
+        case 'circle':
+          mappedShapeType = 'circle';
+          width = 120;
+          height = 120;
+          break;
+        case 'triangle':
+          mappedShapeType = 'triangle';
+          width = 120;
+          height = 100;
+          break;
+        case 'line':
+          mappedShapeType = 'rectangle';
+          width = 200;
+          height = 4;
+          break;
+        default:
+          mappedShapeType = 'rectangle';
+          width = 150;
+          height = 100;
+          break;
+      }
+      
+      // Use a default position instead of center - user can drag to desired location
+      const defaultX = 100; // Start at a reasonable position
+      const defaultY = 100;
+      
+      const newShapeElement = {
+        type: 'shape' as const,
+        x: defaultX,
+        y: defaultY,
+        width,
+        height,
+        rotation: 0,
+        zIndex: 1,
+        shapeType: mappedShapeType,
+        fillColor: shapeType.includes('filled') ? '#3b82f6' : 'transparent',
+        strokeColor: shapeType.includes('outline') ? '#000000' : '#3b82f6',
+        strokeWidth: shapeType.includes('outline') ? 2 : 0,
+      };
+      
+      addElement(currentSlide.id, newShapeElement);
+      console.log('Added shape to canvas:', newShapeElement);
+    }
   };
 
   const handleTextSelect = (textType: string) => {
@@ -115,14 +223,14 @@ const MainToolbar: React.FC = () => {
       const currentSlide = slides[currentSlideIndex];
       
       if (currentSlide) {
-        // Calculate center position for new text element
-        const centerX = (canvasSize.width / 2) - 100; // Center with offset for element width
-        const centerY = (canvasSize.height / 2) - 30; // Center with offset for element height
+        // Use a default position instead of center - user can drag to desired location
+        const defaultX = 100; // Start at a reasonable position
+        const defaultY = 100;
         
         const newTextElement = {
           type: 'text' as const,
-          x: centerX,
-          y: centerY,
+          x: defaultX,
+          y: defaultY,
           width: 200,
           height: 60,
           rotation: 0,
@@ -138,7 +246,7 @@ const MainToolbar: React.FC = () => {
         };
         
         addElement(currentSlide.id, newTextElement);
-        console.log('Created new text element at center of canvas');
+        console.log('Created new text element at default position');
       }
       return;
     }

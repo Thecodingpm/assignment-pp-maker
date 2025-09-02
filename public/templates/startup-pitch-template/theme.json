@@ -1,0 +1,36 @@
+{
+  "name": "Startup Modern",
+  "colors": {
+    "primary": "#2d3748",
+    "secondary": "#718096",
+    "accent": "#3182ce",
+    "background": "#ffffff",
+    "surface": "#f7fafc",
+    "text": "#2d3748",
+    "textSecondary": "#718096"
+  },
+  "fonts": {
+    "heading": "Poppins",
+    "body": "Poppins",
+    "accent": "Poppins"
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "borderRadius": {
+    "sm": 6,
+    "md": 12,
+    "lg": 16,
+    "xl": 20
+  },
+  "shadows": {
+    "sm": "0 2px 4px 0 rgba(0, 0, 0, 0.1)",
+    "md": "0 4px 8px 0 rgba(0, 0, 0, 0.12)",
+    "lg": "0 8px 16px 0 rgba(0, 0, 0, 0.15)"
+  }
+}

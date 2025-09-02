@@ -50,7 +50,13 @@ const SlideThumbnail: React.FC<SlideThumbnailProps> = ({
       {/* Thumbnail */}
       <div
         className="w-full h-24 bg-white border border-gray-200 rounded-lg overflow-hidden relative"
-        style={{ backgroundColor: slide.backgroundColor }}
+        style={{ 
+          backgroundColor: slide.backgroundColor,
+          backgroundImage: slide.backgroundImage ? `url(${slide.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         {/* Slide number */}
         <div className="absolute top-1 left-1 bg-black bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
@@ -59,6 +65,11 @@ const SlideThumbnail: React.FC<SlideThumbnailProps> = ({
 
         {/* Elements preview */}
         <div className="w-full h-full relative">
+          {/* Dark overlay for background images */}
+          {slide.backgroundImage && (
+            <div className="absolute inset-0 bg-black bg-opacity-30"></div>
+          )}
+          
           {slide.elements.slice(0, 3).map((element, elementIndex) => (
             <div
               key={elementIndex}

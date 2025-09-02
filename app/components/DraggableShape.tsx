@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useEditorStore } from '../../stores/useEditorStore';
 
 interface DraggableShapeProps {
   type: 'rectangle' | 'circle' | 'triangle' | 'hexagon';
@@ -60,10 +61,18 @@ export default function DraggableShape({
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (isDragging) {
-        setPosition({
-          x: e.clientX - dragOffset.x,
-          y: e.clientY - dragOffset.y
-        });
+        // Get canvas for proper coordinate calculation
+        const canvas = document.querySelector('[data-canvas]') as HTMLElement;
+        if (!canvas) return;
+        
+        const canvasRect = canvas.getBoundingClientRect();
+        const zoom = useEditorStore.getState()?.zoom || 1;
+        
+        // Calculate position relative to canvas
+        const newX = (e.clientX - canvasRect.left) / zoom - dragOffset.x;
+        const newY = (e.clientY - canvasRect.top) / zoom - dragOffset.y;
+        
+        setPosition({ x: newX, y: newY });
       } else if (isResizing) {
         const deltaX = e.clientX - resizeStart.x;
         const deltaY = e.clientY - resizeStart.y;
