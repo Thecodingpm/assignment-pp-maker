@@ -77,13 +77,13 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
         addElement(currentSlide.id, newTextElement);
         deselectAll();
         
-        // Automatically start editing the new text element
-        setTimeout(() => {
-          const newElementId = currentSlide.elements[currentSlide.elements.length - 1]?.id;
-          if (newElementId) {
-            startTextEditing(newElementId);
-          }
-        }, 100);
+        // Don't automatically start editing - let user click to see popup first
+        // setTimeout(() => {
+        //   const newElementId = currentSlide.elements[currentSlide.elements.length - 1]?.id;
+        //   if (newElementId) {
+        //     startTextEditing(newElementId);
+        //   }
+        // }, 100);
       }
     }, 50);
   }, [currentSlide, zoom, addElement, deselectAll, startTextEditing, isDraggingElement]);
@@ -158,6 +158,8 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
           >
             {/* Elements */}
             {currentSlide.elements.map((element) => {
+              console.log('SlideCanvas: rendering element', { id: element.id, type: element.type, isEditing: element.type === 'text' ? (element as any).isEditing : 'N/A' });
+              
               if (element.type === 'text') {
                 return (
                   <TextElementComponent

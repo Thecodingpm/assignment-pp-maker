@@ -148,6 +148,16 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
       selected: false,
     } as TextElement | ShapeElement | ImageElement;
     
+    console.log('Store: addElement called', { 
+      slideId, 
+      elementData, 
+      newElement: { 
+        id: newElement.id, 
+        type: newElement.type, 
+        isEditing: newElement.type === 'text' ? (newElement as any).isEditing : 'N/A'
+      } 
+    });
+    
     const newSlides = [...slides];
     newSlides[slideIndex] = {
       ...newSlides[slideIndex],

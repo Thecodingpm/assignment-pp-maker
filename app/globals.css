@@ -57,9 +57,11 @@
   border: none !important;
   background: transparent !important;
   resize: none !important;
-  overflow: hidden !important;
+  overflow: auto !important;
   white-space: pre-wrap !important;
   word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  word-break: normal !important;
 }
 
 /* Pitch-like typography and styling */

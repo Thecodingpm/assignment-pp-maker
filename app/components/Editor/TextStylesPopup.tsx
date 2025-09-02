@@ -47,41 +47,36 @@ const TextStylesPopup: React.FC<TextStylesPopupProps> = ({
     <AnimatePresence>
       {isVisible && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop with higher z-index */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[9998] bg-black bg-opacity-20"
             onClick={onClose}
           />
           
-          {/* Popup */}
+          {/* Popup with highest z-index */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed z-[9999] bg-white rounded-lg shadow-xl border-2 border-red-500 min-w-48 text-styles-popup"
+            className="fixed z-[9999] bg-white rounded-lg shadow-2xl border-2 border-blue-300 min-w-56 text-styles-popup"
             style={{
               left: position.x,
               top: position.y,
             }}
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-              <span className="text-sm font-medium text-gray-700">Text styles</span>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-blue-200 bg-blue-50">
+              <span className="text-sm font-semibold text-gray-800">Text styles</span>
               <button 
-                className="text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                className="text-sm text-blue-600 hover:text-blue-800 transition-colors font-medium"
                 onClick={() => onStyleSelect('edit')}
               >
                 Edit
               </button>
-            </div>
-            
-            {/* Debug Info */}
-            <div className="px-4 py-2 bg-red-100 text-red-800 text-xs">
-              DEBUG: Popup is visible at ({position.x}, {position.y})
             </div>
             
             {/* Style Options */}
@@ -90,7 +85,7 @@ const TextStylesPopup: React.FC<TextStylesPopupProps> = ({
                 <button
                   key={style.id}
                   onClick={() => onStyleSelect(style.id)}
-                  className="w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors"
+                  className="w-full text-left px-4 py-3 hover:bg-blue-50 transition-colors border-l-2 border-transparent hover:border-blue-300"
                 >
                   <span className={`${style.className} text-gray-700`}>
                     {style.label}

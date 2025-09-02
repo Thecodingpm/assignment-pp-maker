@@ -16,13 +16,22 @@ import {
   BarChart,
   Table,
   Code,
-  Circle
+  Circle,
+  Mic,
+  Settings
 } from 'lucide-react';
 import MediaPopup from '../Editor/MediaPopup';
+import ShapePopup from '../Editor/ShapePopup';
+import ToolbarTextPopup from '../Editor/ToolbarTextPopup';
+import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
   const [showMediaPopup, setShowMediaPopup] = useState(false);
   const [mediaPopupPosition, setMediaPopupPosition] = useState({ x: 0, y: 0 });
+  const [showShapePopup, setShowShapePopup] = useState(false);
+  const [shapePopupPosition, setShapePopupPosition] = useState({ x: 0, y: 0 });
+  const [showTextPopup, setShowTextPopup] = useState(false);
+  const [textPopupPosition, setTextPopupPosition] = useState({ x: 0, y: 0 });
 
   const handleMediaClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -33,10 +42,154 @@ const MainToolbar: React.FC = () => {
     setShowMediaPopup(true);
   };
 
+  const handleShapeClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setShapePopupPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.bottom + 10
+    });
+    setShowShapePopup(true);
+  };
+
+  const handleTextClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setTextPopupPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.bottom + 10
+    });
+    setShowTextPopup(true);
+  };
+
   const handleMediaSelect = (type: string) => {
     setShowMediaPopup(false);
     console.log('Media selected:', type);
     // Handle different media types here
+  };
+
+  const handleShapeSelect = (shapeType: string) => {
+    setShowShapePopup(false);
+    console.log('Shape selected:', shapeType);
+    // Handle different shape types here
+  };
+
+  const handleTextSelect = (textType: string) => {
+    setShowTextPopup(false);
+    console.log('Text style selected:', textType);
+    
+    // Handle different text style selections
+    if (textType === 'add-text') {
+      // Create a new text element on the canvas
+      const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+      const currentSlide = slides[currentSlideIndex];
+      
+      if (currentSlide) {
+        // Calculate center position for new text element
+        const centerX = (canvasSize.width / 2) - 100; // Center with offset for element width
+        const centerY = (canvasSize.height / 2) - 30; // Center with offset for element height
+        
+        const newTextElement = {
+          type: 'text' as const,
+          x: centerX,
+          y: centerY,
+          width: 200,
+          height: 60,
+          rotation: 0,
+          zIndex: 1,
+          content: 'Add text',
+          fontSize: 16,
+          fontFamily: 'Inter',
+          fontWeight: '400',
+          color: '#000000',
+          textAlign: 'left' as const,
+          lineHeight: 1.2,
+          isEditing: false,
+        };
+        
+        addElement(currentSlide.id, newTextElement);
+        console.log('Created new text element at center of canvas');
+      }
+      return;
+    }
+    
+    if (textType === 'custom') {
+      // Handle custom text styling
+      console.log('Custom text styling requested');
+      return;
+    }
+    
+    // For regular text styles (title, headline, etc.), create new text element with that style
+    const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+    const currentSlide = slides[currentSlideIndex];
+    
+    if (currentSlide) {
+      // Calculate center position for new text element
+      const centerX = (canvasSize.width / 2) - 100;
+      const centerY = (canvasSize.height / 2) - 30;
+      
+      // Define text style properties
+      let textContent = 'Add text';
+      let fontSize = 16;
+      let fontWeight = '400';
+      
+      switch (textType) {
+        case 'title':
+          textContent = 'Title';
+          fontSize = 32;
+          fontWeight = 'bold';
+          break;
+        case 'headline':
+          textContent = 'Headline';
+          fontSize = 24;
+          fontWeight = 'bold';
+          break;
+        case 'subheadline':
+          textContent = 'Subheadline';
+          fontSize = 20;
+          fontWeight = 'bold';
+          break;
+        case 'normal':
+          textContent = 'Normal text';
+          fontSize = 16;
+          fontWeight = 'normal';
+          break;
+        case 'small':
+          textContent = 'Small text';
+          fontSize = 14;
+          fontWeight = 'normal';
+          break;
+        case 'bullet':
+          textContent = '• Bullet point';
+          fontSize = 16;
+          fontWeight = 'normal';
+          break;
+        case 'number':
+          textContent = '1. Numbered item';
+          fontSize = 16;
+          fontWeight = 'normal';
+          break;
+      }
+      
+      const newTextElement = {
+        type: 'text' as const,
+        x: centerX,
+        y: centerY,
+        width: 200,
+        height: 60,
+        rotation: 0,
+        zIndex: 1,
+        content: textContent,
+        fontSize,
+        fontFamily: 'Inter',
+        fontWeight,
+        color: '#000000',
+        textAlign: 'left' as const,
+        lineHeight: 1.2,
+        isEditing: false,
+      };
+      
+      addElement(currentSlide.id, newTextElement);
+      console.log('Created new text element with style:', textType, 'at center of canvas');
+    }
   };
 
   return (
@@ -60,7 +213,10 @@ const MainToolbar: React.FC = () => {
         {/* Center Section - Editing Tools */}
         <div className="flex items-center space-x-4">
           {/* Text Tool */}
-          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleTextClick}
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               <Type className="w-4 h-4 text-gray-700" />
             </div>
@@ -82,7 +238,10 @@ const MainToolbar: React.FC = () => {
           </div>
 
           {/* Shape Tool */}
-          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleShapeClick}
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center space-x-0.5">
               <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
               <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
@@ -173,6 +332,22 @@ const MainToolbar: React.FC = () => {
         onClose={() => setShowMediaPopup(false)}
         onMediaSelect={handleMediaSelect}
         position={mediaPopupPosition}
+      />
+
+      {/* Shape Popup */}
+      <ShapePopup
+        isVisible={showShapePopup}
+        onClose={() => setShowShapePopup(false)}
+        onShapeSelect={handleShapeSelect}
+        position={shapePopupPosition}
+      />
+
+      {/* Text Styles Popup */}
+      <ToolbarTextPopup
+        isVisible={showTextPopup}
+        onClose={() => setShowTextPopup(false)}
+        onStyleSelect={handleTextSelect}
+        position={textPopupPosition}
       />
     </div>
   );
