@@ -121,7 +121,7 @@ const ResizeHandles: React.FC<ResizeHandlesProps> = ({ element, onResize }) => {
       {handles.map(({ position, x, y, cursor }) => (
         <div
           key={position}
-          className="absolute bg-white border border-gray-400 rounded-full shadow-sm"
+          className="absolute bg-white border border-blue-300 rounded-full shadow-sm"
           style={{
             left: x,
             top: y,

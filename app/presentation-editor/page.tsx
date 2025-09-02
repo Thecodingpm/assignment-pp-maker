@@ -12,8 +12,8 @@ export default function PresentationEditorPage() {
       {/* Top Toolbar */}
       <MainToolbar />
       
-      {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      {/* Main Content - Add top padding for fixed toolbar */}
+      <div className="flex-1 flex overflow-hidden pt-16">
         {/* Left Sidebar - Slide List */}
         <SlideList />
         

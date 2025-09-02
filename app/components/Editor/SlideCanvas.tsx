@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
 import { TextElement } from '../../types/editor';
 import TextElementComponent from './TextElement';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
+import { GuideRenderer } from './GuideRenderer';
 
 interface SlideCanvasProps {
   width?: number;
@@ -33,6 +34,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
 
   const canvasRef = useRef<HTMLDivElement>(null);
   const currentSlide = slides[currentSlideIndex];
+  const [draggingElement, setDraggingElement] = useState<EditorElement | null>(null);
 
   // Set canvas size on mount
   useEffect(() => {
@@ -163,12 +165,39 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                     element={element}
                     isSelected={selectedElementIds.includes(element.id)}
                     onSelect={(multiSelect) => selectElement(element.id, multiSelect)}
+                    onDragStart={(element) => {
+                      console.log('SlideCanvas: onDragStart called', element.id);
+                      setDraggingElement(element);
+                    }}
+                    onDragMove={(element) => {
+                      console.log('SlideCanvas: onDragMove called', element.id, 'at', element.x, element.y);
+                      setDraggingElement(element);
+                    }}
+                    onDragEnd={() => {
+                      console.log('SlideCanvas: onDragEnd called');
+                      setDraggingElement(null);
+                      // Ensure guides are cleared when drag ends
+                      console.log('SlideCanvas: clearing drag state');
+                    }}
                   />
                 );
               }
               return null;
             })}
           </div>
+          
+          {/* Smart Guides - positioned relative to canvas */}
+          <GuideRenderer
+            key={`guides-${draggingElement?.id || 'none'}`}
+            draggingElement={draggingElement}
+            allElements={currentSlide.elements}
+            selectedElementIds={selectedElementIds}
+            canvasSize={canvasSize}
+            zoom={zoom}
+            isVisible={isDraggingElement}
+          />
+          
+
 
           {/* Selection Box for multi-select */}
           <SelectionBox />

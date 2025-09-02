@@ -1,278 +1,179 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { 
-  Type, 
-  Square, 
-  Circle, 
-  Triangle, 
-  Image as ImageIcon, 
-  Bold, 
-  Italic, 
-  Underline, 
-  AlignLeft, 
-  AlignCenter, 
-  AlignRight,
-  Palette,
-  Undo,
-  Redo,
-  Save
+  Home, 
+  Menu, 
+  Plus, 
+  Bell, 
+  List, 
+  BarChart3, 
+  Play, 
+  Share2,
+  Type,
+  Image as ImageIcon,
+  Square,
+  BarChart,
+  Table,
+  Code,
+  Circle
 } from 'lucide-react';
-import { useEditorStore } from '../../stores/useEditorStore';
+import MediaPopup from '../Editor/MediaPopup';
 
 const MainToolbar: React.FC = () => {
-  const { selectedElementIds, slides, currentSlideIndex } = useEditorStore();
-  const currentSlide = slides[currentSlideIndex];
-  
-  // Get selected text element for formatting
-  const selectedTextElement = currentSlide?.elements.find(
-    element => element.type === 'text' && selectedElementIds.includes(element.id)
-  ) as any;
+  const [showMediaPopup, setShowMediaPopup] = useState(false);
+  const [mediaPopupPosition, setMediaPopupPosition] = useState({ x: 0, y: 0 });
 
-  const handleAddText = () => {
-    if (!currentSlide) return;
-    
-    const newTextElement = {
-      type: 'text' as const,
-      x: 100,
-      y: 100,
-      width: 200,
-      height: 60,
-      rotation: 0,
-      zIndex: 1,
-      content: 'Click to add text',
-      fontSize: 24,
-      fontFamily: 'Inter',
-      fontWeight: '400',
-      color: '#000000',
-      textAlign: 'left' as const,
-      lineHeight: 1.2,
-      isEditing: false,
-    };
-    
-    useEditorStore.getState().addElement(currentSlide.id, newTextElement);
-  };
-
-  const handleAddShape = (shapeType: 'rectangle' | 'circle' | 'triangle') => {
-    if (!currentSlide) return;
-    
-    const newShapeElement = {
-      type: 'shape' as const,
-      x: 100,
-      y: 100,
-      width: 100,
-      height: 100,
-      rotation: 0,
-      zIndex: 1,
-      shapeType,
-      fillColor: '#e5e7eb',
-      strokeColor: '#9ca3af',
-      strokeWidth: 1,
-    };
-    
-    useEditorStore.getState().addElement(currentSlide.id, newShapeElement);
-  };
-
-  const handleAddImage = () => {
-    if (!currentSlide) return;
-    
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const newImageElement = {
-            type: 'image' as const,
-            x: 100,
-            y: 100,
-            width: 200,
-            height: 150,
-            rotation: 0,
-            zIndex: 1,
-            src: e.target?.result as string,
-            alt: file.name,
-          };
-          
-          useEditorStore.getState().addElement(currentSlide.id, newImageElement);
-        };
-        reader.readAsDataURL(file);
-      }
-    };
-    input.click();
-  };
-
-  const handleTextFormat = (property: string, value: any) => {
-    if (!selectedTextElement || !currentSlide) return;
-    
-    useEditorStore.getState().updateElement(currentSlide.id, selectedTextElement.id, {
-      [property]: value,
+  const handleMediaClick = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMediaPopupPosition({
+      x: rect.left + rect.width / 2,
+      y: rect.bottom + 10
     });
+    setShowMediaPopup(true);
   };
 
-  const handleUndo = () => {
-    // TODO: Implement undo functionality
-    console.log('Undo');
-  };
-
-  const handleRedo = () => {
-    // TODO: Implement redo functionality
-    console.log('Redo');
-  };
-
-  const handleSave = () => {
-    // TODO: Implement save functionality
-    console.log('Save');
+  const handleMediaSelect = (type: string) => {
+    setShowMediaPopup(false);
+    console.log('Media selected:', type);
+    // Handle different media types here
   };
 
   return (
-    <div className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 shadow-sm">
-      {/* Left side - Insert tools */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleAddText}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-        >
-          <Type className="w-4 h-4" />
-          Text
-        </button>
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+      {/* Main Toolbar */}
+      <div className="flex items-center justify-between px-3 py-2">
         
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => handleAddShape('rectangle')}
-            className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
-            title="Rectangle"
-          >
-            <Square className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleAddShape('circle')}
-            className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
-            title="Circle"
-          >
-            <Circle className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => handleAddShape('triangle')}
-            className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
-            title="Triangle"
-          >
-            <Triangle className="w-4 h-4" />
-          </button>
-        </div>
-        
-        <button
-          onClick={handleAddImage}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-        >
-          <ImageIcon className="w-4 h-4" />
-          Image
-        </button>
-      </div>
-
-      {/* Center - Text formatting (only show when text is selected) */}
-      {selectedTextElement && (
-        <div className="flex items-center gap-2">
-          {/* Font weight */}
-          <button
-            onClick={() => handleTextFormat('fontWeight', selectedTextElement.fontWeight === 'bold' ? '400' : 'bold')}
-            className={`p-2 rounded transition-colors ${
-              selectedTextElement.fontWeight === 'bold' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            title="Bold"
-          >
-            <Bold className="w-4 h-4" />
-          </button>
+        {/* Left Section - Presentation Info */}
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1.5">
+            <Home className="w-3.5 h-3.5 text-gray-600" />
+            <Menu className="w-3.5 h-3.5 text-gray-600" />
+          </div>
           
-          <button
-            onClick={() => handleTextFormat('fontWeight', selectedTextElement.fontWeight === '600' ? '400' : '600')}
-            className={`p-2 rounded transition-colors ${
-              selectedTextElement.fontWeight === '600' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-            }`}
-            title="Semi-bold"
-          >
-            <Bold className="w-4 h-4" />
-          </button>
+          <div className="flex flex-col">
+            <h1 className="text-sm font-medium text-gray-700">Untitled presentation</h1>
+            <span className="text-xs text-gray-600">Private</span>
+          </div>
+        </div>
 
-          {/* Text alignment */}
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => handleTextFormat('textAlign', 'left')}
-              className={`p-2 rounded transition-colors ${
-                selectedTextElement.textAlign === 'left' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-              }`}
-              title="Align left"
-            >
-              <AlignLeft className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleTextFormat('textAlign', 'center')}
-              className={`p-2 rounded transition-colors ${
-                selectedTextElement.textAlign === 'center' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-              }`}
-              title="Align center"
-            >
-              <AlignCenter className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handleTextFormat('textAlign', 'right')}
-              className={`p-2 rounded transition-colors ${
-                selectedTextElement.textAlign === 'right' ? 'bg-blue-100 text-blue-700' : 'text-gray-700 hover:bg-gray-100'
-              }`}
-              title="Align right"
-            >
-              <AlignRight className="w-4 h-4" />
-            </button>
+        {/* Center Section - Editing Tools */}
+        <div className="flex items-center space-x-4">
+          {/* Text Tool */}
+          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Type className="w-4 h-4 text-gray-700" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Text</span>
           </div>
 
-          {/* Font size */}
-          <select
-            value={selectedTextElement.fontSize}
-            onChange={(e) => handleTextFormat('fontSize', parseInt(e.target.value))}
-            className="px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {/* Media Tool */}
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleMediaClick}
           >
-            {[12, 14, 16, 18, 20, 24, 28, 32, 36, 48, 64, 72].map(size => (
-              <option key={size} value={size}>{size}</option>
-            ))}
-          </select>
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center relative">
+              <div className="w-4 h-4 bg-white rounded border border-gray-400"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Play className="w-2 h-2 text-gray-700 ml-0.5" />
+              </div>
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Media</span>
+          </div>
 
-          {/* Color picker */}
-          <input
-            type="color"
-            value={selectedTextElement.color}
-            onChange={(e) => handleTextFormat('color', e.target.value)}
-            className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-            title="Text color"
-          />
+          {/* Shape Tool */}
+          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center space-x-0.5">
+              <div className="w-1 h-1 bg-gray-600 rounded-sm"></div>
+              <div className="w-1 h-1 bg-gray-600 rounded-full"></div>
+              <div className="w-1 h-1 bg-gray-600 rotate-45"></div>
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Shape</span>
+          </div>
+
+          {/* Chart Tool */}
+          <div className="flex flex-col items-center space-x-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <BarChart className="w-4 h-4 text-gray-700" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Chart</span>
+          </div>
+
+          {/* Table Tool */}
+          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Table className="w-4 h-4 text-gray-700" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Table</span>
+          </div>
+
+          {/* Embed Tool */}
+          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Code className="w-4 h-4 text-gray-700" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Embed</span>
+          </div>
+
+          {/* Record Tool */}
+          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Circle className="w-2.5 h-2.5 bg-gray-600 rounded-full" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Record</span>
+          </div>
         </div>
-      )}
 
-      {/* Right side - Actions */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={handleUndo}
-          className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
-          title="Undo"
-        >
-          <Undo className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleRedo}
-          className="p-2 text-gray-700 hover:bg-gray-100 rounded transition-colors"
-          title="Redo"
-        >
-          <Redo className="w-4 h-4" />
-        </button>
-        <button
-          onClick={handleSave}
-          className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
-        >
-          <Save className="w-4 h-4" />
-          Save
-        </button>
+        {/* Right Section - User Actions */}
+        <div className="flex items-center space-x-2">
+          {/* Plus Button */}
+          <button className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+            <Plus className="w-3.5 h-3.5 text-gray-600" />
+          </button>
+
+          {/* Profile Picture with Green Dot */}
+          <div className="relative">
+            <div className="w-6 h-6 bg-green-400 rounded-full flex items-center justify-center">
+              <span className="text-white font-medium text-xs">A</span>
+            </div>
+            <div className="absolute -bottom-0.5 -right-0.5 w-2 h-2 bg-green-400 rounded-full border border-white"></div>
+          </div>
+
+          {/* Bell Icon */}
+          <button className="w-6 h-6 hover:bg-gray-100 rounded-full flex items-center justify-center transition-colors">
+            <Bell className="w-3.5 h-3.5 text-gray-600" />
+          </button>
+
+          {/* List Icon */}
+          <button className="w-6 h-6 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+            <List className="w-3.5 h-3.5 text-gray-600" />
+          </button>
+
+          {/* Activity Icon */}
+          <button className="w-6 h-6 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+            <BarChart3 className="w-3.5 h-3.5 text-gray-600" />
+          </button>
+
+          {/* Play Button */}
+          <button className="px-2 py-1 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 flex items-center space-x-1 transition-colors">
+            <Play className="w-3 h-3 text-gray-600" />
+            <span className="text-xs font-medium text-gray-600">Play</span>
+          </button>
+
+          {/* Share Button */}
+          <button className="px-3 py-1 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium text-xs transition-colors">
+            Share
+          </button>
+        </div>
       </div>
+      
+      {/* Media Popup */}
+      <MediaPopup
+        isVisible={showMediaPopup}
+        onClose={() => setShowMediaPopup(false)}
+        onMediaSelect={handleMediaSelect}
+        position={mediaPopupPosition}
+      />
     </div>
   );
 };
