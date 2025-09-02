@@ -3,11 +3,12 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
-import { TextElement, EditorElement, ShapeElement } from '../../types/editor';
+import { TextElement, EditorElement, ShapeElement, ChartElement } from '../../types/editor';
 import TextElementComponent from './TextElement';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
 import { snapToGuides } from '../../utils/magneticSnapping';
+import ReactECharts from 'echarts-for-react';
 
 interface SlideCanvasProps {
   width?: number;
@@ -603,6 +604,94 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                     )}
                     
                     {/* Resize handles for selected images */}
+                    {selectedElementIds.includes(element.id) && (
+                      <>
+                        <ResizeHandles
+                          element={element}
+                          onResize={(newWidth, newHeight) => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              width: newWidth, 
+                              height: newHeight 
+                            });
+                          }}
+                        />
+                        
+                        {/* Rotation handle */}
+                        <div
+                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startRotation = element.rotation;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaY = moveEvent.clientY - startY;
+                              const newRotation = startRotation + (deltaY * 0.5);
+                              
+                              const { updateElement } = useEditorStore.getState();
+                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              
+              if (element.type === 'chart') {
+                const chartElement = element as ChartElement;
+                return (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move select-none ${
+                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    style={{
+                      left: element.x,
+                      top: element.y,
+                      width: element.width,
+                      height: element.height,
+                      transform: `rotate(${element.rotation}deg)`,
+                      zIndex: element.zIndex,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectElement(element.id, e.shiftKey);
+                    }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const canvasRect = canvasRef.current?.getBoundingClientRect();
+                      if (canvasRect) {
+                        const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                        const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                        setDragOffset({ x: offsetX, y: offsetY });
+                      }
+                      setDraggingElement(element);
+                    }}
+                  >
+                    <div className="w-full h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
+                      <ReactECharts
+                        option={chartElement.chartOption}
+                        style={{ height: '100%', width: '100%' }}
+                        opts={{ renderer: 'canvas' }}
+                      />
+                    </div>
+                    
+                    {/* Resize handles for selected charts */}
                     {selectedElementIds.includes(element.id) && (
                       <>
                         <ResizeHandles

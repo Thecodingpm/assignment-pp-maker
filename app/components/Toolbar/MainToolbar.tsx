@@ -23,6 +23,8 @@ import {
 import MediaPopup from '../Editor/MediaPopup';
 import ShapePopup from '../Editor/ShapePopup';
 import ToolbarTextPopup from '../Editor/ToolbarTextPopup';
+import PresentationMenuDropdown from '../Editor/PresentationMenuDropdown';
+import ChartPopup from '../Editor/ChartPopup';
 import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
@@ -32,6 +34,10 @@ const MainToolbar: React.FC = () => {
   const [shapePopupPosition, setShapePopupPosition] = useState({ x: 0, y: 0 });
   const [showTextPopup, setShowTextPopup] = useState(false);
   const [textPopupPosition, setTextPopupPosition] = useState({ x: 0, y: 0 });
+  const [showMenuDropdown, setShowMenuDropdown] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [showChartPopup, setShowChartPopup] = useState(false);
+  const [chartPopupPosition, setChartPopupPosition] = useState({ x: 0, y: 0 });
 
   const handleMediaClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -58,6 +64,32 @@ const MainToolbar: React.FC = () => {
       y: rect.bottom + 10
     });
     setShowTextPopup(true);
+  };
+
+  const handleMenuClick = (e: React.MouseEvent) => {
+    console.log('🎯 Menu button clicked!');
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = {
+      x: rect.left,
+      y: rect.bottom + 5
+    };
+    console.log('📍 Setting menu position:', position);
+    setMenuPosition(position);
+    setShowMenuDropdown(true);
+    console.log('✅ showMenuDropdown set to true');
+  };
+
+  const handleChartClick = (e: React.MouseEvent) => {
+    console.log('📊 Chart button clicked!');
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = {
+      x: Math.max(0, rect.left - 400), // Center the popup
+      y: rect.bottom + 10
+    };
+    console.log('📍 Setting chart popup position:', position);
+    setChartPopupPosition(position);
+    setShowChartPopup(true);
+    console.log('✅ showChartPopup set to true');
   };
 
   const handleMediaSelect = (type: string, mediaData?: any) => {
@@ -341,7 +373,12 @@ const MainToolbar: React.FC = () => {
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1.5">
             <Home className="w-3.5 h-3.5 text-gray-600" />
-            <Menu className="w-3.5 h-3.5 text-gray-600" />
+            <button 
+              onClick={handleMenuClick}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+            >
+              <Menu className="w-3.5 h-3.5 text-gray-600" />
+            </button>
           </div>
           
           <div className="flex flex-col">
@@ -391,7 +428,10 @@ const MainToolbar: React.FC = () => {
           </div>
 
           {/* Chart Tool */}
-          <div className="flex flex-col items-center space-x-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+          <div 
+            className="flex flex-col items-center space-x-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleChartClick}
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               <BarChart className="w-4 h-4 text-gray-700" />
             </div>
@@ -488,6 +528,20 @@ const MainToolbar: React.FC = () => {
         onClose={() => setShowTextPopup(false)}
         onStyleSelect={handleTextSelect}
         position={textPopupPosition}
+      />
+
+      {/* Presentation Menu Dropdown */}
+      <PresentationMenuDropdown
+        isVisible={showMenuDropdown}
+        onClose={() => setShowMenuDropdown(false)}
+        position={menuPosition}
+      />
+
+      {/* Chart Popup */}
+      <ChartPopup
+        isVisible={showChartPopup}
+        onClose={() => setShowChartPopup(false)}
+        position={chartPopupPosition}
       />
     </div>
   );

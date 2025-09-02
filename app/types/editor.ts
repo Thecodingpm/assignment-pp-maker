@@ -1,6 +1,6 @@
 export interface EditorElement {
   id: string;
-  type: 'text' | 'shape' | 'image';
+  type: 'text' | 'shape' | 'image' | 'chart';
   x: number;
   y: number;
   width: number;
@@ -39,9 +39,16 @@ export interface ImageElement extends EditorElement {
   originalHeight?: number;
 }
 
+export interface ChartElement extends EditorElement {
+  type: 'chart';
+  chartType: string;
+  chartOption: any; // ECharts option object
+  data: any; // Chart data
+}
+
 export interface Slide {
   id: string;
-  elements: (TextElement | ShapeElement | ImageElement)[];
+  elements: (TextElement | ShapeElement | ImageElement | ChartElement)[];
   backgroundColor: string;
   backgroundImage?: string;
 }
