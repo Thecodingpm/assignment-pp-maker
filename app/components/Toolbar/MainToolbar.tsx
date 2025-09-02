@@ -60,10 +60,42 @@ const MainToolbar: React.FC = () => {
     setShowTextPopup(true);
   };
 
-  const handleMediaSelect = (type: string) => {
+  const handleMediaSelect = (type: string, mediaData?: any) => {
     setShowMediaPopup(false);
-    console.log('Media selected:', type);
-    // Handle different media types here
+    console.log('Media selected:', type, mediaData);
+    
+    if (type === 'unsplash' && mediaData) {
+      // Handle Unsplash image selection
+      console.log('Selected Unsplash image:', {
+        id: mediaData.id,
+        url: mediaData.url,
+        alt: mediaData.alt,
+        credit: mediaData.credit,
+        width: mediaData.width,
+        height: mediaData.height
+      });
+      
+      // Here you can add logic to insert the image into your presentation
+      // For example, you might want to add it to the current slide
+      // or open an image insertion dialog
+    } else if (type === 'giphy' && mediaData) {
+      // Handle Giphy GIF selection
+      console.log('Selected Giphy GIF:', {
+        id: mediaData.id,
+        url: mediaData.url,
+        alt: mediaData.alt,
+        credit: mediaData.credit,
+        width: mediaData.width,
+        height: mediaData.height,
+        type: mediaData.type
+      });
+      
+      // Here you can add logic to insert the GIF into your presentation
+      // For example, you might want to add it to the current slide
+      // or open a GIF insertion dialog
+    }
+    
+    // Handle other media types here
   };
 
   const handleShapeSelect = (shapeType: string) => {
