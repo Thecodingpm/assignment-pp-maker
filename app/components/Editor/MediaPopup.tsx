@@ -189,7 +189,16 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40"
+            className="fixed inset-0 z-[9998] bg-black bg-opacity-20"
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              width: '100vw',
+              height: '100vh',
+            }}
             onClick={onClose}
           />
           
@@ -199,10 +208,18 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed z-50 bg-white rounded-lg shadow-xl border border-gray-200 w-96 h-96 flex"
+            className="fixed z-[9999] bg-white rounded-lg shadow-xl border border-gray-200 w-96 h-96 flex"
             style={{
+              position: 'fixed',
               left: position.x,
               top: position.y,
+              zIndex: 9999,
+              backgroundColor: 'white',
+              width: '24rem',
+              height: '24rem',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              border: '1px solid #e5e7eb',
+              borderRadius: '0.5rem',
             }}
           >
             {/* Left Sidebar */}
