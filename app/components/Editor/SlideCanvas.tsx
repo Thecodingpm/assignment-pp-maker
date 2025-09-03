@@ -9,6 +9,7 @@ import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
 import { snapToGuides } from '../../utils/magneticSnapping';
 import ReactECharts from 'echarts-for-react';
+import ChartEditor from './ChartEditor';
 
 interface SlideCanvasProps {
   width?: number;
@@ -38,6 +39,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
   const [draggingElement, setDraggingElement] = useState<EditorElement | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [visualGuides, setVisualGuides] = useState<VisualGuide[]>([]);
+  const [selectedChartElement, setSelectedChartElement] = useState<ChartElement | null>(null);
 
   // Visual guide types
   interface VisualGuide {
@@ -60,6 +62,15 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
       setVisualGuides([]);
     }
   }, [draggingElement]);
+
+  // Handle chart selection
+  const handleChartSelect = useCallback((element: EditorElement) => {
+    if (element.type === 'chart') {
+      setSelectedChartElement(element as ChartElement);
+    } else {
+      setSelectedChartElement(null);
+    }
+  }, []);
 
   // Improved guide generation with proper deduplication
   const generateCleanGuides = (
@@ -671,6 +682,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                     onClick={(e) => {
                       e.stopPropagation();
                       selectElement(element.id, e.shiftKey);
+                      handleChartSelect(element);
                     }}
                     onMouseDown={(e) => {
                       const rect = e.currentTarget.getBoundingClientRect();
@@ -767,6 +779,15 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
           <SelectionBox />
         </motion.div>
       </div>
+
+      {/* Chart Editor */}
+      {selectedChartElement && (
+        <ChartEditor
+          chartElement={selectedChartElement}
+          isVisible={true}
+          onClose={() => setSelectedChartElement(null)}
+        />
+      )}
     </div>
   );
 };

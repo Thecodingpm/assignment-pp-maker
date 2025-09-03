@@ -20,6 +20,7 @@
     "docx-preview": "^0.3.6",
     "echarts": "^5.6.0",
     "echarts-for-react": "^3.0.2",
+    "echarts-gl": "^2.0.9",
     "epub-gen": "^0.1.0",
     "file-type": "^21.0.0",
     "firebase": "10.12.0",
