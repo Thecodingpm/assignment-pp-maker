@@ -8,6 +8,9 @@ import {
   Square, Triangle, Sparkles 
 } from 'lucide-react';
 
+// Temporary simplified icons to test
+const TestIcon = () => <div className="w-4 h-4 bg-gray-400 rounded" />;
+
 interface ChartPopupProps {
   isVisible: boolean;
   onClose: () => void;
@@ -363,36 +366,36 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
 
   const chartTypes = {
     "Column & Bar Charts": {
-      column: { icon: BarChart3, color: '#3b82f6' },
-      bar: { icon: BarChart3, color: '#10b981' },
-      '100-stacked': { icon: Layers, color: '#8b5cf6' },
-      'range-column': { icon: Target, color: '#f59e0b' },
-      waterfall: { icon: TrendingUp, color: '#ef4444' }
+      column: { icon: TestIcon, color: '#3b82f6' },
+      bar: { icon: TestIcon, color: '#10b981' },
+      '100-stacked': { icon: TestIcon, color: '#8b5cf6' },
+      'range-column': { icon: TestIcon, color: '#f59e0b' },
+      waterfall: { icon: TestIcon, color: '#ef4444' }
     },
     "Line & Area Charts": {
-      line: { icon: LineChart, color: '#06b6d4' },
-      area: { icon: TrendingUp, color: '#84cc16' },
-      '100-area': { icon: Layers, color: '#ec4899' },
-      'scatter-line': { icon: Activity, color: '#f97316' }
+      line: { icon: TestIcon, color: '#06b6d4' },
+      area: { icon: TestIcon, color: '#84cc16' },
+      '100-area': { icon: TestIcon, color: '#ec4899' },
+      'scatter-line': { icon: TestIcon, color: '#f97316' }
     },
     "Pie & Doughnut Charts": {
-      pie: { icon: PieChart, color: '#8b5cf6' },
-      doughnut: { icon: Circle, color: '#06b6d4' },
-      'exploded-pie': { icon: Sparkles, color: '#f59e0b' },
-      'pie-labels': { icon: Target, color: '#10b981' }
+      pie: { icon: TestIcon, color: '#8b5cf6' },
+      doughnut: { icon: TestIcon, color: '#06b6d4' },
+      'exploded-pie': { icon: TestIcon, color: '#f59e0b' },
+      'pie-labels': { icon: TestIcon, color: '#10b981' }
     },
     "Scatter & Bubble Charts": {
-      scatter: { icon: Scatter, color: '#ef4444' },
-      bubble: { icon: Zap, color: '#8b5cf6' }
+      scatter: { icon: TestIcon, color: '#ef4444' },
+      bubble: { icon: TestIcon, color: '#8b5cf6' }
     },
     "Specialized Charts": {
-      radar: { icon: Target, color: '#06b6d4' },
-      funnel: { icon: Triangle, color: '#f59e0b' },
-      gauge: { icon: Circle, color: '#10b981' },
-      candlestick: { icon: BarChart3, color: '#ef4444' },
-      heatmap: { icon: Square, color: '#8b5cf6' },
-      treemap: { icon: Hexagon, color: '#06b6d4' },
-      sankey: { icon: Sparkles, color: '#f59e0b' }
+      radar: { icon: TestIcon, color: '#06b6d4' },
+      funnel: { icon: TestIcon, color: '#f59e0b' },
+      gauge: { icon: TestIcon, color: '#10b981' },
+      candlestick: { icon: TestIcon, color: '#ef4444' },
+      heatmap: { icon: TestIcon, color: '#8b5cf6' },
+      treemap: { icon: TestIcon, color: '#06b6d4' },
+      sankey: { icon: TestIcon, color: '#f59e0b' }
     }
   };
 
