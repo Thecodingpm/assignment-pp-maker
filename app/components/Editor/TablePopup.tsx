@@ -19,6 +19,7 @@ const TablePopup: React.FC<TablePopupProps> = ({
   const { addElement, canvasSize } = useEditorStore();
   const [hoveredCells, setHoveredCells] = useState({ rows: 0, cols: 0 });
   const [selectedCells, setSelectedCells] = useState({ rows: 0, cols: 0 });
+  const [isSelecting, setIsSelecting] = useState(false);
 
   // Close popup when clicking outside
   useEffect(() => {
@@ -38,15 +39,30 @@ const TablePopup: React.FC<TablePopupProps> = ({
   useEffect(() => {
     if (!isVisible) return;
     
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isVisible]);
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
     
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
-  }, [isVisible, onClose]);
+    // Delete or Backspace to clear selection
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (selectedCells.rows > 0 && selectedCells.cols > 0) {
+        setSelectedCells({ rows: 0, cols: 0 });
+        setHoveredCells({ rows: 0, cols: 0 });
+      }
+    }
+    
+    // Ctrl+A or Cmd+A to select all
+    if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
+      e.preventDefault();
+      setSelectedCells({ rows: maxRows, cols: maxCols });
+      setHoveredCells({ rows: maxRows, cols: maxCols });
+    }
+  };
 
   if (!isVisible) return null;
 
@@ -54,49 +70,42 @@ const TablePopup: React.FC<TablePopupProps> = ({
   const maxCols = 10;
 
   const handleCellHover = (row: number, col: number) => {
-    setHoveredCells({ rows: row + 1, cols: col + 1 });
+    if (!isSelecting) {
+      setHoveredCells({ rows: row + 1, cols: col + 1 });
+    }
   };
 
   const handleCellClick = (row: number, col: number) => {
     const selectedRows = row + 1;
     const selectedCols = col + 1;
-    setSelectedCells({ rows: selectedRows, cols: selectedCols });
     
-    // Create table element and add it to the canvas
-    const { slides, currentSlideIndex } = useEditorStore.getState();
-    const currentSlide = slides[currentSlideIndex];
-    
-    if (currentSlide) {
-      // Calculate center position for new table element
-      const centerX = (canvasSize.width / 2) - 200;
-      const centerY = (canvasSize.height / 2) - 150;
-      
-      const newTableElement = {
-        type: 'table' as const,
-        x: centerX,
-        y: centerY,
-        width: Math.max(300, selectedCols * 80),
-        height: Math.max(200, selectedRows * 40),
-        rotation: 0,
-        zIndex: 1,
-        rows: selectedRows,
-        cols: selectedCols,
-        data: Array(selectedRows).fill(null).map(() => 
-          Array(selectedCols).fill('')
-        ),
-        headers: Array(selectedCols).fill('').map((_, i) => `Column ${i + 1}`),
-        rowHeaders: Array(selectedRows).fill('').map((_, i) => `Row ${i + 1}`)
-      };
-      
-      addElement(currentSlide.id, newTableElement);
-      console.log('Added table to canvas:', newTableElement);
+    // If clicking on already selected area, clear selection
+    if (selectedCells.rows === selectedRows && selectedCells.cols === selectedCols) {
+      setSelectedCells({ rows: 0, cols: 0 });
+      setHoveredCells({ rows: 0, cols: 0 });
+      return;
     }
     
-    onClose();
+    setSelectedCells({ rows: selectedRows, cols: selectedCols });
+    setHoveredCells({ rows: selectedRows, cols: selectedCols });
+  };
+
+  const handleCellMouseDown = (row: number, col: number) => {
+    setIsSelecting(true);
+    const selectedRows = row + 1;
+    const selectedCols = col + 1;
+    setSelectedCells({ rows: selectedRows, cols: selectedCols });
+    setHoveredCells({ rows: selectedRows, cols: selectedCols });
+  };
+
+  const handleCellMouseUp = () => {
+    setIsSelecting(false);
   };
 
   const handleMouseLeave = () => {
-    setHoveredCells({ rows: 0, cols: 0 });
+    if (!isSelecting) {
+      setHoveredCells({ rows: 0, cols: 0 });
+    }
   };
 
   return (
@@ -144,19 +153,20 @@ const TablePopup: React.FC<TablePopupProps> = ({
             >
               {Array.from({ length: maxRows }, (_, row) =>
                 Array.from({ length: maxCols }, (_, col) => {
-                  const isHovered = row < hoveredCells.rows && col < hoveredCells.cols;
-                  const isSelected = row < selectedCells.rows && col < selectedCells.cols;
-                  
                   return (
                     <div
                       key={`${row}-${col}`}
                       className={`w-6 h-6 border border-gray-300 rounded-sm cursor-pointer transition-all duration-150 ${
-                        isHovered || isSelected
-                          ? 'bg-blue-500 border-blue-600'
-                          : 'bg-white hover:bg-gray-100'
+                        row < selectedCells.rows && col < selectedCells.cols
+                          ? 'bg-blue-600 border-blue-700' // Selected cells - darker blue
+                          : row < hoveredCells.rows && col < hoveredCells.cols
+                          ? 'bg-blue-300 border-blue-400' // Hovered cells - lighter blue
+                          : 'bg-white hover:bg-gray-100' // Default state
                       }`}
                       onMouseEnter={() => handleCellHover(row, col)}
                       onClick={() => handleCellClick(row, col)}
+                      onMouseDown={() => handleCellMouseDown(row, col)}
+                      onMouseUp={handleCellMouseUp}
                       title={`${row + 1} × ${col + 1} table`}
                     />
                   );
@@ -167,9 +177,49 @@ const TablePopup: React.FC<TablePopupProps> = ({
 
           {/* Selection Display */}
           <div className="text-center">
-            {hoveredCells.rows > 0 && hoveredCells.cols > 0 ? (
-              <div className="text-sm font-medium text-blue-600">
-                Insert {hoveredCells.rows} × {hoveredCells.cols} table
+            {selectedCells.rows > 0 && selectedCells.cols > 0 ? (
+              <div className="space-y-3">
+                <div className="text-sm font-medium text-blue-600">
+                  Selected: {selectedCells.rows} × {selectedCells.cols} table
+                </div>
+                <button
+                  onClick={() => {
+                    // Create table element and add it to the canvas
+                    const { slides, currentSlideIndex } = useEditorStore.getState();
+                    const currentSlide = slides[currentSlideIndex];
+                    
+                    if (currentSlide) {
+                      // Calculate center position for new table element
+                      const centerX = (canvasSize.width / 2) - 200;
+                      const centerY = (canvasSize.height / 2) - 150;
+                      
+                      const newTableElement = {
+                        type: 'table' as const,
+                        x: centerX,
+                        y: centerY,
+                        width: Math.max(300, selectedCells.cols * 80),
+                        height: Math.max(200, selectedCells.rows * 40),
+                        rotation: 0,
+                        zIndex: 1,
+                        rows: selectedCells.rows,
+                        cols: selectedCells.cols,
+                        data: Array(selectedCells.rows).fill(null).map(() => 
+                          Array(selectedCells.cols).fill('')
+                        ),
+                        headers: Array(selectedCells.cols).fill('').map((_, i) => `Column ${i + 1}`),
+                        rowHeaders: Array(selectedCells.rows).fill('').map((_, i) => `Row ${i + 1}`)
+                      };
+                      
+                      addElement(currentSlide.id, newTableElement);
+                      console.log('Added table to canvas:', newTableElement);
+                    }
+                    
+                    onClose();
+                  }}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition-colors"
+                >
+                  Insert Table
+                </button>
               </div>
             ) : (
               <div className="text-sm text-gray-500">
@@ -194,13 +244,23 @@ const TablePopup: React.FC<TablePopupProps> = ({
                   key={`${preset.rows}-${preset.cols}`}
                   onClick={() => {
                     setSelectedCells({ rows: preset.rows, cols: preset.cols });
-                    handleCellClick(preset.rows - 1, preset.cols - 1);
+                    setHoveredCells({ rows: preset.rows, cols: preset.cols });
                   }}
                   className="px-3 py-2 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
                 >
                   {preset.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          {/* Keyboard Shortcuts */}
+          <div className="mt-3 pt-3 border-t border-gray-100">
+            <p className="text-xs text-gray-600 mb-2 text-center">Keyboard shortcuts:</p>
+            <div className="text-xs text-gray-500 space-y-1">
+              <p>• <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Delete</kbd> or <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Backspace</kbd> - Clear selection</p>
+              <p>• <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Ctrl+A</kbd> or <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Cmd+A</kbd> - Select all (10×10)</p>
+              <p>• <kbd className="px-1 py-0.5 bg-gray-200 rounded text-xs">Escape</kbd> - Close popup</p>
             </div>
           </div>
         </div>
