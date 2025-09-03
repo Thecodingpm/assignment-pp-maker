@@ -94,8 +94,8 @@ const TablePopup: React.FC<TablePopupProps> = ({
           type: 'table' as const,
           x: centerX,
           y: centerY,
-          width: Math.max(300, selectedCols * 80),
-          height: Math.max(200, selectedRows * 40),
+          width: Math.max(400, selectedCols * 100), // Increased from 80 to 100
+          height: Math.max(300, selectedRows * 50),  // Increased from 40 to 50
           rotation: 0,
           zIndex: 1,
           rows: selectedRows,

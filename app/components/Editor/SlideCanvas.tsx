@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
-import { TextElement, EditorElement, ShapeElement, ChartElement } from '../../types/editor';
+import { TextElement, EditorElement, ShapeElement, ChartElement, TableElement } from '../../types/editor';
 import TextElementComponent from './TextElement';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
@@ -744,6 +744,225 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                         >
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              
+              if (element.type === 'table') {
+                const tableElement = element as TableElement;
+                return (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move select-none ${
+                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    style={{
+                      left: element.x,
+                      top: element.y,
+                      width: element.width,
+                      height: element.height,
+                      transform: `rotate(${element.rotation}deg)`,
+                      zIndex: element.zIndex,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectElement(element.id, e.shiftKey);
+                    }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const canvasRect = canvasRef.current?.getBoundingClientRect();
+                      if (canvasRect) {
+                        const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                        const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                        setDragOffset({ x: offsetX, y: offsetY });
+                      }
+                      setDraggingElement(element);
+                    }}
+                  >
+                    <div className="w-full h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
+                      <table className="w-full h-full border-collapse text-xs">
+                        <thead>
+                          <tr>
+                            {tableElement.headers?.map((header: string, index: number) => (
+                              <th 
+                                key={index}
+                                className="border border-gray-300 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-700 text-center min-w-[60px] cursor-text hover:bg-gray-100 transition-colors"
+                                title="Click to edit column name"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  // Start editing this header
+                                  const newHeaders = [...tableElement.headers];
+                                  newHeaders[index] = newHeaders[index] || '';
+                                  
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { 
+                                    headers: newHeaders 
+                                  } as Partial<TableElement>);
+                                  
+                                  // Create editable input
+                                  const input = document.createElement('input');
+                                  input.type = 'text';
+                                  input.value = newHeaders[index];
+                                  input.className = 'w-full h-full border-none outline-none text-left text-xs font-medium bg-transparent border-2 border-blue-400 rounded px-1';
+                                  input.style.width = '100%';
+                                  input.style.height = '100%';
+                                  
+                                  // Replace header content with input
+                                  const headerElement = e.currentTarget;
+                                  headerElement.innerHTML = '';
+                                  headerElement.appendChild(input);
+                                  input.focus();
+                                  input.select();
+                                  
+                                  // Handle input completion
+                                  const handleInputComplete = () => {
+                                    const newValue = input.value;
+                                    const updatedHeaders = [...tableElement.headers];
+                                    updatedHeaders[index] = newValue;
+                                    
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { 
+                                      headers: updatedHeaders 
+                                    } as Partial<TableElement>);
+                                    
+                                    // Restore header display
+                                    headerElement.innerHTML = newValue || `Column ${index + 1}`;
+                                  };
+                                  
+                                  input.addEventListener('blur', handleInputComplete);
+                                  input.addEventListener('keydown', (keyEvent) => {
+                                    if (keyEvent.key === 'Enter') {
+                                      keyEvent.preventDefault();
+                                      input.blur();
+                                    } else if (keyEvent.key === 'Escape') {
+                                      keyEvent.preventDefault();
+                                      headerElement.innerHTML = newHeaders[index] || `Column ${index + 1}`;
+                                      input.blur();
+                                    }
+                                  });
+                                }}
+                              >
+                                {header || `Column ${index + 1}`}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {tableElement.data?.map((row: string[], rowIndex: number) => (
+                            <tr key={rowIndex}>
+                              {row.map((cell: string, colIndex: number) => (
+                                <td 
+                                  key={colIndex}
+                                  className="border border-gray-300 px-3 py-2 text-xs text-gray-600 text-center min-w-[60px] min-h-[30px] cursor-text hover:bg-gray-50 transition-colors"
+                                  title="Click to edit cell content"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Start editing this cell
+                                    const newData = [...tableElement.data];
+                                    newData[rowIndex][colIndex] = newData[rowIndex][colIndex] || '';
+                                    
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { 
+                                      data: newData 
+                                    } as Partial<TableElement>);
+                                    
+                                    // Create editable input
+                                    const input = document.createElement('input');
+                                    input.type = 'text';
+                                    input.value = newData[rowIndex][colIndex];
+                                    input.className = 'w-full h-full border-none outline-none text-left text-xs bg-transparent border-2 border-blue-400 rounded px-1';
+                                    input.style.width = '100%';
+                                    input.style.height = '100%';
+                                    
+                                    // Replace cell content with input
+                                    const cellElement = e.currentTarget;
+                                    cellElement.innerHTML = '';
+                                    cellElement.appendChild(input);
+                                    input.focus();
+                                    input.select();
+                                    
+                                    // Handle input completion
+                                    const handleInputComplete = () => {
+                                      const newValue = input.value;
+                                      const updatedData = [...tableElement.data];
+                                      updatedData[rowIndex][colIndex] = newValue;
+                                      
+                                      const { updateElement } = useEditorStore.getState();
+                                      updateElement(currentSlide.id, element.id, { 
+                                        data: updatedData 
+                                      } as Partial<TableElement>);
+                                      
+                                      // Restore cell display
+                                      cellElement.innerHTML = newValue || '';
+                                    };
+                                    
+                                    input.addEventListener('blur', handleInputComplete);
+                                    input.addEventListener('keydown', (keyEvent) => {
+                                      if (keyEvent.key === 'Enter') {
+                                        keyEvent.preventDefault();
+                                        input.blur();
+                                      } else if (keyEvent.key === 'Escape') {
+                                        keyEvent.preventDefault();
+                                        cellElement.innerHTML = newData[rowIndex][colIndex] || '';
+                                        input.blur();
+                                      }
+                                    });
+                                  }}
+                                >
+                                  {cell || ''}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    
+                    {/* Resize handles for selected tables */}
+                    {selectedElementIds.includes(element.id) && (
+                      <>
+                        <ResizeHandles
+                          element={element}
+                          onResize={(newWidth, newHeight) => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              width: newWidth, 
+                              height: newHeight 
+                            });
+                          }}
+                        />
+                        
+                        {/* Rotation handle */}
+                        <div
+                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startRotation = element.rotation;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaY = moveEvent.clientY - startY;
+                              const newRotation = startRotation + (deltaY * 0.5);
+                              
+                              const { updateElement } = useEditorStore.getState();
+                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                           </svg>
                         </div>
                       </>

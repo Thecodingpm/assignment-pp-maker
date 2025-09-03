@@ -24,7 +24,7 @@ import MediaPopup from '../Editor/MediaPopup';
 import ShapePopup from '../Editor/ShapePopup';
 import ToolbarTextPopup from '../Editor/ToolbarTextPopup';
 import PresentationMenuDropdown from '../Editor/PresentationMenuDropdown';
-import ChartPopup from '../Editor/ChartPopup';
+import ChartPopup, { getChartOption } from '../Editor/ChartPopup';
 import TablePopup from '../Editor/TablePopup';
 import { useEditorStore } from '../../stores/useEditorStore';
 
@@ -95,9 +95,9 @@ const MainToolbar: React.FC = () => {
     console.log('✅ showChartPopup set to true');
   };
 
-  const handleChartInsert = (chartType: string, chartOption: any) => {
+  const handleChartInsert = (chartType: string) => {
     setShowChartPopup(false);
-    console.log('Chart selected:', chartType, chartOption);
+    console.log('Chart selected:', chartType);
     
     // Add the chart to the canvas
     const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
@@ -117,7 +117,7 @@ const MainToolbar: React.FC = () => {
         rotation: 0,
         zIndex: 1,
         chartType: chartType,
-        chartOption: chartOption
+        chartOption: getChartOption(chartType)
       };
       
       addElement(currentSlide.id, newChartElement);
