@@ -366,33 +366,33 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
 
   const chartTypes = {
     "Column & Bar Charts": {
-      column: { icon: TestIcon, color: '#3b82f6' },
-      bar: { icon: TestIcon, color: '#10b981' },
+      column: { icon: BarChart3, color: '#3b82f6' },
+      bar: { icon: BarChart3, color: '#10b981' },
       '100-stacked': { icon: TestIcon, color: '#8b5cf6' },
       'range-column': { icon: TestIcon, color: '#f59e0b' },
       waterfall: { icon: TestIcon, color: '#ef4444' }
     },
     "Line & Area Charts": {
-      line: { icon: TestIcon, color: '#06b6d4' },
+      line: { icon: LineChart, color: '#06b6d4' },
       area: { icon: TestIcon, color: '#84cc16' },
       '100-area': { icon: TestIcon, color: '#ec4899' },
       'scatter-line': { icon: TestIcon, color: '#f97316' }
     },
     "Pie & Doughnut Charts": {
-      pie: { icon: TestIcon, color: '#8b5cf6' },
+      pie: { icon: PieChart, color: '#8b5cf6' },
       doughnut: { icon: TestIcon, color: '#06b6d4' },
       'exploded-pie': { icon: TestIcon, color: '#f59e0b' },
       'pie-labels': { icon: TestIcon, color: '#10b981' }
     },
     "Scatter & Bubble Charts": {
-      scatter: { icon: TestIcon, color: '#ef4444' },
+      scatter: { icon: Scatter, color: '#ef4444' },
       bubble: { icon: TestIcon, color: '#8b5cf6' }
     },
     "Specialized Charts": {
       radar: { icon: TestIcon, color: '#06b6d4' },
       funnel: { icon: TestIcon, color: '#f59e0b' },
       gauge: { icon: TestIcon, color: '#10b981' },
-      candlestick: { icon: TestIcon, color: '#ef4444' },
+      candlestick: { icon: BarChart3, color: '#ef4444' },
       heatmap: { icon: TestIcon, color: '#8b5cf6' },
       treemap: { icon: TestIcon, color: '#06b6d4' },
       sankey: { icon: TestIcon, color: '#f59e0b' }
