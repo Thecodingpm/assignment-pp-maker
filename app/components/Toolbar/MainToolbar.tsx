@@ -95,6 +95,36 @@ const MainToolbar: React.FC = () => {
     console.log('✅ showChartPopup set to true');
   };
 
+  const handleChartInsert = (chartType: string, chartOption: any) => {
+    setShowChartPopup(false);
+    console.log('Chart selected:', chartType, chartOption);
+    
+    // Add the chart to the canvas
+    const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+    const currentSlide = slides[currentSlideIndex];
+    
+    if (currentSlide) {
+      // Calculate center position for new chart element
+      const centerX = (canvasSize.width / 2) - 200;
+      const centerY = (canvasSize.height / 2) - 150;
+      
+      const newChartElement = {
+        type: 'chart' as const,
+        x: centerX,
+        y: centerY,
+        width: 400,
+        height: 300,
+        rotation: 0,
+        zIndex: 1,
+        chartType: chartType,
+        chartOption: chartOption
+      };
+      
+      addElement(currentSlide.id, newChartElement);
+      console.log('Added chart to canvas:', newChartElement);
+    }
+  };
+
   const handleTableClick = (e: React.MouseEvent) => {
     console.log('📋 Table button clicked!');
     const rect = e.currentTarget.getBoundingClientRect();
@@ -560,7 +590,7 @@ const MainToolbar: React.FC = () => {
       <ChartPopup
         isVisible={showChartPopup}
         onClose={() => setShowChartPopup(false)}
-        position={chartPopupPosition}
+        onInsertChart={handleChartInsert}
       />
 
       {/* Table Popup */}
