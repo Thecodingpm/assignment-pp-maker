@@ -2,11 +2,20 @@
 
 import React, { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
-import { 
-  BarChart3, LineChart, PieChart, Scatter, TrendingUp, 
-  Activity, Target, Zap, Layers, Hexagon, Circle, 
-  Square, Triangle, Sparkles 
-} from 'lucide-react';
+import { BarChart3 } from 'lucide-react';
+import { LineChart } from 'lucide-react';
+import { PieChart } from 'lucide-react';
+import { Scatter } from 'lucide-react';
+import { TrendingUp } from 'lucide-react';
+import { Activity } from 'lucide-react';
+import { Target } from 'lucide-react';
+import { Zap } from 'lucide-react';
+import { Layers } from 'lucide-react';
+import { Hexagon } from 'lucide-react';
+import { Circle } from 'lucide-react';
+import { Square } from 'lucide-react';
+import { Triangle } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 // Temporary simplified icons to test
 const TestIcon = () => <div className="w-4 h-4 bg-gray-400 rounded" />;
