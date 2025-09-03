@@ -396,6 +396,24 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
     }
   };
 
+  // Debug: Check if any icons are undefined
+  console.log('Debug - Icons check:', {
+    BarChart3: typeof BarChart3,
+    LineChart: typeof LineChart,
+    PieChart: typeof PieChart,
+    Scatter: typeof Scatter,
+    TrendingUp: typeof TrendingUp,
+    Activity: typeof Activity,
+    Target: typeof Target,
+    Zap: typeof Zap,
+    Layers: typeof Layers,
+    Hexagon: typeof Hexagon,
+    Circle: typeof Circle,
+    Square: typeof Square,
+    Triangle: typeof Triangle,
+    Sparkles: typeof Sparkles
+  });
+
   return (
     <>
       {/* Backdrop */}
@@ -435,6 +453,13 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                   <div className="space-y-2">
                     {Object.entries(charts).map(([chartType, config]) => {
                       const IconComponent = config.icon;
+                      
+                      // Safety check: if icon is undefined, use a fallback
+                      if (!IconComponent) {
+                        console.error(`Icon is undefined for chart type: ${chartType}`);
+                        return null;
+                      }
+                      
                       return (
                         <button
                           key={chartType}
