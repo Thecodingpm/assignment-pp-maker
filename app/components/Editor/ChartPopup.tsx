@@ -2,23 +2,94 @@
 
 import React, { useState } from 'react';
 import ReactECharts from 'echarts-for-react';
-import { BarChart3 } from 'lucide-react';
-import { LineChart } from 'lucide-react';
-import { PieChart } from 'lucide-react';
-import { Scatter } from 'lucide-react';
-import { TrendingUp } from 'lucide-react';
-import { Activity } from 'lucide-react';
-import { Target } from 'lucide-react';
-import { Zap } from 'lucide-react';
-import { Layers } from 'lucide-react';
-import { Hexagon } from 'lucide-react';
-import { Circle } from 'lucide-react';
-import { Square } from 'lucide-react';
-import { Triangle } from 'lucide-react';
-import { Sparkles } from 'lucide-react';
 
-// Temporary simplified icons to test
-const TestIcon = () => <div className="w-4 h-4 bg-gray-400 rounded" />;
+// Simple SVG icon components to avoid lucide-react import issues
+const BarChartIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+const LineChartIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+  </svg>
+);
+
+const PieChartIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+  </svg>
+);
+
+const ScatterIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <circle cx="6" cy="6" r="2" stroke="currentColor" strokeWidth={2} fill="none" />
+    <circle cx="12" cy="12" r="2" stroke="currentColor" strokeWidth={2} fill="none" />
+    <circle cx="18" cy="18" r="2" stroke="currentColor" strokeWidth={2} fill="none" />
+  </svg>
+);
+
+const TrendingUpIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+  </svg>
+);
+
+const ActivityIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+);
+
+const TargetIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+);
+
+const ZapIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+  </svg>
+);
+
+const LayersIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v2" />
+  </svg>
+);
+
+const HexagonIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V6a1 1 0 01-1 1H8a1 1 0 01-1-1V4m0 0v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4m0 0v2a1 1 0 01-1 1H2a1 1 0 01-1-1V4m0 0v2a1 1 0 01-1 1H1a1 1 0 01-1-1V4" />
+  </svg>
+);
+
+const CircleIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth={2} fill="none" />
+  </svg>
+);
+
+const SquareIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" strokeWidth={2} fill="none" />
+  </svg>
+);
+
+const TriangleIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7l8-4 8 4M3 7v10l8 4 8-4V7M3 7l8 4 8-4" />
+  </svg>
+);
+
+const SparklesIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+);
 
 interface ChartPopupProps {
   isVisible: boolean;
@@ -375,56 +446,38 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
 
   const chartTypes = {
     "Column & Bar Charts": {
-      column: { icon: BarChart3, color: '#3b82f6' },
-      bar: { icon: BarChart3, color: '#10b981' },
-      '100-stacked': { icon: TestIcon, color: '#8b5cf6' },
-      'range-column': { icon: TestIcon, color: '#f59e0b' },
-      waterfall: { icon: TestIcon, color: '#ef4444' }
+      column: { icon: BarChartIcon, color: '#3b82f6' },
+      bar: { icon: BarChartIcon, color: '#10b981' },
+      '100-stacked': { icon: SquareIcon, color: '#8b5cf6' },
+      'range-column': { icon: SquareIcon, color: '#f59e0b' },
+      waterfall: { icon: SquareIcon, color: '#ef4444' }
     },
     "Line & Area Charts": {
-      line: { icon: LineChart, color: '#06b6d4' },
-      area: { icon: TestIcon, color: '#84cc16' },
-      '100-area': { icon: TestIcon, color: '#ec4899' },
-      'scatter-line': { icon: TestIcon, color: '#f97316' }
+      line: { icon: LineChartIcon, color: '#06b6d4' },
+      area: { icon: SquareIcon, color: '#84cc16' },
+      '100-area': { icon: SquareIcon, color: '#ec4899' },
+      'scatter-line': { icon: SquareIcon, color: '#f97316' }
     },
     "Pie & Doughnut Charts": {
-      pie: { icon: PieChart, color: '#8b5cf6' },
-      doughnut: { icon: TestIcon, color: '#06b6d4' },
-      'exploded-pie': { icon: TestIcon, color: '#f59e0b' },
-      'pie-labels': { icon: TestIcon, color: '#10b981' }
+      pie: { icon: PieChartIcon, color: '#8b5cf6' },
+      doughnut: { icon: SquareIcon, color: '#06b6d4' },
+      'exploded-pie': { icon: SquareIcon, color: '#f59e0b' },
+      'pie-labels': { icon: SquareIcon, color: '#10b981' }
     },
     "Scatter & Bubble Charts": {
-      scatter: { icon: Scatter, color: '#ef4444' },
-      bubble: { icon: TestIcon, color: '#8b5cf6' }
+      scatter: { icon: ScatterIcon, color: '#ef4444' },
+      bubble: { icon: SquareIcon, color: '#8b5cf6' }
     },
     "Specialized Charts": {
-      radar: { icon: TestIcon, color: '#06b6d4' },
-      funnel: { icon: TestIcon, color: '#f59e0b' },
-      gauge: { icon: TestIcon, color: '#10b981' },
-      candlestick: { icon: BarChart3, color: '#ef4444' },
-      heatmap: { icon: TestIcon, color: '#8b5cf6' },
-      treemap: { icon: TestIcon, color: '#06b6d4' },
-      sankey: { icon: TestIcon, color: '#f59e0b' }
+      radar: { icon: SquareIcon, color: '#06b6d4' },
+      funnel: { icon: SquareIcon, color: '#f59e0b' },
+      gauge: { icon: SquareIcon, color: '#10b981' },
+      candlestick: { icon: BarChartIcon, color: '#ef4444' },
+      heatmap: { icon: SquareIcon, color: '#8b5cf6' },
+      treemap: { icon: SquareIcon, color: '#06b6d4' },
+      sankey: { icon: SquareIcon, color: '#f59e0b' }
     }
   };
-
-  // Debug: Check if any icons are undefined
-  console.log('Debug - Icons check:', {
-    BarChart3: typeof BarChart3,
-    LineChart: typeof LineChart,
-    PieChart: typeof PieChart,
-    Scatter: typeof Scatter,
-    TrendingUp: typeof TrendingUp,
-    Activity: typeof Activity,
-    Target: typeof Target,
-    Zap: typeof Zap,
-    Layers: typeof Layers,
-    Hexagon: typeof Hexagon,
-    Circle: typeof Circle,
-    Square: typeof Square,
-    Triangle: typeof Triangle,
-    Sparkles: typeof Sparkles
-  });
 
   return (
     <>
@@ -465,12 +518,6 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                   <div className="space-y-2">
                     {Object.entries(charts).map(([chartType, config]) => {
                       const IconComponent = config.icon;
-                      
-                      // Safety check: if icon is undefined, use a fallback
-                      if (!IconComponent) {
-                        console.error(`Icon is undefined for chart type: ${chartType}`);
-                        return null;
-                      }
                       
                       return (
                         <button
@@ -529,7 +576,7 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
             ) : (
               <div className="flex items-center justify-center h-96 text-gray-500">
                 <div className="text-center">
-                  <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <BarChartIcon className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                   <p className="text-lg font-medium">Select a chart type to preview</p>
                   <p className="text-sm">Choose from the sidebar to see how your chart will look</p>
                 </div>
