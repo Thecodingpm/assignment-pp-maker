@@ -79,13 +79,43 @@ const TablePopup: React.FC<TablePopupProps> = ({
     const selectedRows = row + 1;
     const selectedCols = col + 1;
     
-    // If clicking on already selected area, clear selection
+    // If clicking on already selected area, create and insert the table
     if (selectedCells.rows === selectedRows && selectedCells.cols === selectedCols) {
-      setSelectedCells({ rows: 0, cols: 0 });
-      setHoveredCells({ rows: 0, cols: 0 });
+      // Create table element and add it to the canvas
+      const { slides, currentSlideIndex } = useEditorStore.getState();
+      const currentSlide = slides[currentSlideIndex];
+      
+      if (currentSlide) {
+        // Calculate center position for new table element
+        const centerX = (canvasSize.width / 2) - 200;
+        const centerY = (canvasSize.height / 2) - 150;
+        
+        const newTableElement = {
+          type: 'table' as const,
+          x: centerX,
+          y: centerY,
+          width: Math.max(300, selectedCols * 80),
+          height: Math.max(200, selectedRows * 40),
+          rotation: 0,
+          zIndex: 1,
+          rows: selectedRows,
+          cols: selectedCols,
+          data: Array(selectedRows).fill(null).map(() => 
+            Array(selectedCols).fill('')
+          ),
+          headers: Array(selectedCols).fill('').map((_, i) => `Column ${i + 1}`),
+          rowHeaders: Array(selectedRows).fill('').map((_, i) => `Row ${i + 1}`)
+        };
+        
+        addElement(currentSlide.id, newTableElement);
+        console.log('Added table to canvas:', newTableElement);
+      }
+      
+      onClose();
       return;
     }
     
+    // Otherwise, select the new area
     setSelectedCells({ rows: selectedRows, cols: selectedCols });
     setHoveredCells({ rows: selectedRows, cols: selectedCols });
   };
@@ -182,44 +212,9 @@ const TablePopup: React.FC<TablePopupProps> = ({
                 <div className="text-sm font-medium text-blue-600">
                   Selected: {selectedCells.rows} × {selectedCells.cols} table
                 </div>
-                <button
-                  onClick={() => {
-                    // Create table element and add it to the canvas
-                    const { slides, currentSlideIndex } = useEditorStore.getState();
-                    const currentSlide = slides[currentSlideIndex];
-                    
-                    if (currentSlide) {
-                      // Calculate center position for new table element
-                      const centerX = (canvasSize.width / 2) - 200;
-                      const centerY = (canvasSize.height / 2) - 150;
-                      
-                      const newTableElement = {
-                        type: 'table' as const,
-                        x: centerX,
-                        y: centerY,
-                        width: Math.max(300, selectedCells.cols * 80),
-                        height: Math.max(200, selectedCells.rows * 40),
-                        rotation: 0,
-                        zIndex: 1,
-                        rows: selectedCells.rows,
-                        cols: selectedCells.cols,
-                        data: Array(selectedCells.rows).fill(null).map(() => 
-                          Array(selectedCells.cols).fill('')
-                        ),
-                        headers: Array(selectedCells.cols).fill('').map((_, i) => `Column ${i + 1}`),
-                        rowHeaders: Array(selectedCells.rows).fill('').map((_, i) => `Row ${i + 1}`)
-                      };
-                      
-                      addElement(currentSlide.id, newTableElement);
-                      console.log('Added table to canvas:', newTableElement);
-                    }
-                    
-                    onClose();
-                  }}
-                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium text-sm transition-colors"
-                >
-                  Insert Table
-                </button>
+                <div className="text-xs text-gray-600">
+                  Click the selected area again to insert the table
+                </div>
               </div>
             ) : (
               <div className="text-sm text-gray-500">
