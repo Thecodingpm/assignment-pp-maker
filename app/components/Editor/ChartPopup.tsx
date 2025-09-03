@@ -798,6 +798,240 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
           animation: false
         };
       
+      case '3d-simple-column':
+        return {
+          grid3D: {
+            viewControl: {
+              projection: 'orthographic',
+              autoRotate: false,
+              distance: 150,
+              alpha: 15,
+              beta: 15
+            },
+            light: {
+              main: {
+                intensity: 0.8,
+                shadow: false
+              },
+              ambient: {
+                intensity: 0.4
+              }
+            },
+            environment: '#ffffff',
+            shading: 'color'
+          },
+          xAxis3D: { type: 'category', data: ['Q1', 'Q2', 'Q3', 'Q4'] },
+          yAxis3D: { type: 'category', data: ['2023', '2024'] },
+          zAxis3D: { type: 'value' },
+          series: [{
+            type: 'bar3D',
+            data: [
+              [0, 0, 120], [1, 0, 180], [2, 0, 150], [3, 0, 200],
+              [0, 1, 140], [1, 1, 220], [2, 1, 180], [3, 1, 240]
+            ],
+            itemStyle: { 
+              color: '#6366f1',
+              opacity: 0.9
+            },
+            shading: 'color',
+            bevelSize: 0.1,
+            bevelSmoothness: 0.1
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
+      case '3d-simple-pie':
+        return {
+          series: [{
+            type: 'pie3D',
+            radius: '60%',
+            data: [
+              { value: 40, name: 'Sales', itemStyle: { color: '#6366f1' } },
+              { value: 30, name: 'Marketing', itemStyle: { color: '#8b5cf6' } },
+              { value: 20, name: 'Development', itemStyle: { color: '#f59e0b' } },
+              { value: 10, name: 'Support', itemStyle: { color: '#10b981' } }
+            ],
+            emphasis: { 
+              itemStyle: { 
+                shadowBlur: 5, 
+                shadowOffsetX: 2, 
+                shadowColor: 'rgba(0, 0, 0, 0.2)' 
+              } 
+            },
+            itemStyle: {
+              borderWidth: 1,
+              borderColor: '#ffffff',
+              opacity: 0.9
+            }
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
+      case '3d-simple-line':
+        return {
+          grid3D: {
+            viewControl: {
+              projection: 'orthographic',
+              autoRotate: false,
+              distance: 120,
+              alpha: 20,
+              beta: 20
+            },
+            light: {
+              main: {
+                intensity: 0.6,
+                shadow: false
+              },
+              ambient: {
+                intensity: 0.5
+              }
+            },
+            environment: '#ffffff',
+            shading: 'color'
+          },
+          xAxis3D: { type: 'value' },
+          yAxis3D: { type: 'value' },
+          zAxis3D: { type: 'value' },
+          series: [{
+            type: 'line3D',
+            data: [
+              [0, 0, 0], [1, 1, 2], [2, 4, 4], [3, 9, 6], [4, 16, 8],
+              [5, 25, 10], [6, 36, 12], [7, 49, 14], [8, 64, 16]
+            ],
+            itemStyle: { 
+              color: '#10b981',
+              opacity: 0.8
+            },
+            lineStyle: { 
+              width: 4,
+              color: '#10b981'
+            }
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
+      case '3d-simple-area':
+        return {
+          grid3D: {
+            viewControl: {
+              projection: 'orthographic',
+              autoRotate: false,
+              distance: 130,
+              alpha: 25,
+              beta: 25
+            },
+            light: {
+              main: {
+                intensity: 0.7,
+                shadow: false
+              },
+              ambient: {
+                intensity: 0.4
+              }
+            },
+            environment: '#ffffff',
+            shading: 'color'
+          },
+          xAxis3D: { type: 'value' },
+          yAxis3D: { type: 'value' },
+          zAxis3D: { type: 'value' },
+          series: [{
+            type: 'surface',
+            data: (() => {
+              const data = [];
+              for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                  const x = i - 2.5;
+                  const y = j - 2.5;
+                  const z = Math.max(0, 4 - (x * x + y * y) * 0.5);
+                  data.push([x, y, z]);
+                }
+              }
+              return data;
+            })(),
+            itemStyle: { 
+              color: '#f59e0b',
+              opacity: 0.8
+            },
+            shading: 'color',
+            wireframe: {
+              show: false
+            }
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
+      case '3d-simple-scatter':
+        return {
+          grid3D: {
+            viewControl: {
+              projection: 'orthographic',
+              autoRotate: false,
+              distance: 140,
+              alpha: 30,
+              beta: 30
+            },
+            light: {
+              main: {
+                intensity: 0.6,
+                shadow: false
+              },
+              ambient: {
+                intensity: 0.5
+              }
+            },
+            environment: '#ffffff',
+            shading: 'color'
+          },
+          xAxis3D: { type: 'value' },
+          yAxis3D: { type: 'value' },
+          zAxis3D: { type: 'value' },
+          series: [{
+            type: 'scatter3D',
+            data: [
+              [2, 2, 2], [3, 3, 3], [4, 4, 4], [5, 5, 5], [6, 6, 6],
+              [2, 4, 3], [3, 5, 4], [4, 6, 5], [5, 7, 6], [6, 8, 7]
+            ],
+            itemStyle: { 
+              color: '#8b5cf6',
+              opacity: 0.8
+            },
+            symbol: 'sphere',
+            symbolSize: 6
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
+      case '3d-simple-funnel':
+        return {
+          series: [{
+            type: 'funnel3D',
+            data: [
+              { value: 100, name: 'Leads' },
+              { value: 80, name: 'Qualified' },
+              { value: 60, name: 'Proposals' },
+              { value: 40, name: 'Negotiation' },
+              { value: 20, name: 'Closed' }
+            ],
+            itemStyle: { 
+              color: '#06b6d4',
+              opacity: 0.9
+            },
+            emphasis: {
+              itemStyle: {
+                color: '#0891b2'
+              }
+            }
+          }],
+          tooltip: { trigger: 'item' },
+          animation: false
+        };
+      
       default:
         return baseOption;
     }
@@ -855,6 +1089,14 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
       { name: '3D Horizontal Bar', type: '3d-bar-horizontal', icon: BarChart, color: '#f59e0b' },
       { name: '3D Area Chart', type: '3d-area', icon: AreaChart, color: '#10b981' },
       { name: '3D Mathematical', type: '3d-mathematical', icon: Box, color: '#8b5cf6' }
+    ],
+    'Simple 3D Charts': [
+      { name: 'Simple 3D Column', type: '3d-simple-column', icon: Cube, color: '#6366f1' },
+      { name: 'Simple 3D Pie', type: '3d-simple-pie', icon: Globe, color: '#8b5cf6' },
+      { name: 'Simple 3D Line', type: '3d-simple-line', icon: TrendingUp, color: '#10b981' },
+      { name: 'Simple 3D Area', type: '3d-simple-area', icon: AreaChart, color: '#f59e0b' },
+      { name: 'Simple 3D Scatter', type: '3d-simple-scatter', icon: Target, color: '#8b5cf6' },
+      { name: 'Simple 3D Funnel', type: '3d-simple-funnel', icon: Triangle, color: '#06b6d4' }
     ]
   };
 
@@ -946,7 +1188,7 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
             Add beautiful charts to your presentation • Now with 3D charts powered by echarts-gl
           </p>
           <div className="mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
-            💡 3D charts feature auto-rotation, realistic lighting, and interactive camera controls
+            💡 3D charts feature auto-rotation, realistic lighting, and interactive camera controls • Simple 3D charts for Keynote-style presentations
           </div>
         </div>
 
@@ -1378,6 +1620,54 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                                     <circle cx="18" cy="10" r="2" fill={chart.color}/>
                                     <circle cx="10" cy="16" r="2" fill={chart.color}/>
                                     <circle cx="16" cy="12" r="2" fill={chart.color}/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-column' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <rect x="4" y="8" width="3" height="12" fill={chart.color} rx="1"/>
+                                    <rect x="9" y="12" width="3" height="8" fill={chart.color} rx="1"/>
+                                    <rect x="14" y="6" width="3" height="14" fill={chart.color} rx="1"/>
+                                    <rect x="19" y="10" width="3" height="10" fill={chart.color} rx="1"/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-pie' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" fill="none" stroke={chart.color} strokeWidth="2"/>
+                                    <path d="M12 2A10 10 0 0 1 22 12L12 12Z" fill={chart.color}/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-line' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <path d="M4 18L8 14L12 16L16 10L20 12" stroke={chart.color} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+                                    <circle cx="8" cy="14" r="2" fill={chart.color}/>
+                                    <circle cx="12" cy="16" r="2" fill={chart.color}/>
+                                    <circle cx="16" cy="10" r="2" fill={chart.color}/>
+                                    <circle cx="20" cy="12" r="2" fill={chart.color}/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-area' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <rect x="4" y="8" width="3" height="12" fill={chart.color} rx="1"/>
+                                    <rect x="9" y="12" width="3" height="8" fill={chart.color} rx="1"/>
+                                    <rect x="14" y="6" width="3" height="14" fill={chart.color} rx="1"/>
+                                    <rect x="19" y="10" width="3" height="10" fill={chart.color} rx="1"/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-scatter' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="6" cy="18" r="2" fill={chart.color}/>
+                                    <circle cx="12" cy="14" r="2" fill={chart.color}/>
+                                    <circle cx="18" cy="10" r="2" fill={chart.color}/>
+                                    <circle cx="10" cy="16" r="2" fill={chart.color}/>
+                                    <circle cx="16" cy="12" r="2" fill={chart.color}/>
+                                  </svg>
+                                )}
+                                {chart.type === '3d-simple-funnel' && (
+                                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
+                                    <rect x="4" y="12" width="3" height="8" fill="#10b981" rx="1"/>
+                                    <rect x="9" y="14" width="3" height="6" fill="#ef4444" rx="1"/>
+                                    <rect x="14" y="16" width="3" height="4" fill="#10b981" rx="1"/>
+                                    <rect x="19" y="18" width="3" height="2" fill="#10b981" rx="1"/>
                                   </svg>
                                 )}
                               </div>
