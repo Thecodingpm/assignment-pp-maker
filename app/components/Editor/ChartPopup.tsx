@@ -56,6 +56,7 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
 }) => {
   const popupRef = useRef<HTMLDivElement>(null);
   const [activeSection, setActiveSection] = useState<'charts' | 'integrations'>('charts');
+  const [performanceMode, setPerformanceMode] = useState<'quality' | 'performance'>('performance');
   const { addElement, canvasSize } = useEditorStore();
 
   // Close popup when clicking outside
@@ -104,23 +105,29 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
       grid3D: {
         viewControl: {
           projection: 'orthographic',
-          autoRotate: true,
-          autoRotateSpeed: 10,
+          autoRotate: performanceMode === 'quality', // Only auto-rotate in quality mode
+          autoRotateSpeed: performanceMode === 'quality' ? 10 : 5,
           distance: 200,
           alpha: 20,
           beta: 40
         },
         light: {
           main: {
-            intensity: 1.2,
-            shadow: true
+            intensity: performanceMode === 'quality' ? 1.2 : 0.8,
+            shadow: performanceMode === 'quality' // Only shadows in quality mode
           },
           ambient: {
-            intensity: 0.3
+            intensity: performanceMode === 'quality' ? 0.3 : 0.4
           }
         },
-        environment: '#000',
-        shading: 'realistic'
+        environment: performanceMode === 'quality' ? '#000' : '#ffffff',
+        shading: performanceMode === 'quality' ? 'realistic' : 'color',
+        postEffect: {
+          enable: performanceMode === 'quality' // Only post effects in quality mode
+        },
+        temporalSuperSampling: {
+          enable: performanceMode === 'quality' // Only super sampling in quality mode
+        }
       }
     };
 
@@ -603,10 +610,11 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
             type: 'surface',
             data: (() => {
               const data = [];
-              for (let i = 0; i < 10; i++) {
-                for (let j = 0; j < 10; j++) {
-                  const x = i - 5;
-                  const y = j - 5;
+              // Reduced from 10x10 to 6x6 for better performance
+              for (let i = 0; i < 6; i++) {
+                for (let j = 0; j < 6; j++) {
+                  const x = i - 2.5;
+                  const y = j - 2.5;
                   const z = Math.sin(Math.sqrt(x * x + y * y)) / Math.sqrt(x * x + y * y + 0.1);
                   data.push([x, y, z]);
                 }
@@ -614,13 +622,9 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
               return data;
             })(),
             itemStyle: { color: '#6366f1' },
-            shading: 'realistic',
+            shading: 'color', // Changed to color for better performance
             wireframe: {
-              show: true,
-              lineStyle: {
-                color: '#6366f1',
-                opacity: 0.3
-              }
+              show: false // Disabled wireframe for better performance
             }
           }],
           tooltip: { trigger: 'item' },
@@ -773,10 +777,11 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
             type: 'surface',
             data: (() => {
               const data = [];
-              for (let i = 0; i < 12; i++) {
-                for (let j = 0; j < 12; j++) {
-                  const x = (i - 6) * 0.5;
-                  const y = (j - 6) * 0.5;
+              // Reduced from 12x12 to 8x8 for better performance
+              for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                  const x = (i - 4) * 0.5;
+                  const y = (j - 4) * 0.5;
                   const z = Math.sin(Math.sqrt(x * x + y * y)) / (Math.sqrt(x * x + y * y + 0.1)) + 
                            Math.cos(x) * Math.sin(y) * 0.5;
                   data.push([x, y, z]);
@@ -785,13 +790,9 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
               return data;
             })(),
             itemStyle: { color: '#8b5cf6' },
-            shading: 'realistic',
+            shading: 'color', // Changed to color for better performance
             wireframe: {
-              show: true,
-              lineStyle: {
-                color: '#8b5cf6',
-                opacity: 0.3
-              }
+              show: false // Disabled wireframe for better performance
             }
           }],
           tooltip: { trigger: 'item' },
@@ -1190,6 +1191,36 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
           <div className="mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-lg">
             💡 3D charts feature auto-rotation, realistic lighting, and interactive camera controls • Simple 3D charts for Keynote-style presentations
           </div>
+          <div className="mt-3 flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <span className="text-xs text-gray-600">Performance Mode:</span>
+              <div className="flex bg-gray-200 rounded-lg p-1">
+                <button
+                  onClick={() => setPerformanceMode('performance')}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    performanceMode === 'performance'
+                      ? 'bg-white text-gray-800 shadow-sm'
+                      : 'text-gray-600 hover:text-gray-800'
+                  }`}
+                >
+                  Performance
+                </button>
+                <button
+                  onClick={() => setPerformanceMode('quality')}
+                  className={`px-3 py-1 text-xs rounded-md transition-colors ${
+                    performanceMode === 'quality'
+                      ? 'bg-white text-gray-800 shadow-sm'
+                      : 'text-gray-800 hover:text-gray-800'
+                  }`}
+                >
+                  Quality
+                </button>
+              </div>
+            </div>
+            <div className="text-xs text-gray-500">
+              {performanceMode === 'performance' ? '⚡ Fast rendering' : '🎨 High quality'}
+            </div>
+          </div>
         </div>
 
         <div className="flex">
@@ -1244,6 +1275,17 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                   </button>
                 </p>
               </div>
+              
+              {/* Performance Tips Section */}
+              <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                <h4 className="text-xs font-semibold text-blue-800 mb-2">🚀 Performance Tips</h4>
+                <div className="space-y-1 text-xs text-blue-700">
+                  <p>• Use Performance mode for smooth 3D charts</p>
+                  <p>• Quality mode may cause lag on slower devices</p>
+                  <p>• Simple 3D charts are faster than complex ones</p>
+                  <p>• Close other tabs for better performance</p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -1266,10 +1308,22 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                             className="p-4 border border-gray-200 rounded-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 text-center group hover:shadow-md"
                           >
                             <div className="w-28 h-24 mx-auto mb-3 bg-gray-50 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
+                              {chart.type.startsWith('3d') && performanceMode === 'quality' && (
+                                <div className="absolute top-1 right-1 bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-full">
+                                  ⚠️ Heavy
+                                </div>
+                              )}
                               <ReactECharts
                                 option={getChartOption(chart.type)}
                                 style={{ height: '100%', width: '100%' }}
-                                opts={{ renderer: 'canvas' }}
+                                opts={{ 
+                                  renderer: 'canvas',
+                                  useDirtyRect: false,
+                                  ...(chart.type.startsWith('3d') && {
+                                    useDirtyRect: false,
+                                    lazyUpdate: true
+                                  })
+                                }}
                                 onEvents={{
                                   error: (params: any) => {
                                     console.warn('Chart render error:', params);
@@ -1674,6 +1728,15 @@ const ChartPopup: React.FC<ChartPopupProps> = ({
                             </div>
                             <div className="text-xs font-medium text-gray-700 group-hover:text-blue-700">
                               {chart.name}
+                              {chart.type.startsWith('3d') && (
+                                <span className={`ml-1 px-1.5 py-0.5 rounded text-xs ${
+                                  chart.type.includes('simple') || chart.type.includes('pie') || chart.type.includes('funnel')
+                                    ? 'bg-green-100 text-green-700'
+                                    : 'bg-orange-100 text-orange-700'
+                                }`}>
+                                  {chart.type.includes('simple') || chart.type.includes('pie') || chart.type.includes('funnel') ? 'Fast' : 'Medium'}
+                                </span>
+                              )}
                             </div>
                           </button>
                         );
