@@ -1,6 +1,6 @@
 export interface EditorElement {
   id: string;
-  type: 'text' | 'shape' | 'image' | 'chart';
+  type: 'text' | 'shape' | 'image' | 'chart' | 'table';
   x: number;
   y: number;
   width: number;
@@ -46,9 +46,18 @@ export interface ChartElement extends EditorElement {
   data: any; // Chart data
 }
 
+export interface TableElement extends EditorElement {
+  type: 'table';
+  rows: number;
+  cols: number;
+  data: string[][]; // 2D array of cell content
+  headers: string[]; // Column headers
+  rowHeaders: string[]; // Row headers
+}
+
 export interface Slide {
   id: string;
-  elements: (TextElement | ShapeElement | ImageElement | ChartElement)[];
+  elements: (TextElement | ShapeElement | ImageElement | ChartElement | TableElement)[];
   backgroundColor: string;
   backgroundImage?: string;
 }

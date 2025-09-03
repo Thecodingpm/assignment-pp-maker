@@ -25,6 +25,7 @@ import ShapePopup from '../Editor/ShapePopup';
 import ToolbarTextPopup from '../Editor/ToolbarTextPopup';
 import PresentationMenuDropdown from '../Editor/PresentationMenuDropdown';
 import ChartPopup from '../Editor/ChartPopup';
+import TablePopup from '../Editor/TablePopup';
 import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
@@ -38,6 +39,8 @@ const MainToolbar: React.FC = () => {
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
   const [showChartPopup, setShowChartPopup] = useState(false);
   const [chartPopupPosition, setChartPopupPosition] = useState({ x: 0, y: 0 });
+  const [showTablePopup, setShowTablePopup] = useState(false);
+  const [tablePopupPosition, setTablePopupPosition] = useState({ x: 0, y: 0 });
 
   const handleMediaClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -90,6 +93,19 @@ const MainToolbar: React.FC = () => {
     setChartPopupPosition(position);
     setShowChartPopup(true);
     console.log('✅ showChartPopup set to true');
+  };
+
+  const handleTableClick = (e: React.MouseEvent) => {
+    console.log('📋 Table button clicked!');
+    const rect = e.currentTarget.getBoundingClientRect();
+    const position = {
+      x: Math.max(0, rect.left - 160), // Center the popup (table popup is 320px wide)
+      y: rect.bottom + 10
+    };
+    console.log('📍 Setting table popup position:', position);
+    setTablePopupPosition(position);
+    setShowTablePopup(true);
+    console.log('✅ showTablePopup set to true');
   };
 
   const handleMediaSelect = (type: string, mediaData?: any) => {
@@ -439,7 +455,10 @@ const MainToolbar: React.FC = () => {
           </div>
 
           {/* Table Tool */}
-          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleTableClick}
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               <Table className="w-4 h-4 text-gray-700" />
             </div>
@@ -542,6 +561,13 @@ const MainToolbar: React.FC = () => {
         isVisible={showChartPopup}
         onClose={() => setShowChartPopup(false)}
         position={chartPopupPosition}
+      />
+
+      {/* Table Popup */}
+      <TablePopup
+        isVisible={showTablePopup}
+        onClose={() => setShowTablePopup(false)}
+        position={tablePopupPosition}
       />
     </div>
   );
