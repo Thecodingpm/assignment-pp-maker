@@ -35,9 +35,10 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
 
   const categories = [
     { id: 'essential', label: 'Essential' },
-    { id: 'lines', label: 'Lines' },
-    { id: 'buttons', label: 'Buttons and labels' },
-    { id: 'process', label: 'Process' }
+    { id: 'geometric', label: 'Geometric' },
+    { id: 'lines', label: 'Lines & Arrows' },
+    { id: 'flowchart', label: 'Flowchart' },
+    { id: 'decorative', label: 'Decorative' }
   ];
 
   const essentialShapes = [
@@ -57,6 +58,23 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
     { id: 'star-outline', label: 'Star Outline', icon: '☆', type: 'outline' }
   ];
 
+  const geometricShapes = [
+    // First row - Filled geometric shapes
+    { id: 'hexagon-filled', label: 'Hexagon', icon: '⬡', type: 'filled' },
+    { id: 'octagon-filled', label: 'Octagon', icon: '⬢', type: 'filled' },
+    { id: 'pentagon-filled', label: 'Pentagon', icon: '⬟', type: 'filled' },
+    { id: 'ellipse-filled', label: 'Ellipse', icon: '⬭', type: 'filled' },
+    { id: 'cross-filled', label: 'Cross', icon: '✚', type: 'filled' },
+    { id: 'plus-filled', label: 'Plus', icon: '➕', type: 'filled' },
+    // Second row - Outlined geometric shapes
+    { id: 'hexagon-outline', label: 'Hexagon Outline', icon: '⬡', type: 'outline' },
+    { id: 'octagon-outline', label: 'Octagon Outline', icon: '⬢', type: 'outline' },
+    { id: 'pentagon-outline', label: 'Pentagon Outline', icon: '⬟', type: 'outline' },
+    { id: 'ellipse-outline', label: 'Ellipse Outline', icon: '⬭', type: 'outline' },
+    { id: 'cross-outline', label: 'Cross Outline', icon: '✚', type: 'outline' },
+    { id: 'plus-outline', label: 'Plus Outline', icon: '➕', type: 'outline' }
+  ];
+
   const lineStyles = [
     // First row - Solid lines
     { id: 'line-solid', label: 'Simple Line', icon: '━', type: 'solid' },
@@ -72,6 +90,40 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
     { id: 'line-dashed-arrow-left-dot', label: 'Dashed Arrow Left + Dot', icon: '◀┅┅●', type: 'dashed' },
     { id: 'line-dashed-dot-arrow-right', label: 'Dashed Dot + Arrow Right', icon: '●┅┅▶', type: 'dashed' },
     { id: 'line-dashed-bar-arrow-right', label: 'Dashed Bar + Arrow Right', icon: '┃┅┅▶', type: 'dashed' }
+  ];
+
+  const flowchartShapes = [
+    // First row - Filled flowchart shapes
+    { id: 'rectangle-flowchart', label: 'Rectangle', icon: '▭', type: 'filled' },
+    { id: 'diamond-flowchart', label: 'Diamond', icon: '⬥', type: 'filled' },
+    { id: 'oval-flowchart', label: 'Oval', icon: '⬭', type: 'filled' },
+    { id: 'parallelogram-flowchart', label: 'Parallelogram', icon: '▱', type: 'filled' },
+    { id: 'cylinder-flowchart', label: 'Cylinder', icon: '⬡', type: 'filled' },
+    { id: 'document-flowchart', label: 'Document', icon: '📄', type: 'filled' },
+    // Second row - Outlined flowchart shapes
+    { id: 'rectangle-flowchart-outline', label: 'Rectangle Outline', icon: '▭', type: 'outline' },
+    { id: 'diamond-flowchart-outline', label: 'Diamond Outline', icon: '⬥', type: 'outline' },
+    { id: 'oval-flowchart-outline', label: 'Oval Outline', icon: '⬭', type: 'outline' },
+    { id: 'parallelogram-flowchart-outline', label: 'Parallelogram Outline', icon: '▱', type: 'outline' },
+    { id: 'cylinder-flowchart-outline', label: 'Cylinder Outline', icon: '⬡', type: 'outline' },
+    { id: 'document-flowchart-outline', label: 'Document Outline', icon: '📄', type: 'outline' }
+  ];
+
+  const decorativeShapes = [
+    // First row - Filled decorative shapes
+    { id: 'heart-filled', label: 'Heart', icon: '❤️', type: 'filled' },
+    { id: 'cloud-filled', label: 'Cloud', icon: '☁️', type: 'filled' },
+    { id: 'sun-filled', label: 'Sun', icon: '☀️', type: 'filled' },
+    { id: 'moon-filled', label: 'Moon', icon: '🌙', type: 'filled' },
+    { id: 'flower-filled', label: 'Flower', icon: '🌸', type: 'filled' },
+    { id: 'leaf-filled', label: 'Leaf', icon: '🍃', type: 'filled' },
+    // Second row - Outlined decorative shapes
+    { id: 'heart-outline', label: 'Heart Outline', icon: '💙', type: 'outline' },
+    { id: 'cloud-outline', label: 'Cloud Outline', icon: '☁️', type: 'outline' },
+    { id: 'sun-outline', label: 'Sun Outline', icon: '☀️', type: 'outline' },
+    { id: 'moon-outline', label: 'Moon Outline', icon: '🌙', type: 'outline' },
+    { id: 'flower-outline', label: 'Flower Outline', icon: '🌸', type: 'outline' },
+    { id: 'leaf-outline', label: 'Leaf Outline', icon: '🍃', type: 'outline' }
   ];
 
   const renderShapes = () => {
@@ -97,6 +149,41 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
             <h4 className="text-sm font-medium text-gray-700 mb-3">Outlined Shapes</h4>
             <div className="grid grid-cols-6 gap-3">
               {essentialShapes.slice(6, 12).map((shape) => (
+                <button
+                  key={shape.id}
+                  onClick={() => onShapeSelect(shape.id)}
+                  className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-gray-300 hover:border-gray-400"
+                  title={shape.label}
+                >
+                  {shape.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    } else if (selectedCategory === 'geometric') {
+      return (
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Filled Geometric</h4>
+            <div className="grid grid-cols-6 gap-3">
+              {geometricShapes.slice(0, 6).map((shape) => (
+                <button
+                  key={shape.id}
+                  onClick={() => onShapeSelect(shape.id)}
+                  className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-200"
+                  title={shape.label}
+                >
+                  {shape.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Outlined Geometric</h4>
+            <div className="grid grid-cols-6 gap-3">
+              {geometricShapes.slice(6, 12).map((shape) => (
                 <button
                   key={shape.id}
                   onClick={() => onShapeSelect(shape.id)}
@@ -143,6 +230,76 @@ const ShapePopup: React.FC<ShapePopupProps> = ({
               ))}
             </div>
           </div>
+        </div>
+      );
+    } else if (selectedCategory === 'flowchart') {
+      return (
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Filled Flowchart</h4>
+            <div className="grid grid-cols-6 gap-3">
+              {flowchartShapes.slice(0, 6).map((shape) => (
+                <button
+                  key={shape.id}
+                  onClick={() => onShapeSelect(shape.id)}
+                  className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-200"
+                  title={shape.label}
+                >
+                  {shape.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Outlined Flowchart</h4>
+            <div className="grid grid-cols-6 gap-3">
+              {flowchartShapes.slice(6, 12).map((shape) => (
+                <button
+                  key={shape.id}
+                  onClick={() => onShapeSelect(shape.id)}
+                  className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-gray-300 hover:border-gray-400"
+                  title={shape.label}
+                >
+                  {shape.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    } else if (selectedCategory === 'decorative') {
+      return (
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-3">Filled Decorative</h4>
+            <div className="grid grid-cols-6 gap-3">
+              {decorativeShapes.slice(0, 6).map((shape) => (
+                <button
+                  key={shape.id}
+                  onClick={() => onShapeSelect(shape.id)}
+                  className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-transparent hover:border-gray-200"
+                  title={shape.label}
+                >
+                  {shape.icon}
+                </button>
+              ))}
+            </div>
+          </div>
+                      <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-3">Outlined Decorative</h4>
+              <div className="grid grid-cols-6 gap-3">
+                {decorativeShapes.slice(6, 12).map((shape) => (
+                  <button
+                    key={shape.id}
+                    onClick={() => onShapeSelect(shape.id)}
+                    className="w-12 h-12 flex items-center justify-center text-2xl text-gray-800 hover:bg-gray-100 hover:scale-105 rounded-lg transition-all duration-200 border border-gray-300 hover:border-gray-400"
+                    title={shape.label}
+                  >
+                    {shape.icon}
+                  </button>
+                ))}
+              </div>
+            </div>
         </div>
       );
     }

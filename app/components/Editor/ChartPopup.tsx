@@ -319,8 +319,8 @@ const SankeyIcon = () => (
 );
 
 // Chart configuration function
-const getChartOption = (chartType: string) => {
-  const baseOption = {
+  const getChartOption = (chartType: string) => {
+    const baseOption = {
     title: {
       text: chartType.charAt(0).toUpperCase() + chartType.slice(1),
       left: 'center',
@@ -338,61 +338,61 @@ const getChartOption = (chartType: string) => {
       top: '20%',
       bottom: '15%'
     }
-  };
+    };
 
-  switch (chartType) {
-    case 'column':
-      return {
-        ...baseOption,
+    switch (chartType) {
+      case 'column':
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [{
-          type: 'bar',
-          data: [120, 200, 150, 80, 70],
+          series: [{
+            type: 'bar',
+            data: [120, 200, 150, 80, 70],
           itemStyle: { color: '#3b82f6' }
         }]
       };
 
-    case 'bar':
-      return {
-        ...baseOption,
-        xAxis: { type: 'value' },
+      case 'bar':
+        return {
+          ...baseOption,
+          xAxis: { type: 'value' },
         yAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
-        series: [{
-          type: 'bar',
-          data: [120, 200, 150, 80, 70],
+          series: [{
+            type: 'bar',
+            data: [120, 200, 150, 80, 70],
           itemStyle: { color: '#10b981' }
         }]
       };
 
-    case 'line':
-      return {
-        ...baseOption,
+      case 'line':
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [{
-          type: 'line',
-          data: [120, 200, 150, 80, 70],
+          series: [{
+            type: 'line',
+            data: [120, 200, 150, 80, 70],
           itemStyle: { color: '#06b6d4' },
-          smooth: true
-        }]
-      };
-
+            smooth: true
+          }]
+        };
+      
     case 'line-points':
-      return {
-        ...baseOption,
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [{
-          type: 'line',
-          data: [120, 200, 150, 80, 70],
+          series: [{
+            type: 'line',
+            data: [120, 200, 150, 80, 70],
           itemStyle: { color: '#8b5cf6' },
           smooth: false,
-          symbol: 'circle',
-          symbolSize: 6
-        }]
-      };
-
+            symbol: 'circle',
+            symbolSize: 6
+          }]
+        };
+      
     case 'multi-line':
       return {
         ...baseOption,
@@ -405,48 +405,48 @@ const getChartOption = (chartType: string) => {
       };
 
     case 'multi-line-points':
-      return {
-        ...baseOption,
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [
+          series: [
           { type: 'line', data: [120, 200, 150, 80, 70], itemStyle: { color: '#8b5cf6' }, smooth: false, symbol: 'circle', symbolSize: 6 },
           { type: 'line', data: [80, 150, 200, 120, 100], itemStyle: { color: '#f59e0b' }, smooth: false, symbol: 'circle', symbolSize: 6 }
-        ]
-      };
-
-    case 'area':
-      return {
-        ...baseOption,
+          ]
+        };
+      
+      case 'area':
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [{
-          type: 'line',
-          data: [120, 200, 150, 80, 70],
+          series: [{
+            type: 'line',
+            data: [120, 200, 150, 80, 70],
           areaStyle: { color: '#8b5cf6', opacity: 0.3 },
           itemStyle: { color: '#8b5cf6' },
           smooth: true
-        }]
-      };
-
-    case 'stacked-area':
-      return {
-        ...baseOption,
+          }]
+        };
+      
+      case 'stacked-area':
+        return {
+          ...baseOption,
         xAxis: { type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'] },
         yAxis: { type: 'value' },
-        series: [
+          series: [
           { type: 'line', data: [120, 200, 150, 80, 70], areaStyle: { color: '#8b5cf6', opacity: 0.3 }, itemStyle: { color: '#8b5cf6' }, smooth: true, stack: 'total' },
           { type: 'line', data: [80, 150, 200, 120, 100], areaStyle: { color: '#f59e0b', opacity: 0.3 }, itemStyle: { color: '#f59e0b' }, smooth: true, stack: 'total' }
-        ]
-      };
-
-    case 'pie':
-      return {
+          ]
+        };
+      
+      case 'pie':
+        return {
         ...baseOption,
-        series: [{
-          type: 'pie',
-          radius: '50%',
-          data: [
+          series: [{
+            type: 'pie',
+            radius: '50%',
+            data: [
             { value: 335, name: 'Direct' },
             { value: 310, name: 'Email' },
             { value: 234, name: 'Affiliate' },
@@ -460,42 +460,42 @@ const getChartOption = (chartType: string) => {
             }
           }
         }]
-      };
-
-    case 'doughnut':
-      return {
+        };
+      
+      case 'doughnut':
+        return {
         ...baseOption,
-        series: [{
-          type: 'pie',
-          radius: ['40%', '70%'],
-          data: [
+          series: [{
+            type: 'pie',
+            radius: ['40%', '70%'],
+            data: [
             { value: 335, name: 'Direct' },
             { value: 310, name: 'Email' },
             { value: 234, name: 'Affiliate' },
             { value: 135, name: 'Video' }
           ]
         }]
-      };
-
-    case 'scatter':
-      return {
+        };
+      
+      case 'scatter':
+        return {
         ...baseOption,
-        xAxis: { type: 'value' },
-        yAxis: { type: 'value' },
-        series: [{
-          type: 'scatter',
+          xAxis: { type: 'value' },
+          yAxis: { type: 'value' },
+          series: [{
+            type: 'scatter',
           data: [[10, 8.04], [8, 6.95], [13, 7.58], [9, 8.81], [11, 8.33]],
           itemStyle: { color: '#ef4444' }
         }]
-      };
-
-    case 'bubble':
-      return {
+        };
+      
+      case 'bubble':
+        return {
         ...baseOption,
-        xAxis: { type: 'value' },
-        yAxis: { type: 'value' },
-        series: [{
-          type: 'scatter',
+          xAxis: { type: 'value' },
+          yAxis: { type: 'value' },
+          series: [{
+            type: 'scatter',
           data: [[10, 8.04, 5], [8, 6.95, 3], [13, 7.58, 7], [9, 8.81, 4], [11, 8.33, 6]],
           symbolSize: function (data: number[]) {
             return data[2] * 3;
@@ -561,7 +561,7 @@ const getChartOption = (chartType: string) => {
         yAxis: { type: 'value' },
         series: [{
           type: 'candlestick',
-          data: [
+            data: [
             [20, 34, 10, 38], // [open, close, lowest, highest]
             [40, 35, 30, 50],
             [31, 38, 31, 44],
@@ -873,7 +873,7 @@ const ChartPopup = ({ isVisible, onClose, onInsertChart }: ChartPopupProps) => {
           <div className="flex items-center justify-between mb-2">
             <h2 className="text-base font-semibold text-gray-800">Insert Chart</h2>
             <button
-              onClick={onClose}
+        onClick={onClose}
               className="text-gray-500 hover:text-gray-700 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -907,7 +907,7 @@ const ChartPopup = ({ isVisible, onClose, onInsertChart }: ChartPopupProps) => {
             }`} onClick={() => setActiveCategory('charts')}>
               <h3 className="text-xs font-semibold text-blue-800">Charts</h3>
             </div>
-            
+
             {/* Integrations Section */}
             <div className="px-2 py-1.5 rounded-md mb-2 cursor-pointer transition-colors hover:bg-gray-100">
               <h3 className="text-xs font-semibold text-gray-700">Integrations</h3>
@@ -922,21 +922,21 @@ const ChartPopup = ({ isVisible, onClose, onInsertChart }: ChartPopupProps) => {
                   <line x1="12" y1="17" x2="12" y2="21" stroke="currentColor" strokeWidth="2"/>
                 </svg>
                 <span>Import a CSV</span>
-              </div>
+                        </div>
               <div className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded cursor-pointer flex items-center space-x-2">
                 <svg className="w-3.5 h-3.5" fill="#0f9d58" viewBox="0 0 24 24">
                   <rect x="2" y="3" width="20" height="18" rx="2" ry="2" fill="none" stroke="#0f9d58" strokeWidth="2"/>
                   <path d="M7 7h10v2H7zM7 11h10v2H7zM7 15h6v2H7z" fill="#0f9d58"/>
                 </svg>
                 <span>Google Sheets</span>
-              </div>
+                        </div>
               <div className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded cursor-pointer flex items-center space-x-2">
                 <svg className="w-3.5 h-3.5" fill="#f9ab00" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10" fill="none" stroke="#f9ab00" strokeWidth="2"/>
                   <path d="M12 2v20M2 12h20" stroke="#f9ab00" strokeWidth="2"/>
                 </svg>
                 <span>Google Analytics</span>
-              </div>
+                      </div>
               <div className="px-2 py-1 text-xs text-gray-600 hover:bg-gray-100 rounded cursor-pointer flex items-center space-x-2">
                 <svg className="w-3.5 h-3.5" fill="#1e40af" viewBox="0 0 24 24">
                   <rect x="2" y="2" width="20" height="20" rx="2" ry="2" fill="#1e40af"/>
@@ -944,14 +944,14 @@ const ChartPopup = ({ isVisible, onClose, onInsertChart }: ChartPopupProps) => {
                 </svg>
                 <span>ChartMogul</span>
               </div>
-            </div>
-
-            {/* Feedback Section */}
+              </div>
+              
+              {/* Feedback Section */}
             <div className="px-2 py-1.5 bg-gray-100 rounded-md mt-3">
-              <p className="text-xs text-gray-600">
-                Which other apps would you like to see on this list?{' '}
+                <p className="text-xs text-gray-600">
+                  Which other apps would you like to see on this list?{' '}
                 <a href="#" className="text-blue-600 hover:text-blue-700 font-medium">Let us know</a>
-              </p>
+                </p>
             </div>
           </div>
 
@@ -961,22 +961,22 @@ const ChartPopup = ({ isVisible, onClose, onInsertChart }: ChartPopupProps) => {
               <div key={category} className="mb-4">
                 <h3 className="text-xs font-semibold text-gray-700 mb-2">{category}</h3>
                 <div className="grid grid-cols-3 gap-2">
-                  {charts.map((chart) => (
+                      {charts.map((chart) => (
                     <div
-                      key={chart.type}
+                          key={chart.type}
                       onClick={() => handleChartClick(chart.type)}
                       className="flex flex-col items-center p-2 rounded-md border border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200 group"
                       title={chart.name}
                     >
                       <div className="text-gray-600 group-hover:text-blue-600 transition-colors">
                         <chart.icon />
-                      </div>
+                          </div>
                       <span className="text-xs font-medium text-gray-700 mt-1.5 text-center leading-tight">
-                        {chart.name}
+                            {chart.name}
                       </span>
                     </div>
                   ))}
-                </div>
+                  </div>
               </div>
             ))}
           </div>

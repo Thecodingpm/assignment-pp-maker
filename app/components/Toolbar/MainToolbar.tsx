@@ -26,6 +26,7 @@ import ToolbarTextPopup from '../Editor/ToolbarTextPopup';
 import PresentationMenuDropdown from '../Editor/PresentationMenuDropdown';
 import ChartPopup, { getChartOption } from '../Editor/ChartPopup';
 import TablePopup from '../Editor/TablePopup';
+import EmbedPopup from '../Editor/EmbedPopup';
 import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
@@ -41,6 +42,8 @@ const MainToolbar: React.FC = () => {
   const [chartPopupPosition, setChartPopupPosition] = useState({ x: 0, y: 0 });
   const [showTablePopup, setShowTablePopup] = useState(false);
   const [tablePopupPosition, setTablePopupPosition] = useState({ x: 0, y: 0 });
+  const [showEmbedPopup, setShowEmbedPopup] = useState(false);
+  const [embedPopupPosition, setEmbedPopupPosition] = useState({ x: 0, y: 0 });
 
   const handleMediaClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -125,6 +128,54 @@ const MainToolbar: React.FC = () => {
     }
   };
 
+  const handleEmbed = (type: string, url: string) => {
+    setShowEmbedPopup(false);
+    console.log('Embed selected:', type, url);
+    
+    // Handle different embedding types
+    if (type === 'youtube') {
+      // Extract video ID from YouTube URL
+      const videoId = extractYouTubeVideoId(url);
+      if (videoId) {
+        // Add the embedded video to the canvas
+        const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+        const currentSlide = slides[currentSlideIndex];
+        
+        if (currentSlide) {
+          const centerX = (canvasSize.width / 2) - 150;
+          const centerY = (canvasSize.height / 2) - 112;
+          
+          const newEmbedElement = {
+            type: 'embed' as const,
+            x: centerX,
+            y: centerY,
+            width: 300,
+            height: 225,
+            rotation: 0,
+            zIndex: 1,
+            embedType: 'youtube',
+            embedUrl: url,
+            videoId: videoId,
+            title: 'YouTube Video',
+          };
+          
+          addElement(currentSlide.id, newEmbedElement);
+          console.log('Added YouTube embed to canvas:', newEmbedElement);
+        }
+      } else {
+        console.error('Invalid YouTube URL');
+        // You could show an error message to the user here
+      }
+    }
+    // Add more embedding types here as needed
+  };
+
+  const extractYouTubeVideoId = (url: string): string | null => {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  };
+
   const handleTableClick = (e: React.MouseEvent) => {
     console.log('📋 Table button clicked!');
     const rect = e.currentTarget.getBoundingClientRect();
@@ -136,6 +187,27 @@ const MainToolbar: React.FC = () => {
     setTablePopupPosition(position);
     setShowTablePopup(true);
     console.log('✅ showTablePopup set to true');
+  };
+
+  const handleEmbedClick = (e: React.MouseEvent) => {
+    console.log('🔗 Embed button clicked!');
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    // Calculate position to center the popup on screen
+    const popupWidth = 700;
+    const popupHeight = 600;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    
+    const position = {
+      x: Math.max(20, Math.min(screenWidth - popupWidth - 20, rect.left - popupWidth / 2)),
+      y: Math.max(20, rect.bottom + 10)
+    };
+    
+    console.log('📍 Setting embed popup position:', position);
+    setEmbedPopupPosition(position);
+    setShowEmbedPopup(true);
+    console.log('✅ showEmbedPopup set to true');
   };
 
   const handleMediaSelect = (type: string, mediaData?: any) => {
@@ -234,32 +306,199 @@ const MainToolbar: React.FC = () => {
     const currentSlide = slides[currentSlideIndex];
     
     if (currentSlide) {
-      // Map shape types to editor shape types
-      let mappedShapeType: 'rectangle' | 'circle' | 'triangle';
+      // Map shape types to editor shape types with proper dimensions
+      let mappedShapeType: 'rectangle' | 'circle' | 'triangle' | 'diamond' | 'star' | 'line';
       let width = 150;
       let height = 100;
       
       switch (shapeType) {
-        case 'rectangle':
+        // Basic shapes
+        case 'square-filled':
+        case 'square-outline':
+        case 'rounded-square-filled':
+        case 'rounded-square-outline':
           mappedShapeType = 'rectangle';
-          width = 150;
-          height = 100;
+          width = 120;
+          height = 120;
           break;
-        case 'circle':
+        case 'circle-filled':
+        case 'circle-outline':
           mappedShapeType = 'circle';
           width = 120;
           height = 120;
           break;
-        case 'triangle':
+        case 'triangle-filled':
+        case 'triangle-outline':
           mappedShapeType = 'triangle';
           width = 120;
           height = 100;
           break;
-        case 'line':
+        case 'diamond-filled':
+        case 'diamond-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'star-filled':
+        case 'star-outline':
+          mappedShapeType = 'star';
+          width = 120;
+          height = 120;
+          break;
+        
+        // Geometric shapes
+        case 'hexagon-filled':
+        case 'hexagon-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'octagon-filled':
+        case 'octagon-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'pentagon-filled':
+        case 'pentagon-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'ellipse-filled':
+        case 'ellipse-outline':
+          mappedShapeType = 'circle';
+          width = 150;
+          height = 100;
+          break;
+        case 'cross-filled':
+        case 'cross-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'plus-filled':
+        case 'plus-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        
+        // Flowchart shapes
+        case 'rectangle-flowchart':
+        case 'rectangle-flowchart-outline':
           mappedShapeType = 'rectangle';
+          width = 150;
+          height = 100;
+          break;
+        case 'diamond-flowchart':
+        case 'diamond-flowchart-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'oval-flowchart':
+        case 'oval-flowchart-outline':
+          mappedShapeType = 'circle';
+          width = 150;
+          height = 100;
+          break;
+        case 'parallelogram-flowchart':
+        case 'parallelogram-flowchart-outline':
+          mappedShapeType = 'diamond';
+          width = 150;
+          height = 100;
+          break;
+        case 'cylinder-flowchart':
+        case 'cylinder-flowchart-outline':
+          mappedShapeType = 'circle';
+          width = 120;
+          height = 120;
+          break;
+        case 'document-flowchart':
+        case 'document-flowchart-outline':
+          mappedShapeType = 'rectangle';
+          width = 120;
+          height = 150;
+          break;
+        
+        // Decorative shapes
+        case 'heart-filled':
+        case 'heart-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'cloud-filled':
+        case 'cloud-outline':
+          mappedShapeType = 'circle';
+          width = 150;
+          height = 100;
+          break;
+        case 'sun-filled':
+        case 'sun-outline':
+          mappedShapeType = 'circle';
+          width = 120;
+          height = 120;
+          break;
+        case 'moon-filled':
+        case 'moon-outline':
+          mappedShapeType = 'circle';
+          width = 120;
+          height = 120;
+          break;
+        case 'flower-filled':
+        case 'flower-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 120;
+          break;
+        case 'leaf-filled':
+        case 'leaf-outline':
+          mappedShapeType = 'diamond';
+          width = 120;
+          height = 100;
+          break;
+        
+        // Lines
+        case 'line-solid':
+        case 'line-dashed':
+          mappedShapeType = 'line';
           width = 200;
           height = 4;
           break;
+        case 'line-arrow-right':
+        case 'line-dashed-arrow-right':
+          mappedShapeType = 'line';
+          width = 200;
+          height = 4;
+          break;
+        case 'line-arrow-both':
+        case 'line-dashed-arrow-both':
+          mappedShapeType = 'line';
+          width = 200;
+          height = 4;
+          break;
+        case 'line-arrow-left-dot':
+        case 'line-dashed-arrow-left-dot':
+          mappedShapeType = 'line';
+          width = 200;
+          height = 4;
+          break;
+        case 'line-dot-arrow-right':
+        case 'line-dashed-dot-arrow-right':
+          mappedShapeType = 'line';
+          width = 200;
+          height = 4;
+          break;
+        case 'line-bar-arrow-right':
+        case 'line-dashed-bar-arrow-right':
+          mappedShapeType = 'line';
+          width = 200;
+          height = 4;
+          break;
+        
+        // Default
         default:
           mappedShapeType = 'rectangle';
           width = 150;
@@ -283,6 +522,13 @@ const MainToolbar: React.FC = () => {
         fillColor: shapeType.includes('filled') ? '#3b82f6' : 'transparent',
         strokeColor: shapeType.includes('outline') ? '#000000' : '#3b82f6',
         strokeWidth: shapeType.includes('outline') ? 2 : 0,
+        // Add specific properties for different shapes
+        isRounded: shapeType.includes('rounded'),
+        hasArrows: shapeType.includes('arrow'),
+        hasDots: shapeType.includes('dot'),
+        hasBars: shapeType.includes('bar'),
+        isDashed: shapeType.includes('dashed'),
+        lineStyle: shapeType.includes('dashed') ? 'dashed' : 'solid',
       };
       
       addElement(currentSlide.id, newShapeElement);
@@ -496,7 +742,11 @@ const MainToolbar: React.FC = () => {
           </div>
 
           {/* Embed Tool */}
-          <div className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors">
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={handleEmbedClick}
+            title="Click to open embed popup"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               <Code className="w-4 h-4 text-gray-700" />
             </div>
@@ -598,6 +848,14 @@ const MainToolbar: React.FC = () => {
         isVisible={showTablePopup}
         onClose={() => setShowTablePopup(false)}
         position={tablePopupPosition}
+      />
+
+      {/* Embed Popup */}
+      <EmbedPopup
+        isVisible={showEmbedPopup}
+        onClose={() => setShowEmbedPopup(false)}
+        onEmbed={handleEmbed}
+        position={embedPopupPosition}
       />
     </div>
   );

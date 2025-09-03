@@ -1,6 +1,6 @@
 export interface EditorElement {
   id: string;
-  type: 'text' | 'shape' | 'image' | 'chart' | 'table';
+  type: 'text' | 'shape' | 'image' | 'chart' | 'table' | 'embed';
   x: number;
   y: number;
   width: number;
@@ -24,10 +24,17 @@ export interface TextElement extends EditorElement {
 
 export interface ShapeElement extends EditorElement {
   type: 'shape';
-  shapeType: 'rectangle' | 'circle' | 'triangle';
+  shapeType: 'rectangle' | 'circle' | 'triangle' | 'diamond' | 'star' | 'line';
   fillColor: string;
   strokeColor: string;
   strokeWidth: number;
+  // Additional properties for enhanced shapes
+  isRounded?: boolean;
+  hasArrows?: boolean;
+  hasDots?: boolean;
+  hasBars?: boolean;
+  isDashed?: boolean;
+  lineStyle?: 'solid' | 'dashed';
 }
 
 export interface ImageElement extends EditorElement {
@@ -55,9 +62,18 @@ export interface TableElement extends EditorElement {
   rowHeaders: string[]; // Row headers
 }
 
+export interface EmbedElement extends EditorElement {
+  type: 'embed';
+  embedType: string; // 'youtube', 'vimeo', etc.
+  embedUrl: string;
+  videoId?: string; // For video platforms
+  title: string;
+  thumbnail?: string;
+}
+
 export interface Slide {
   id: string;
-  elements: (TextElement | ShapeElement | ImageElement | ChartElement | TableElement)[];
+  elements: (TextElement | ShapeElement | ImageElement | ChartElement | TableElement | EmbedElement)[];
   backgroundColor: string;
   backgroundImage?: string;
 }

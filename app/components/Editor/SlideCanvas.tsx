@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useEditorStore } from '../../stores/useEditorStore';
-import { TextElement, EditorElement, ShapeElement, ChartElement, TableElement } from '../../types/editor';
+import { TextElement, EditorElement, ShapeElement, ChartElement, TableElement, EmbedElement } from '../../types/editor';
 import TextElementComponent from './TextElement';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
@@ -488,7 +488,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
-                          borderRadius: '0.5rem',
+                          borderRadius: shapeElement.isRounded ? '1rem' : '0.5rem',
                         }}
                       />
                     )}
@@ -512,6 +512,102 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                           clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
                         }}
                       />
+                    )}
+
+                    {shapeElement.shapeType === 'diamond' && (
+                      <div
+                        className="w-full h-full"
+                        style={{
+                          backgroundColor: shapeElement.fillColor,
+                          border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                          clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
+                        }}
+                      />
+                    )}
+
+                    {shapeElement.shapeType === 'star' && (
+                      <div
+                        className="w-full h-full"
+                        style={{
+                          backgroundColor: shapeElement.fillColor,
+                          border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                          clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
+                        }}
+                      />
+                    )}
+
+                    {shapeElement.shapeType === 'line' && (
+                      <div
+                        className="w-full h-full flex items-center justify-center"
+                        style={{
+                          backgroundColor: 'transparent',
+                          border: 'none',
+                        }}
+                      >
+                        <div
+                          className="w-full"
+                          style={{
+                            height: '4px',
+                            backgroundColor: shapeElement.fillColor,
+                            border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
+                            borderStyle: shapeElement.isDashed ? 'dashed' : 'solid',
+                            position: 'relative',
+                          }}
+                        >
+                          {/* Arrow indicators */}
+                          {shapeElement.hasArrows && (
+                            <>
+                              <div
+                                className="absolute -right-2 top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4"
+                                style={{
+                                  borderTopColor: shapeElement.fillColor,
+                                  right: '-8px',
+                                }}
+                              />
+                              {shapeElement.hasArrows && shapeElement.hasArrows.toString().includes('both') && (
+                                <div
+                                  className="absolute -left-2 top-1/2 transform -translate-y-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4"
+                                  style={{
+                                    borderTopColor: shapeElement.fillColor,
+                                    left: '-8px',
+                                    transform: 'translateY(-50%) rotate(180deg)',
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                          
+                          {/* Dot indicators */}
+                          {shapeElement.hasDots && (
+                            <>
+                              <div
+                                className="absolute left-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full"
+                                style={{
+                                  backgroundColor: shapeElement.fillColor,
+                                }}
+                              />
+                              {shapeElement.hasDots && shapeElement.hasDots.toString().includes('right') && (
+                                <div
+                                  className="absolute right-2 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full"
+                                  style={{
+                                    backgroundColor: shapeElement.fillColor,
+                                  }}
+                                />
+                              )}
+                            </>
+                          )}
+                          
+                          {/* Bar indicators */}
+                          {shapeElement.hasBars && (
+                            <div
+                              className="absolute left-0 top-1/2 transform -translate-y-1/2 w-1 h-6"
+                              style={{
+                                backgroundColor: shapeElement.fillColor,
+                              }}
+                            />
+                          )}
+                        </div>
+                      </div>
                     )}
                     
                     {/* Resize handles for selected shapes */}
@@ -744,6 +840,103 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                         >
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+                          </svg>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+              
+              if (element.type === 'embed') {
+                const embedElement = element as EmbedElement;
+                return (
+                  <div
+                    key={element.id}
+                    className={`absolute cursor-move select-none ${
+                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                    style={{
+                      left: element.x,
+                      top: element.y,
+                      width: element.width,
+                      height: element.height,
+                      transform: `rotate(${element.rotation}deg)`,
+                      zIndex: element.zIndex,
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      selectElement(element.id, e.shiftKey);
+                    }}
+                    onMouseDown={(e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const canvasRect = canvasRef.current?.getBoundingClientRect();
+                      if (canvasRect) {
+                        const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                        const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                        setDragOffset({ x: offsetX, y: offsetY });
+                      }
+                      setDraggingElement(element);
+                    }}
+                  >
+                    <div className="w-full h-full bg-white rounded-lg border border-gray-200 overflow-hidden flex items-center justify-center">
+                      {embedElement.embedType === 'youtube' && (
+                        <div className="text-center p-4">
+                          <div className="w-16 h-16 bg-red-600 rounded-lg flex items-center justify-center mx-auto mb-3">
+                            <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                            </svg>
+                          </div>
+                          <h3 className="font-medium text-gray-800 mb-1">{embedElement.title}</h3>
+                          <p className="text-sm text-gray-600">YouTube Video</p>
+                          <p className="text-xs text-gray-500 mt-1 truncate max-w-full">
+                            {embedElement.embedUrl}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Resize handles for selected embeds */}
+                    {selectedElementIds.includes(element.id) && (
+                      <>
+                        <ResizeHandles
+                          element={element}
+                          onResize={(newWidth, newHeight) => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              width: newWidth, 
+                              height: newHeight 
+                            });
+                          }}
+                        />
+                        
+                        {/* Rotation handle */}
+                        <div
+                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            const startY = e.clientY;
+                            const startRotation = element.rotation;
+                            
+                            const handleMouseMove = (moveEvent: MouseEvent) => {
+                              const deltaY = moveEvent.clientY - startY;
+                              const newRotation = startRotation + (deltaY * 0.5);
+                              
+                              const { updateElement } = useEditorStore.getState();
+                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
+                            };
+                            
+                            const handleMouseUp = () => {
+                              document.removeEventListener('mousemove', handleMouseMove);
+                              document.removeEventListener('mouseup', handleMouseUp);
+                            };
+                            
+                            document.addEventListener('mousemove', handleMouseMove);
+                            document.addEventListener('mouseup', handleMouseUp);
+                          }}
+                        >
+                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h7H9a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
                           </svg>
                         </div>
                       </>

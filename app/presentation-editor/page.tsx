@@ -5,6 +5,7 @@ import { SlideList } from '../components/Sidebar';
 import { SlideCanvas } from '../components/Editor';
 import { MainToolbar } from '../components/Toolbar';
 import PropertyPanel from '../components/PropertyPanel';
+import RightCornerToolbar from '../components/Editor/RightCornerToolbar';
 import { useEditorStore } from '../stores/useEditorStore';
 import { mapAIToEditorFormat } from '../utils/aiTemplateMapper';
 
@@ -61,6 +62,18 @@ export default function PresentationEditorPage() {
         {/* Right Sidebar - Property Panel */}
         <PropertyPanel />
       </div>
+      
+      {/* Right Corner Toolbar */}
+      <RightCornerToolbar 
+        onPlay={() => console.log('🎬 Play presentation')}
+        onStop={() => console.log('⏹️ Stop presentation')}
+        onFullscreen={() => console.log('🖥️ Enter fullscreen')}
+        onSettings={() => console.log('⚙️ Open settings')}
+        onShare={() => console.log('📤 Share presentation')}
+        onExport={() => console.log('💾 Export presentation')}
+        onToggleGrid={() => console.log('🔲 Toggle grid')}
+        onToggleLayers={() => console.log('📚 Toggle layers')}
+      />
     </div>
   );
 } 
