@@ -18,7 +18,8 @@ import {
   Code,
   Circle,
   Mic,
-  Settings
+  Settings,
+  Diamond
 } from 'lucide-react';
 import MediaPopup from '../Editor/MediaPopup';
 import ShapePopup from '../Editor/ShapePopup';
@@ -27,6 +28,11 @@ import PresentationMenuDropdown from '../Editor/PresentationMenuDropdown';
 import ChartPopup, { getChartOption } from '../Editor/ChartPopup';
 import TablePopup from '../Editor/TablePopup';
 import EmbedPopup from '../Editor/EmbedPopup';
+// import SlideTransitionPanel from '../Editor/SlideTransitionPanel';
+import PresentationModeModal from '../PresentationModeModal';
+import PresentationMode from '../PresentationMode';
+import DesignButton from '../DesignSystem/DesignButton';
+import AddContentModal from '../AddContentModal';
 import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
@@ -44,6 +50,44 @@ const MainToolbar: React.FC = () => {
   const [tablePopupPosition, setTablePopupPosition] = useState({ x: 0, y: 0 });
   const [showEmbedPopup, setShowEmbedPopup] = useState(false);
   const [embedPopupPosition, setEmbedPopupPosition] = useState({ x: 0, y: 0 });
+  const [showSlideTransitionPanel, setShowSlideTransitionPanel] = useState(false);
+
+  // Presentation mode state
+  const { 
+    showPresentationModal, 
+    presentationModalType, 
+    setShowPresentationModal, 
+    enterPresentationMode,
+    isPresentationMode,
+    startPresentation,
+    exitPresentationMode,
+    addSlide,
+    createTextElement,
+    showAddContentModal,
+    setShowAddContentModal
+  } = useEditorStore();
+
+  // Presentation handlers
+  const handlePlayClick = () => {
+    if (isPresentationMode) {
+      exitPresentationMode();
+    } else {
+      startPresentation();
+    }
+  };
+
+  const handleAddContent = () => {
+    // Add a new slide with some default content
+    addSlide();
+    // Add a text element to the new slide
+    setTimeout(() => {
+      createTextElement(100, 100);
+    }, 100);
+  };
+
+  const handlePlusClick = () => {
+    setShowAddContentModal(true);
+  };
 
   const handleMediaClick = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -657,7 +701,7 @@ const MainToolbar: React.FC = () => {
   };
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-white">
+    <div className="fixed top-2 left-2 right-2 z-50 bg-white rounded-lg shadow-lg">
       {/* Main Toolbar */}
       <div className="flex items-center justify-between px-3 py-2">
         
@@ -760,12 +804,27 @@ const MainToolbar: React.FC = () => {
             </div>
             <span className="text-xs text-gray-700 font-medium">Record</span>
           </div>
+
+          {/* Slide Transition Tool */}
+          <div 
+            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
+            onClick={() => setShowSlideTransitionPanel(true)}
+          >
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              <Diamond className="w-4 h-4 text-gray-700" />
+            </div>
+            <span className="text-xs text-gray-700 font-medium">Transitions</span>
+          </div>
         </div>
 
         {/* Right Section - User Actions */}
         <div className="flex items-center space-x-2">
           {/* Plus Button */}
-          <button className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors">
+          <button 
+            onClick={handlePlusClick}
+            className="w-6 h-6 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+            title="Add content"
+          >
             <Plus className="w-3.5 h-3.5 text-gray-600" />
           </button>
 
@@ -792,10 +851,29 @@ const MainToolbar: React.FC = () => {
             <BarChart3 className="w-3.5 h-3.5 text-gray-600" />
           </button>
 
+          {/* Design Button */}
+          <div className="ml-2">
+            <DesignButton />
+          </div>
+
           {/* Play Button */}
-          <button className="px-2 py-1 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 flex items-center space-x-1 transition-colors">
-            <Play className="w-3 h-3 text-gray-600" />
-            <span className="text-xs font-medium text-gray-600">Play</span>
+          <button 
+            onClick={handlePlayClick}
+            className={`px-2 py-1 border rounded-lg flex items-center space-x-1 transition-colors ${
+              isPresentationMode 
+                ? 'bg-red-500 border-red-500 text-white hover:bg-red-600' 
+                : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-100'
+            }`}
+            title={isPresentationMode ? 'Stop Presentation' : 'Play Presentation'}
+          >
+            {isPresentationMode ? (
+              <Square className="w-3 h-3" />
+            ) : (
+              <Play className="w-3 h-3" />
+            )}
+            <span className="text-xs font-medium">
+              {isPresentationMode ? 'Stop' : 'Play'}
+            </span>
           </button>
 
           {/* Share Button */}
@@ -856,6 +934,30 @@ const MainToolbar: React.FC = () => {
         onClose={() => setShowEmbedPopup(false)}
         onEmbed={handleEmbed}
         position={embedPopupPosition}
+      />
+
+      {/* Slide Transition Panel */}
+      {/* <SlideTransitionPanel
+        isVisible={showSlideTransitionPanel}
+        onClose={() => setShowSlideTransitionPanel(false)}
+      /> */}
+
+      {/* Presentation Mode Modal */}
+      <PresentationModeModal
+        isVisible={showPresentationModal}
+        modalType={presentationModalType}
+        onClose={() => setShowPresentationModal(false)}
+        onStartPresentation={enterPresentationMode}
+        onAddContent={handleAddContent}
+      />
+      
+      {/* Presentation Mode */}
+      <PresentationMode />
+
+      {/* Add Content Modal */}
+      <AddContentModal
+        isVisible={showAddContentModal}
+        onClose={() => setShowAddContentModal(false)}
       />
     </div>
   );

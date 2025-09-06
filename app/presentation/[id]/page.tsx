@@ -2,10 +2,44 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useEditorStore } from '../../stores/useEditorStore';
+import PresentationModeModal from '../../components/PresentationModeModal';
+import PresentationMode from '../../components/PresentationMode';
 
 export default function PresentationEditor({ params }: { params: { id: string } }) {
   const [selectedSlide, setSelectedSlide] = useState(1);
   const [zoom, setZoom] = useState(80);
+
+  // Presentation mode state
+  const { 
+    showPresentationModal, 
+    presentationModalType, 
+    setShowPresentationModal, 
+    enterPresentationMode,
+    isPresentationMode,
+    startPresentation,
+    exitPresentationMode,
+    addSlide,
+    createTextElement
+  } = useEditorStore();
+
+  // Presentation handlers
+  const handlePlayClick = () => {
+    if (isPresentationMode) {
+      exitPresentationMode();
+    } else {
+      startPresentation();
+    }
+  };
+
+  const handleAddContent = () => {
+    // Add a new slide with some default content
+    addSlide();
+    // Add a text element to the new slide
+    setTimeout(() => {
+      createTextElement(100, 100);
+    }, 100);
+  };
 
   return (
     <div className="h-screen bg-white flex flex-col">
@@ -97,11 +131,23 @@ export default function PresentationEditor({ params }: { params: { id: string } 
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
             </svg>
           </button>
-          <button className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors flex items-center space-x-2">
+          <button 
+            onClick={handlePlayClick}
+            className={`px-4 py-2 text-sm rounded-lg transition-colors flex items-center space-x-2 ${
+              isPresentationMode 
+                ? 'bg-red-500 text-white hover:bg-red-600' 
+                : 'text-gray-700 hover:bg-gray-100'
+            }`}
+            title={isPresentationMode ? 'Stop Presentation' : 'Play Presentation'}
+          >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              {isPresentationMode ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 6h12v12H6z" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              )}
             </svg>
-            <span>Play</span>
+            <span>{isPresentationMode ? 'Stop' : 'Play'}</span>
           </button>
           <button className="px-4 py-2 bg-purple-600 text-white text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
             Share
@@ -208,6 +254,18 @@ export default function PresentationEditor({ params }: { params: { id: string } 
           </button>
         </div>
       </div>
+
+      {/* Presentation Mode Modal */}
+      <PresentationModeModal
+        isVisible={showPresentationModal}
+        modalType={presentationModalType}
+        onClose={() => setShowPresentationModal(false)}
+        onStartPresentation={enterPresentationMode}
+        onAddContent={handleAddContent}
+      />
+      
+      {/* Presentation Mode */}
+      <PresentationMode />
     </div>
   );
 }

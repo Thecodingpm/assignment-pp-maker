@@ -406,12 +406,14 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
         <motion.div
           ref={canvasRef}
           data-canvas
-          className="bg-white shadow-xl rounded-lg overflow-hidden cursor-crosshair relative"
+          className="bg-white shadow-xl rounded-lg overflow-hidden cursor-crosshair relative mx-auto"
           style={{
             width: `${width}px`,
             height: `${height}px`,
             transform: `scale(${zoom})`,
             transformOrigin: 'center center',
+            maxWidth: '100%',
+            maxHeight: '100%',
           }}
           onClick={handleCanvasClick}
         >
@@ -422,7 +424,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
               backgroundColor: currentSlide.backgroundColor,
               backgroundImage: currentSlide.backgroundImage ? `url(${currentSlide.backgroundImage})` : 'none',
               backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              backgroundPosition: 'center top',
               backgroundRepeat: 'no-repeat'
             }}
             onClick={(e) => {
@@ -950,9 +952,7 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                 return (
                   <div
                     key={element.id}
-                    className={`absolute cursor-move select-none ${
-                      selectedElementIds.includes(element.id) ? 'ring-2 ring-blue-500' : ''
-                    }`}
+                    className="absolute cursor-move select-none"
                     style={{
                       left: element.x,
                       top: element.y,
@@ -961,21 +961,29 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                       transform: `rotate(${element.rotation}deg)`,
                       zIndex: element.zIndex,
                     }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      selectElement(element.id, e.shiftKey);
-                    }}
-                    onMouseDown={(e) => {
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const canvasRect = canvasRef.current?.getBoundingClientRect();
-                      if (canvasRect) {
-                        const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
-                        const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
-                        setDragOffset({ x: offsetX, y: offsetY });
-                      }
-                      setDraggingElement(element);
-                    }}
                   >
+                    {/* Selection border area */}
+                    <div 
+                      className={`absolute -inset-2 z-10 cursor-pointer border-2 transition-colors ${
+                        selectedElementIds.includes(element.id) 
+                          ? 'border-blue-500' 
+                          : 'border-transparent hover:border-blue-300'
+                      }`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectElement(element.id, e.shiftKey);
+                      }}
+                      onMouseDown={(e) => {
+                        const rect = e.currentTarget.getBoundingClientRect();
+                        const canvasRect = canvasRef.current?.getBoundingClientRect();
+                        if (canvasRect) {
+                          const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
+                          const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
+                          setDragOffset({ x: offsetX, y: offsetY });
+                        }
+                        setDraggingElement(element);
+                      }}
+                    />
                     <div className="w-full h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
                       <table className="w-full h-full border-collapse text-xs">
                         <thead>

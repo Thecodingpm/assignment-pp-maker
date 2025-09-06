@@ -361,10 +361,10 @@ export default function Home() {
                 whileTap={{ scale: 0.95 }}
               >
                 <Link 
-                  href="/assignment-editor"
+                  href="/presentation-editor"
                   className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg block"
                 >
-                  Sign up for free
+                  Start New Presentation
                 </Link>
               </motion.div>
               <motion.div

@@ -36,6 +36,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   zoom: 1,
   canvasSize: { width: 1920, height: 1080 },
   isDraggingElement: false,
+  isPresentationMode: false,
+  showPresentationModal: false,
+  presentationModalType: 'default',
+  showAddContentModal: false,
 
   // Slide management
   setSlides: (newSlides: Slide[]) => {
@@ -317,5 +321,253 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   // Dragging state management
   setIsDraggingElement: (isDragging: boolean) => {
     set({ isDraggingElement: isDragging });
+  },
+
+  // Utility functions for the new clean architecture
+  getCurrentSlide: () => {
+    const { slides, currentSlideIndex } = get();
+    return slides[currentSlideIndex] || null;
+  },
+
+  getSelectedElement: () => {
+    const { selectedElementIds, slides, currentSlideIndex } = get();
+    const currentSlide = slides[currentSlideIndex];
+    if (!currentSlide || selectedElementIds.length === 0) return null;
+    
+    return currentSlide.elements.find(element => 
+      selectedElementIds.includes(element.id)
+    ) || null;
+  },
+
+  getSelectedElements: () => {
+    const { selectedElementIds, slides, currentSlideIndex } = get();
+    const currentSlide = slides[currentSlideIndex];
+    if (!currentSlide || selectedElementIds.length === 0) return [];
+    
+    return currentSlide.elements.filter(element => 
+      selectedElementIds.includes(element.id)
+    );
+  },
+
+  // Batch operations for multiple selected elements
+  updateSelectedElements: (updates: Partial<EditorElement>) => {
+    const { selectedElementIds, slides, currentSlideIndex, updateElement } = get();
+    const currentSlide = slides[currentSlideIndex];
+    
+    if (!currentSlide) return;
+    
+    selectedElementIds.forEach(elementId => {
+      updateElement(currentSlide.id, elementId, updates);
+    });
+  },
+
+  // Slide background management
+  updateSlideBackground: (backgroundColor: string) => {
+    const { slides, currentSlideIndex } = get();
+    const newSlides = [...slides];
+    newSlides[currentSlideIndex] = {
+      ...newSlides[currentSlideIndex],
+      backgroundColor
+    };
+    set({ slides: newSlides });
+  },
+
+  updateSlideBackgroundImage: (backgroundImage: string) => {
+    const { slides, currentSlideIndex } = get();
+    const newSlides = [...slides];
+    newSlides[currentSlideIndex] = {
+      ...newSlides[currentSlideIndex],
+      backgroundImage
+    };
+    set({ slides: newSlides });
+  },
+
+  updateSlideStyle: (style: string) => {
+    const { slides, currentSlideIndex } = get();
+    const newSlides = [...slides];
+    newSlides[currentSlideIndex] = {
+      ...newSlides[currentSlideIndex],
+      style
+    };
+    set({ slides: newSlides });
+  },
+
+  toggleSlideNumber: () => {
+    const { slides, currentSlideIndex } = get();
+    const newSlides = [...slides];
+    newSlides[currentSlideIndex] = {
+      ...newSlides[currentSlideIndex],
+      showSlideNumber: !newSlides[currentSlideIndex].showSlideNumber
+    };
+    set({ slides: newSlides });
+  },
+
+  // Element creation helpers
+  createTextElement: (x: number, y: number) => {
+    const { addElement, getCurrentSlide } = get();
+    const currentSlide = getCurrentSlide();
+    if (!currentSlide) return;
+
+    const newTextElement: Omit<TextElement, 'id' | 'selected'> = {
+      type: 'text',
+      x,
+      y,
+      width: 200,
+      height: 60,
+      rotation: 0,
+      zIndex: 1,
+      content: 'Add text',
+      fontSize: 24,
+      fontFamily: 'Inter',
+      fontWeight: '400',
+      color: '#000000',
+      textAlign: 'left',
+      lineHeight: 1.2,
+      isEditing: false,
+    };
+
+    addElement(currentSlide.id, newTextElement);
+  },
+
+  createShapeElement: (x: number, y: number, shapeType: ShapeElement['shapeType'] = 'rectangle') => {
+    const { addElement, getCurrentSlide } = get();
+    const currentSlide = getCurrentSlide();
+    if (!currentSlide) return;
+
+    const newShapeElement: Omit<ShapeElement, 'id' | 'selected'> = {
+      type: 'shape',
+      x,
+      y,
+      width: 100,
+      height: 100,
+      rotation: 0,
+      zIndex: 1,
+      shapeType,
+      fillColor: '#3B82F6',
+      strokeColor: '#1E40AF',
+      strokeWidth: 2,
+    };
+
+    addElement(currentSlide.id, newShapeElement);
+  },
+
+  createImageElement: (x: number, y: number, src: string) => {
+    const { addElement, getCurrentSlide } = get();
+    const currentSlide = getCurrentSlide();
+    if (!currentSlide) return;
+
+    const newImageElement: Omit<ImageElement, 'id' | 'selected'> = {
+      type: 'image',
+      x,
+      y,
+      width: 200,
+      height: 150,
+      rotation: 0,
+      zIndex: 1,
+      src,
+      alt: 'Image',
+    };
+
+    addElement(currentSlide.id, newImageElement);
+  },
+
+  // Presentation mode management
+  setPresentationMode: (isPresentationMode: boolean) => {
+    set({ isPresentationMode });
+  },
+
+  setShowPresentationModal: (show: boolean) => {
+    set({ showPresentationModal: show });
+  },
+
+  setPresentationModalType: (type: string) => {
+    set({ presentationModalType: type });
+  },
+
+  // Add content modal
+  setShowAddContentModal: (show: boolean) => {
+    set({ showAddContentModal: show });
+  },
+
+  // Determine which popup to show based on conditions
+  determinePresentationModalType: () => {
+    const { slides, currentSlideIndex } = get();
+    const currentSlide = slides[currentSlideIndex];
+    
+    if (!currentSlide) return 'default';
+    
+    const slideCount = slides.length;
+    const elementCount = currentSlide.elements.length;
+    const hasText = currentSlide.elements.some(el => el.type === 'text');
+    const hasImages = currentSlide.elements.some(el => el.type === 'image');
+    const hasShapes = currentSlide.elements.some(el => el.type === 'shape');
+    
+    // Condition 1: Empty presentation
+    if (slideCount === 1 && elementCount === 0) {
+      return 'empty';
+    }
+    
+    // Condition 2: Single slide with minimal content
+    if (slideCount === 1 && elementCount <= 2 && !hasImages) {
+      return 'minimal';
+    }
+    
+    // Condition 3: Rich content presentation
+    if (hasImages && hasShapes && hasText) {
+      return 'rich';
+    }
+    
+    // Condition 4: Text-heavy presentation
+    if (hasText && !hasImages && !hasShapes) {
+      return 'text-heavy';
+    }
+    
+    // Condition 5: Default/ready to present
+    return 'ready';
+  },
+
+  // Start presentation with modal
+  startPresentation: () => {
+    const { determinePresentationModalType } = get();
+    const modalType = determinePresentationModalType();
+    
+    set({
+      showPresentationModal: true,
+      presentationModalType: modalType,
+    });
+  },
+
+  // Start actual presentation mode
+  enterPresentationMode: () => {
+    set({
+      isPresentationMode: true,
+      showPresentationModal: false,
+      currentSlideIndex: 0,
+    });
+  },
+
+  // Exit presentation mode
+  exitPresentationMode: () => {
+    set({
+      isPresentationMode: false,
+      showPresentationModal: false,
+    });
+  },
+
+  // Navigate slides in presentation mode
+  nextSlide: () => {
+    const { slides, currentSlideIndex, isPresentationMode } = get();
+    if (!isPresentationMode) return;
+    
+    const nextIndex = Math.min(currentSlideIndex + 1, slides.length - 1);
+    set({ currentSlideIndex: nextIndex });
+  },
+
+  previousSlide: () => {
+    const { currentSlideIndex, isPresentationMode } = get();
+    if (!isPresentationMode) return;
+    
+    const prevIndex = Math.max(currentSlideIndex - 1, 0);
+    set({ currentSlideIndex: prevIndex });
   },
 }));

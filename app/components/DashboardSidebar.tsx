@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { auth } from '../firebase/config';
+import { signOut } from 'firebase/auth';
 
 type TabType = 'assignments' | 'presentations' | 'trash' | 'analytics';
 
@@ -30,7 +32,86 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
     assignments: true,
     comments: true
   });
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
+
+  // Direct logout function that bypasses AuthContext
+  const handleDirectLogout = async () => {
+    if (isLoggingOut) return;
+    
+    console.log('🚪 DashboardSidebar: Starting direct logout...');
+    setIsLoggingOut(true);
+    
+    try {
+      // Sign out directly from Firebase
+      await signOut(auth);
+      console.log('✅ DashboardSidebar: Firebase signOut successful');
+      
+      // Clear local state
+      setShowTeamDropdown(false);
+      
+      // Force redirect to landing page
+      console.log('🔄 DashboardSidebar: Redirecting to landing page...');
+      
+      // Method 1: Immediate window.location redirect (most reliable)
+      console.log('🔄 DashboardSidebar: Immediate window.location redirect...');
+      try {
+        window.location.href = '/';
+        console.log('✅ DashboardSidebar: Immediate redirect successful');
+      } catch (e) {
+        console.log('⚠️ DashboardSidebar: Immediate redirect failed, trying replace...');
+        try {
+          window.location.replace('/');
+          console.log('✅ DashboardSidebar: Replace redirect successful');
+        } catch (e2) {
+          console.log('⚠️ DashboardSidebar: Replace redirect failed, trying assign...');
+          try {
+            window.location.assign('/');
+            console.log('✅ DashboardSidebar: Assign redirect successful');
+          } catch (e3) {
+            console.error('❌ DashboardSidebar: All immediate redirects failed');
+          }
+        }
+      }
+      
+      // Method 2: Next.js Router as backup
+      setTimeout(() => {
+        console.log('🔄 DashboardSidebar: Trying Next.js router as backup...');
+        try {
+          router.push('/');
+          console.log('✅ DashboardSidebar: Router backup successful');
+        } catch (error) {
+          console.error('❌ DashboardSidebar: Router backup failed:', error);
+        }
+      }, 100);
+      
+      // Method 3: Force redirect after delay
+      setTimeout(() => {
+        console.log('🔄 DashboardSidebar: Force redirect after delay...');
+        try {
+          window.location.href = '/';
+        } catch (e) {
+          window.location.replace('/');
+        }
+      }, 300);
+      
+    } catch (error) {
+      console.error('❌ DashboardSidebar: Direct logout error:', error);
+      setIsLoggingOut(false);
+      
+      // Even if there's an error, try to redirect
+      console.log('🔄 DashboardSidebar: Error fallback redirect...');
+      try {
+        window.location.href = '/';
+      } catch (e) {
+        try {
+          window.location.replace('/');
+        } catch (e2) {
+          window.location.assign('/');
+        }
+      }
+    }
+  };
 
   // Modal content based on step
   const modalContent = [
@@ -346,11 +427,23 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
                 <span>Account settings</span>
               </button>
               
-              <button className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded flex items-center space-x-2">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                <span>Log out</span>
+              <button 
+                onClick={handleDirectLogout}
+                disabled={isLoggingOut}
+                className={`w-full text-left px-3 py-2 text-sm rounded flex items-center space-x-2 ${
+                  isLoggingOut 
+                    ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                    : 'text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {isLoggingOut ? (
+                  <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                )}
+                <span>{isLoggingOut ? 'Logging out...' : 'Log out'}</span>
               </button>
             </div>
             
@@ -615,16 +708,22 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
                   <span>Account settings</span>
                 </button>
                 <button 
-                  onClick={() => {
-                    logout();
-                    setShowTeamDropdown(false);
-                  }}
-                  className="w-full text-left px-3 py-2.5 text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-all duration-200 flex items-center space-x-3"
+                  onClick={handleDirectLogout}
+                  disabled={isLoggingOut}
+                  className={`w-full text-left px-3 py-2.5 text-sm rounded-lg transition-all duration-200 flex items-center space-x-3 ${
+                    isLoggingOut 
+                      ? 'text-gray-400 bg-gray-100 cursor-not-allowed' 
+                      : 'text-gray-700 hover:bg-gray-50'
+                  }`}
                 >
-                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                  <span>Log out</span>
+                  {isLoggingOut ? (
+                    <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
+                  )}
+                  <span>{isLoggingOut ? 'Logging out...' : 'Log out'}</span>
                 </button>
               </div>
             </div>
@@ -1351,7 +1450,7 @@ export default function DashboardSidebar({ activeTab, onTabChange }: DashboardSi
                   <button
                     onClick={() => {
                       // Handle account deletion here
-                      logout();
+                      handleDirectLogout();
                       setShowDeleteConfirm(false);
                       setShowAccountSettingsModal(false);
                     }}

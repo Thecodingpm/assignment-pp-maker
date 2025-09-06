@@ -41,12 +41,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Listen for auth state changes
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
+      console.log('🔄 AuthContext: Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out');
       if (firebaseUser) {
         const userData: User = {
           id: firebaseUser.uid,
           email: firebaseUser.email || '',
           name: firebaseUser.displayName || 'User'
         };
+        console.log('🔄 AuthContext: Setting user data:', userData);
         setUser(userData);
         try {
           const userDocs = await getUserDocuments(firebaseUser.uid);
@@ -55,6 +57,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           console.error('Failed to load documents:', error);
         }
       } else {
+        console.log('🔄 AuthContext: Clearing user data (no firebase user)');
         setUser(null);
         setDocuments([]);
       }
@@ -74,15 +77,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try { 
-      await logoutUser(); 
+      console.log('🔄 AuthContext: Starting logout process...');
+      console.log('🔄 AuthContext: Current user:', user);
+      
+      // Clear state first to prevent race conditions
       setUser(null); 
       setDocuments([]); 
-      // Redirect to landing page after logout
+      console.log('✅ AuthContext: State cleared');
+      
+      // Then logout from Firebase
+      await logoutUser(); 
+      console.log('✅ AuthContext: Firebase logout successful');
+      
+      // Force a hard redirect to ensure logout
       if (typeof window !== 'undefined') {
-        window.location.href = '/';
+        console.log('🔄 AuthContext: Redirecting to landing page...');
+        // Use a more aggressive redirect with multiple fallbacks
+        try {
+          window.location.href = '/';
+        } catch (e) {
+          console.log('🔄 AuthContext: First redirect failed, trying replace...');
+          window.location.replace('/');
+        }
+        
+        // Force redirect after a short delay
+        setTimeout(() => {
+          try {
+            window.location.href = '/';
+          } catch (e) {
+            window.location.replace('/');
+          }
+        }, 50);
       }
     } catch (error) { 
-      console.error('Logout error:', error); 
+      console.error('❌ AuthContext: Logout error:', error); 
+      // Even if there's an error, try to redirect
+      if (typeof window !== 'undefined') {
+        try {
+          window.location.href = '/';
+        } catch (e) {
+          window.location.replace('/');
+        }
+      }
+      throw error; // Re-throw to handle in component
     }
   };
 

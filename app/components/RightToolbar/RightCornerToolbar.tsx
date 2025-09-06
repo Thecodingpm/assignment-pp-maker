@@ -13,6 +13,8 @@ import {
   Grid3X3,
   Layers
 } from 'lucide-react';
+import { useEditorStore } from '../../stores/useEditorStore';
+import DesignButton from '../DesignSystem/DesignButton';
 
 interface RightCornerToolbarProps {
   onPlay?: () => void;
@@ -35,16 +37,20 @@ const RightCornerToolbar: React.FC<RightCornerToolbarProps> = ({
   onToggleGrid,
   onToggleLayers
 }) => {
-  const [isPlaying, setIsPlaying] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLayers, setShowLayers] = useState(false);
+  
+  const { 
+    isPresentationMode, 
+    startPresentation, 
+    exitPresentationMode 
+  } = useEditorStore();
 
   const handlePlayToggle = () => {
-    setIsPlaying(!isPlaying);
-    if (isPlaying) {
-      onStop?.();
+    if (isPresentationMode) {
+      exitPresentationMode();
     } else {
-      onPlay?.();
+      startPresentation();
     }
   };
 
@@ -59,19 +65,9 @@ const RightCornerToolbar: React.FC<RightCornerToolbarProps> = ({
   };
 
   return (
-    <div className="fixed top-20 right-4 z-50 flex flex-col space-y-2">
-      {/* Play/Stop Button */}
-      <button
-        onClick={handlePlayToggle}
-        className="w-10 h-10 bg-purple-500 hover:bg-purple-600 text-white rounded-lg flex items-center justify-center transition-colors shadow-lg"
-        title={isPlaying ? 'Stop Presentation' : 'Play Presentation'}
-      >
-        {isPlaying ? (
-          <Square className="w-5 h-5" />
-        ) : (
-          <Play className="w-5 h-5 ml-0.5" />
-        )}
-      </button>
+    <div className="fixed top-20 right-8 z-50 flex flex-col space-y-2">
+      {/* Design Button */}
+      <DesignButton />
 
       {/* Grid Toggle */}
       <button

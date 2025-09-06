@@ -11,7 +11,7 @@ const TemplatesPage: React.FC = () => {
   const handleTemplateSelect = (template: Template) => {
     setSelectedTemplate(template);
     // Navigate to assignment editor with the selected template
-    window.location.href = `/assignment-editor?templateId=${template.id}`;
+            window.location.href = `/presentation-editor?templateId=${template.id}`;
   };
 
   const handleTemplatePreview = (template: Template) => {

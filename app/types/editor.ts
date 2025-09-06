@@ -17,9 +17,13 @@ export interface TextElement extends EditorElement {
   fontFamily: string;
   fontWeight: string;
   color: string;
-  textAlign: 'left' | 'center' | 'right';
+  textAlign: 'left' | 'center' | 'right' | 'justify';
   lineHeight: number;
   isEditing: boolean;
+  // New properties
+  textStyle?: 'heading' | 'subheading' | 'body' | 'caption' | 'quote';
+  opacity?: number;
+  shadow?: 'none' | 'soft' | 'regular' | 'retro';
 }
 
 export interface ShapeElement extends EditorElement {
@@ -76,6 +80,8 @@ export interface Slide {
   elements: (TextElement | ShapeElement | ImageElement | ChartElement | TableElement | EmbedElement)[];
   backgroundColor: string;
   backgroundImage?: string;
+  style?: string;
+  showSlideNumber?: boolean;
 }
 
 export interface EditorState {
@@ -86,6 +92,10 @@ export interface EditorState {
   zoom: number;
   canvasSize: { width: number; height: number };
   isDraggingElement: boolean;
+  isPresentationMode: boolean;
+  showPresentationModal: boolean;
+  presentationModalType: string;
+  showAddContentModal: boolean;
 }
 
 export interface EditorActions {
@@ -112,6 +122,33 @@ export interface EditorActions {
   
   // Dragging state management
   setIsDraggingElement: (isDragging: boolean) => void;
+  
+  // Utility functions for the new clean architecture
+  getCurrentSlide: () => Slide | null;
+  getSelectedElement: () => EditorElement | null;
+  getSelectedElements: () => EditorElement[];
+  updateSelectedElements: (updates: Partial<EditorElement>) => void;
+  updateSlideBackground: (backgroundColor: string) => void;
+  updateSlideBackgroundImage: (backgroundImage: string) => void;
+  updateSlideStyle: (style: string) => void;
+  toggleSlideNumber: () => void;
+  
+  // Element creation helpers
+  createTextElement: (x: number, y: number) => void;
+  createShapeElement: (x: number, y: number, shapeType?: ShapeElement['shapeType']) => void;
+  createImageElement: (x: number, y: number, src: string) => void;
+  
+  // Presentation mode management
+  setPresentationMode: (isPresentationMode: boolean) => void;
+  setShowPresentationModal: (show: boolean) => void;
+  setPresentationModalType: (type: string) => void;
+  setShowAddContentModal: (show: boolean) => void;
+  determinePresentationModalType: () => string;
+  startPresentation: () => void;
+  enterPresentationMode: () => void;
+  exitPresentationMode: () => void;
+  nextSlide: () => void;
+  previousSlide: () => void;
 }
 
 export type EditorStore = EditorState & EditorActions;

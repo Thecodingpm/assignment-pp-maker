@@ -1,16 +1,31 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { SlideList } from '../components/Sidebar';
-import { SlideCanvas } from '../components/Editor';
-import { MainToolbar } from '../components/Toolbar';
-import PropertyPanel from '../components/PropertyPanel';
-import RightCornerToolbar from '../components/Editor/RightCornerToolbar';
 import { useEditorStore } from '../stores/useEditorStore';
-import { mapAIToEditorFormat } from '../utils/aiTemplateMapper';
+// import { mapAIToEditorFormat } from '../utils/aiTemplateMapper';
+
+// Import components individually to debug
+import SlideList from '../components/Sidebar/SlideList';
+import SlideCanvas from '../components/Editor/SlideCanvas';
+import MainToolbar from '../components/Toolbar/MainToolbar';
+import PropertyPanel from '../components/PropertyPanel';
+import RightCornerToolbar from '../components/RightToolbar/RightCornerToolbar';
+import PresentationModeModal from '../components/PresentationModeModal';
+import PresentationMode from '../components/PresentationMode';
+import SlidePropertiesBar from '../components/SlidePropertiesBar';
 
 export default function PresentationEditorPage() {
-  const { setSlides } = useEditorStore();
+  const { 
+    setSlides, 
+    showPresentationModal, 
+    presentationModalType, 
+    setShowPresentationModal, 
+    enterPresentationMode,
+    addSlide,
+    createTextElement,
+    createImageElement,
+    createShapeElement
+  } = useEditorStore();
 
   useEffect(() => {
     // Check for AI-generated presentation data in localStorage
@@ -21,7 +36,8 @@ export default function PresentationEditorPage() {
         const parsedData = JSON.parse(aiData);
         console.log('Raw AI data from localStorage:', parsedData);
         
-        const mappedPresentation = mapAIToEditorFormat(parsedData);
+        // const mappedPresentation = mapAIToEditorFormat(parsedData);
+        const mappedPresentation = { slides: [] }; // Temporary fallback
         console.log('Mapped presentation:', mappedPresentation);
         
         // Load the AI-generated slides into the editor
@@ -44,13 +60,22 @@ export default function PresentationEditorPage() {
     }
   }, [setSlides]);
 
+  const handleAddContent = () => {
+    // Add a new slide with some default content
+    addSlide();
+    // Add a text element to the new slide
+    setTimeout(() => {
+      createTextElement(100, 100);
+    }, 100);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-gray-50">
       {/* Top Toolbar */}
       <MainToolbar />
       
-      {/* Main Content - Add top padding for fixed toolbar */}
-      <div className="flex-1 flex overflow-hidden pt-16">
+      {/* Main Content - Add top padding for fixed toolbar and bottom padding for properties bar */}
+      <div className="flex-1 flex overflow-hidden pt-20 pb-16 pr-20">
         {/* Left Sidebar - Slide List */}
         <SlideList />
         
@@ -74,6 +99,21 @@ export default function PresentationEditorPage() {
         onToggleGrid={() => console.log('🔲 Toggle grid')}
         onToggleLayers={() => console.log('📚 Toggle layers')}
       />
+      
+      {/* Presentation Mode Modal */}
+      <PresentationModeModal
+        isVisible={showPresentationModal}
+        modalType={presentationModalType}
+        onClose={() => setShowPresentationModal(false)}
+        onStartPresentation={enterPresentationMode}
+        onAddContent={handleAddContent}
+      />
+      
+      {/* Presentation Mode */}
+      <PresentationMode />
+      
+      {/* Bottom Slide Properties Bar */}
+      <SlidePropertiesBar />
     </div>
   );
-} 
+}

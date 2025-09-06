@@ -32,9 +32,20 @@ const SlideList: React.FC = () => {
   };
 
   return (
-    <div className="w-64 bg-white border-r border-gray-200 flex flex-col h-full">
+    <div className="w-96 bg-white border-r border-gray-200 flex flex-col h-full">
+      {/* Add Slide Button */}
+      <div className="px-8 py-3 border-b border-gray-200">
+        <button
+          onClick={addSlide}
+          className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-white text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors text-sm font-medium whitespace-nowrap"
+        >
+          <Plus className="w-4 h-4 flex-shrink-0" />
+          <span>Add slide</span>
+        </button>
+      </div>
+
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
+      <div className="px-8 py-3 border-b border-gray-200">
         <h2 className="text-lg font-semibold text-gray-900">Slides</h2>
         <p className="text-sm text-gray-500 mt-1">
           {slides.length} slide{slides.length !== 1 ? 's' : ''}
@@ -42,7 +53,7 @@ const SlideList: React.FC = () => {
       </div>
 
       {/* Slide List */}
-      <div className="flex-1 overflow-y-auto p-2">
+      <div className="flex-1 overflow-y-auto px-8 py-2">
         <DndContext
           collisionDetection={closestCenter}
           onDragEnd={handleDragEnd}
@@ -64,17 +75,6 @@ const SlideList: React.FC = () => {
             ))}
           </SortableContext>
         </DndContext>
-      </div>
-
-      {/* Add Slide Button */}
-      <div className="p-4 border-t border-gray-200">
-        <button
-          onClick={addSlide}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Slide
-        </button>
       </div>
     </div>
   );
