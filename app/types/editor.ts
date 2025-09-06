@@ -96,6 +96,8 @@ export interface EditorState {
   showPresentationModal: boolean;
   presentationModalType: string;
   showAddContentModal: boolean;
+  showDesignPopup: boolean;
+  designPopupType: 'text' | 'media' | 'shape' | 'chart' | 'table' | 'default';
 }
 
 export interface EditorActions {
@@ -145,6 +147,11 @@ export interface EditorActions {
   setShowAddContentModal: (show: boolean) => void;
   determinePresentationModalType: () => string;
   startPresentation: () => void;
+  
+  // Design popup management
+  setShowDesignPopup: (show: boolean) => void;
+  setDesignPopupType: (type: 'text' | 'media' | 'shape' | 'chart' | 'table' | 'default') => void;
+  triggerDesignPopup: (elementType: 'text' | 'media' | 'shape' | 'chart' | 'table' | 'default') => void;
   enterPresentationMode: () => void;
   exitPresentationMode: () => void;
   nextSlide: () => void;

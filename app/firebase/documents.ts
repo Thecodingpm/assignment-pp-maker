@@ -24,12 +24,26 @@ export interface Document {
   updatedAt: string;
   isDeleted?: boolean;
   deletedAt?: string | null;
+  // S3 file storage
+  s3Url?: string;
+  s3Key?: string;
+  originalFileName?: string;
+  fileSize?: number;
+  mimeType?: string;
+  isImported?: boolean;
 }
 
 export interface DocumentInput {
   title: string;
   content: string;
   type: 'assignment' | 'presentation';
+  // S3 file storage
+  s3Url?: string;
+  s3Key?: string;
+  originalFileName?: string;
+  fileSize?: number;
+  mimeType?: string;
+  isImported?: boolean;
 }
 
 // Create a new document
@@ -43,7 +57,14 @@ export const createDocument = async (userId: string, documentData: DocumentInput
       isDeleted: false,
       deletedAt: null,
       createdAt: serverTimestamp(),
-      updatedAt: serverTimestamp()
+      updatedAt: serverTimestamp(),
+      // S3 file storage
+      s3Url: documentData.s3Url || null,
+      s3Key: documentData.s3Key || null,
+      originalFileName: documentData.originalFileName || null,
+      fileSize: documentData.fileSize || null,
+      mimeType: documentData.mimeType || null,
+      isImported: documentData.isImported || false
     });
     return docRef.id;
   } catch (error: any) {
@@ -123,6 +144,13 @@ export const getUserDocuments = async (userId: string): Promise<Document[]> => {
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
         isDeleted: isDeleted,
         deletedAt: data.deletedAt?.toDate?.()?.toISOString() || null,
+        // S3 file storage
+        s3Url: data.s3Url || null,
+        s3Key: data.s3Key || null,
+        originalFileName: data.originalFileName || null,
+        fileSize: data.fileSize || null,
+        mimeType: data.mimeType || null,
+        isImported: data.isImported || false,
       });
     });
 
@@ -153,6 +181,13 @@ export const getUserTrashDocuments = async (userId: string): Promise<Document[]>
         updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
         isDeleted: isDeleted,
         deletedAt: data.deletedAt?.toDate?.()?.toISOString() || null,
+        // S3 file storage
+        s3Url: data.s3Url || null,
+        s3Key: data.s3Key || null,
+        originalFileName: data.originalFileName || null,
+        fileSize: data.fileSize || null,
+        mimeType: data.mimeType || null,
+        isImported: data.isImported || false,
       });
     });
     documents.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());

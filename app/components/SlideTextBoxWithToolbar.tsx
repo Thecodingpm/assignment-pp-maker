@@ -12,7 +12,9 @@ import { ListNode, ListItemNode } from '@lexical/list';
 import { HeadingNode } from '@lexical/rich-text';
 import { EditorState, $getRoot, $createParagraphNode, $createTextNode } from 'lexical';
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
-import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND } from 'lexical';
+import { $getSelection, $isRangeSelection, FORMAT_TEXT_COMMAND, FORMAT_ELEMENT_COMMAND, SELECTION_CHANGE_COMMAND } from 'lexical';
+import { MoreHorizontal } from 'lucide-react';
+import { useEditorStore } from '../stores/useEditorStore';
 
 interface SlideTextBoxWithToolbarProps {
   id: string;
@@ -152,6 +154,9 @@ export default function SlideTextBoxWithToolbar({
   const handleDoubleClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     setIsEditing(true);
+    
+    // Don't select all text by default - let user click where they want cursor
+    // The DoubleClickSelectPlugin will handle actual double-click selection within the editor
   }, []);
 
   // Handle click outside to stop editing
@@ -222,7 +227,7 @@ export default function SlideTextBoxWithToolbar({
         {/* Formatting Toolbar */}
         {isEditing && showToolbar && (
           <div className="absolute -top-10 left-0 bg-white border border-gray-300 rounded-lg shadow-lg p-1 flex items-center space-x-1 z-20">
-            <FormatToolbar />
+            <FormatToolbar elementId={id} />
           </div>
         )}
 
@@ -259,11 +264,18 @@ export default function SlideTextBoxWithToolbar({
                     resize: 'none',
                     overflow: 'auto'
                   } as React.CSSProperties}
+                  onClick={(e) => {
+                    // Allow natural cursor positioning
+                    e.stopPropagation();
+                  }}
                 />
               }
               placeholder={
                 <div className="absolute top-3 left-3 text-gray-400 pointer-events-none select-none">
-                  {isEditing ? 'Start typing...' : 'Double-click to edit'}
+                  {(state.text === initialText || state.text === '' || state.text === 'Click to edit text...') ? 
+                    (isEditing ? 'Start typing...' : 'Double-click to edit') : 
+                    ''
+                  }
                 </div>
               }
               ErrorBoundary={LexicalErrorBoundary}
@@ -272,6 +284,7 @@ export default function SlideTextBoxWithToolbar({
             <HistoryPlugin />
             <ListPlugin />
             <OnChangePlugin onChange={handleTextChange} />
+            <DoubleClickSelectPlugin />
             
             {/* Initial content plugin */}
             <InitialContentPlugin initialContent={initialText} />
@@ -283,11 +296,12 @@ export default function SlideTextBoxWithToolbar({
 }
 
 // Formatting Toolbar Component
-function FormatToolbar() {
+function FormatToolbar({ elementId }: { elementId: string }) {
   const [editor] = useLexicalComposerContext();
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
+  const { setSelectedElementIds } = useEditorStore();
 
   const formatText = useCallback((format: 'bold' | 'italic' | 'underline') => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, format);
@@ -296,6 +310,11 @@ function FormatToolbar() {
   const formatElement = useCallback((format: 'left' | 'center' | 'right' | 'justify') => {
     editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, format);
   }, [editor]);
+
+  const handleDesignClick = useCallback(() => {
+    // Set the current text element as selected to trigger the design popup
+    setSelectedElementIds([elementId]);
+  }, [setSelectedElementIds, elementId]);
 
   // Update toolbar state based on selection
   useEffect(() => {
@@ -376,6 +395,17 @@ function FormatToolbar() {
           <path d="M3 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1zm0 4a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H4a1 1 0 0 1-1-1z"/>
         </svg>
       </button>
+
+      <div className="w-px h-4 bg-gray-300 mx-1"></div>
+
+      {/* Three Dots - Design Options */}
+      <button
+        onClick={handleDesignClick}
+        className="p-1 rounded hover:bg-gray-100"
+        title="More Design Options"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
     </>
   );
 }
@@ -385,12 +415,45 @@ function LexicalErrorBoundary({ children }: { children: React.ReactNode }) {
   return <div className="w-full h-full">{children}</div>;
 }
 
+// Plugin to handle double-click selection
+function DoubleClickSelectPlugin() {
+  const [editor] = useLexicalComposerContext();
+  
+  useEffect(() => {
+    const handleDoubleClick = (e: MouseEvent) => {
+      editor.update(() => {
+        const rootNode = $getRoot();
+        const allText = rootNode.getTextContent();
+        
+        // Select all text on double-click
+        if (allText && allText.trim() !== '') {
+          const selection = $getSelection();
+          if ($isRangeSelection(selection)) {
+            selection.selectAll();
+          }
+        }
+      });
+    };
+
+    const contentEditable = editor.getRootElement();
+    if (contentEditable) {
+      contentEditable.addEventListener('dblclick', handleDoubleClick);
+      
+      return () => {
+        contentEditable.removeEventListener('dblclick', handleDoubleClick);
+      };
+    }
+  }, [editor]);
+
+  return null;
+}
+
 // Plugin to set initial content
 function InitialContentPlugin({ initialContent }: { initialContent: string }) {
   const [editor] = useLexicalComposerContext();
   
   useEffect(() => {
-    if (initialContent && initialContent !== 'Click to edit text...') {
+    if (initialContent && initialContent !== 'Click to edit text...' && initialContent.trim() !== '') {
       editor.update(() => {
         const root = $getRoot();
         root.clear();

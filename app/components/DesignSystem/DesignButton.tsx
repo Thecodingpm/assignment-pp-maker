@@ -6,10 +6,14 @@ import { useEditorStore } from '../../stores/useEditorStore';
 import { TextDesignPopup, MediaDesignPopup, ShapeDesignPopup, ChartDesignPopup, TableDesignPopup } from './index';
 
 const DesignButton: React.FC = () => {
-  const [showDesignPopup, setShowDesignPopup] = useState(false);
-  const [popupType, setPopupType] = useState<'text' | 'media' | 'shape' | 'chart' | 'table' | 'default'>('default');
-  
-  const { getSelectedElement, getSelectedElements } = useEditorStore();
+  const { 
+    getSelectedElement, 
+    getSelectedElements, 
+    showDesignPopup, 
+    designPopupType, 
+    setShowDesignPopup, 
+    setDesignPopupType 
+  } = useEditorStore();
 
   const handleDesignClick = () => {
     const selectedElement = getSelectedElement();
@@ -19,20 +23,20 @@ const DesignButton: React.FC = () => {
     if (selectedElements.length > 0) {
       const element = selectedElements[0];
       if (element.type === 'text') {
-        setPopupType('text');
+        setDesignPopupType('text');
       } else if (element.type === 'image') {
-        setPopupType('media');
+        setDesignPopupType('media');
       } else if (element.type === 'shape') {
-        setPopupType('shape');
+        setDesignPopupType('shape');
       } else if (element.type === 'chart') {
-        setPopupType('chart');
+        setDesignPopupType('chart');
       } else if (element.type === 'table') {
-        setPopupType('table');
+        setDesignPopupType('table');
       } else {
-        setPopupType('default');
+        setDesignPopupType('default');
       }
     } else {
-      setPopupType('default');
+      setDesignPopupType('default');
     }
     
     setShowDesignPopup(true);
@@ -43,7 +47,7 @@ const DesignButton: React.FC = () => {
   };
 
   const renderPopup = () => {
-    switch (popupType) {
+    switch (designPopupType) {
       case 'text':
         return (
           <TextDesignPopup

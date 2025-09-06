@@ -40,6 +40,8 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
   showPresentationModal: false,
   presentationModalType: 'default',
   showAddContentModal: false,
+  showDesignPopup: false,
+  designPopupType: 'default',
 
   // Slide management
   setSlides: (newSlides: Slide[]) => {
@@ -569,5 +571,21 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     
     const prevIndex = Math.max(currentSlideIndex - 1, 0);
     set({ currentSlideIndex: prevIndex });
+  },
+
+  // Design popup management
+  setShowDesignPopup: (show: boolean) => {
+    set({ showDesignPopup: show });
+  },
+
+  setDesignPopupType: (type: 'text' | 'media' | 'shape' | 'chart' | 'table' | 'default') => {
+    set({ designPopupType: type });
+  },
+
+  triggerDesignPopup: (elementType: 'text' | 'media' | 'shape' | 'chart' | 'table' | 'default') => {
+    set({ 
+      designPopupType: elementType,
+      showDesignPopup: true 
+    });
   },
 }));

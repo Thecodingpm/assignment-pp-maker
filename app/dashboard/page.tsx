@@ -8,7 +8,12 @@ import Link from 'next/link';
 import ThemeToggle from '../components/ThemeToggle';
 import DashboardSidebar from '../components/DashboardSidebar';
 import AIPopup from '../components/AIPopup';
-import { moveToTrash, restoreDocument, getUserTrashDocuments } from '../firebase/documents';
+import ImportPresentationModal from '../components/ImportPresentationModal';
+import SimpleImportModal from '../components/SimpleImportModal';
+import StorageTest from '../components/StorageTest';
+import SimpleUploadTest from '../components/SimpleUploadTest';
+import { moveToTrash, restoreDocument, getUserTrashDocuments, createDocument, getDocument } from '../firebase/documents';
+import { parsePptxFile, convertToEditorFormat } from '../utils/pptxParser';
 
 type TabType = 'assignments' | 'presentations' | 'trash' | 'analytics';
 
@@ -24,6 +29,8 @@ export default function DashboardPage() {
   const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [isAIPopupOpen, setIsAIPopupOpen] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [showSimpleImportModal, setShowSimpleImportModal] = useState(false);
 
   const fetchTrash = async () => {
     if (!user) return;
@@ -59,6 +66,99 @@ export default function DashboardPage() {
     setShowAnalyticsModal(true);
   };
 
+  const handleImportPresentation = async (file: File, parsedData?: any, s3Data?: any) => {
+    try {
+      if (!user) {
+        console.error('User not authenticated');
+        return;
+      }
+
+      console.log('Starting import process for:', file.name);
+
+      // Create document content based on parsed data or file info
+      let content = '';
+      if (parsedData) {
+        // Use parsed presentation data
+        content = JSON.stringify(parsedData);
+        console.log('Using parsed data for content');
+      } else {
+        // Create basic content for non-PPTX files
+        content = JSON.stringify({
+          title: file.name.replace(/\.[^/.]+$/, ""),
+          slides: [{
+            id: 'slide-1',
+            elements: [{
+              id: 'text-1',
+              type: 'text',
+              x: 100,
+              y: 100,
+              width: 300,
+              height: 60,
+              content: file.name.replace(/\.[^/.]+$/, ""),
+              fontSize: 24,
+              fontFamily: 'Inter',
+              fontWeight: '400',
+              color: '#000000',
+              textAlign: 'left',
+              lineHeight: 1.2,
+              isEditing: false,
+              rotation: 0,
+              zIndex: 1,
+              selected: false
+            }],
+            backgroundColor: '#ffffff'
+          }]
+        });
+        console.log('Created basic content for file');
+      }
+
+      // Create document in Firebase
+      console.log('Creating document in Firebase...');
+      const documentId = await createDocument(user.id, {
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        content: content,
+        type: 'presentation',
+        // Include storage data if available
+        ...(s3Data && {
+          s3Url: s3Data.s3Url,
+          s3Key: s3Data.s3Key,
+          originalFileName: s3Data.originalFileName,
+          fileSize: s3Data.fileSize,
+          mimeType: s3Data.mimeType,
+          isImported: s3Data.isImported
+        }),
+        // Always mark as imported
+        isImported: true,
+        originalFileName: file.name,
+        fileSize: file.size,
+        mimeType: file.type
+      });
+
+      console.log('✅ Document created successfully with ID:', documentId);
+      
+      // Refresh documents to show the new one
+      console.log('Refreshing documents list...');
+      await refreshDocuments();
+      
+      console.log('✅ Import process completed successfully!');
+      
+    } catch (error) {
+      console.error('❌ Error importing presentation:', error);
+      // Show user-friendly error message
+      alert('Failed to import presentation. Please try again.');
+    }
+  };
+
+  const handleDocumentClick = (doc: any) => {
+    if (doc.type === 'presentation') {
+      // Navigate to presentation editor with the document ID
+      router.push(`/presentation-editor?id=${doc.id}`);
+    } else if (doc.type === 'assignment') {
+      // Navigate to assignment editor
+      router.push(`/assignment-editor/editor?id=${doc.id}`);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
@@ -84,6 +184,16 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <div className="flex-1 bg-gray-50 overflow-y-auto">
         <div className="p-8">
+          {/* Storage Configuration Test */}
+          <div className="mb-6">
+            <StorageTest />
+          </div>
+          
+          {/* Simple Upload Test */}
+          <div className="mb-6">
+            <SimpleUploadTest />
+          </div>
+          
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-gray-900">Recents</h1>
             
@@ -155,7 +265,10 @@ export default function DashboardPage() {
               <p className="text-sm text-gray-600">Set up a space for prospects and clients</p>
             </button>
 
-            <button className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
+            <button 
+              onClick={() => setShowSimpleImportModal(true)}
+              className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group"
+            >
               <div className="flex items-center space-x-3 mb-3">
                 <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
                   <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -218,6 +331,7 @@ export default function DashboardPage() {
             {currentDocuments.map((doc) => (
               <div
                 key={doc.id}
+                onClick={() => handleDocumentClick(doc)}
                 className="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 transition-colors cursor-pointer group"
               >
                 <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center relative">
@@ -385,6 +499,140 @@ export default function DashboardPage() {
         isOpen={isAIPopupOpen} 
         onClose={() => setIsAIPopupOpen(false)} 
       />
+
+      {/* Import Presentation Modal */}
+        <ImportPresentationModal
+          isVisible={showImportModal}
+          onClose={() => setShowImportModal(false)}
+          onImport={handleImportPresentation}
+          userId={user?.id}
+        />
+
+        <SimpleImportModal
+          isVisible={showSimpleImportModal}
+          onClose={() => setShowSimpleImportModal(false)}
+          onImport={async (file) => {
+            console.log('Simple import:', file.name);
+            // Create document directly without storage upload
+            try {
+              if (!user) {
+                console.error('User not authenticated');
+                return;
+              }
+
+              console.log('Creating document for:', file.name);
+              
+              let documentContent;
+              
+              // Check if it's a PPTX file and parse it
+              if (file.name.toLowerCase().endsWith('.pptx')) {
+                console.log('📄 Parsing PPTX file...');
+                try {
+                  const parsedPresentation = await parsePptxFile(file);
+                  console.log('📄 Parsed presentation:', parsedPresentation);
+                  
+                  const editorFormat = convertToEditorFormat(parsedPresentation);
+                  console.log('📄 Editor format:', editorFormat);
+                  
+                  documentContent = {
+                    title: editorFormat.title,
+                    slides: editorFormat.slides
+                  };
+                } catch (error) {
+                  console.error('❌ Error parsing PPTX:', error);
+                  // Fallback to generic slide
+                  documentContent = {
+                    title: file.name.replace(/\.[^/.]+$/, ""),
+                    slides: [{
+                      id: 'slide-1',
+                      elements: [{
+                        id: 'text-1',
+                        type: 'text',
+                        x: 100,
+                        y: 100,
+                        width: 300,
+                        height: 60,
+                        content: `Error parsing: ${file.name}`,
+                        fontSize: 24,
+                        fontFamily: 'Inter',
+                        fontWeight: '400',
+                        color: '#FF0000',
+                        textAlign: 'left',
+                        lineHeight: 1.2,
+                        isEditing: false,
+                        rotation: 0,
+                        zIndex: 1,
+                        selected: false
+                      }],
+                      backgroundColor: '#ffffff'
+                    }]
+                  };
+                }
+              } else {
+                // For non-PPTX files, create a generic slide
+                documentContent = {
+                  title: file.name.replace(/\.[^/.]+$/, ""),
+                  slides: [{
+                    id: 'slide-1',
+                    elements: [{
+                      id: 'text-1',
+                      type: 'text',
+                      x: 100,
+                      y: 100,
+                      width: 300,
+                      height: 60,
+                      content: `Imported: ${file.name.replace(/\.[^/.]+$/, "")}`,
+                      fontSize: 24,
+                      fontFamily: 'Inter',
+                      fontWeight: '400',
+                      color: '#000000',
+                      textAlign: 'left',
+                      lineHeight: 1.2,
+                      isEditing: false,
+                      rotation: 0,
+                      zIndex: 1,
+                      selected: false
+                    }],
+                    backgroundColor: '#ffffff'
+                  }]
+                };
+              }
+              
+              console.log('📄 Final document content to be stored:', documentContent);
+              
+              const documentId = await createDocument(user.id, {
+                title: documentContent.title,
+                content: JSON.stringify(documentContent),
+                type: 'presentation',
+                isImported: true,
+                originalFileName: file.name,
+                fileSize: file.size,
+                mimeType: file.type
+              });
+
+              console.log('✅ Document created with ID:', documentId);
+              
+              // Test: Verify the document was created correctly
+              console.log('🔍 Testing document retrieval...');
+              const testDoc = await getDocument(documentId);
+              console.log('🔍 Retrieved document:', testDoc);
+              if (testDoc && testDoc.content) {
+                const testContent = JSON.parse(testDoc.content);
+                console.log('🔍 Parsed content:', testContent);
+              }
+              
+              // Refresh documents to show the new one
+              await refreshDocuments();
+              
+              setShowSimpleImportModal(false);
+              console.log('✅ Import completed - check "By me" section!');
+              
+            } catch (error) {
+              console.error('❌ Error creating document:', error);
+              alert('Failed to create document. Please try again.');
+            }
+          }}
+        />
 
       {/* Analytics Modal */}
       {showAnalyticsModal && selectedDocument && (
