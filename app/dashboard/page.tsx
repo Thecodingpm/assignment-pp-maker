@@ -305,9 +305,9 @@ export default function DashboardPage() {
     }
   };
 
-  const handleAIGeneration = async (type: 'presentation' | 'logo', prompt: string, options: any) => {
+  const handleAIGeneration = async (type: 'presentation' | 'logo', prompt: string, options: any, generationMode?: 'single' | 'variations') => {
     try {
-      console.log('🤖 AI Generation Request:', { type, prompt, options });
+      console.log('🤖 AI Generation Request:', { type, prompt, options, generationMode });
       
       if (type === 'presentation') {
         // Use existing AI generation endpoint for presentations
@@ -331,8 +331,10 @@ export default function DashboardPage() {
         // Navigate to presentation editor
         router.push('/presentation-editor');
       } else if (type === 'logo') {
-        // Use new logo generation endpoint
-        const response = await fetch('/api/generate-logo', {
+        // Choose endpoint based on generation mode
+        const endpoint = generationMode === 'variations' ? '/api/generate-logo-variations' : '/api/generate-logo';
+        
+        const response = await fetch(endpoint, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

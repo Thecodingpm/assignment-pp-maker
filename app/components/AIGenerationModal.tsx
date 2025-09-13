@@ -6,7 +6,7 @@ import { X, Sparkles, FileText, Palette, Wand2 } from 'lucide-react';
 interface AIGenerationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onGenerate: (type: 'presentation' | 'logo', prompt: string, options: any) => void;
+  onGenerate: (type: 'presentation' | 'logo', prompt: string, options: any, generationMode?: 'single' | 'variations') => void;
 }
 
 export default function AIGenerationModal({ isOpen, onClose, onGenerate }: AIGenerationModalProps) {
@@ -25,7 +25,7 @@ export default function AIGenerationModal({ isOpen, onClose, onGenerate }: AIGen
     
     setIsGenerating(true);
     try {
-      await onGenerate(selectedType, prompt, options);
+      await onGenerate(selectedType, prompt, options, selectedType === 'logo' ? generationMode : undefined);
       onClose();
     } catch (error) {
       console.error('Generation failed:', error);
