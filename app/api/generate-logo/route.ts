@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+interface LogoOptions {
+  style?: 'professional' | 'minimalist' | 'creative' | 'corporate';
+  color?: 'modern' | 'vibrant' | 'monochrome' | 'pastel';
+  industry?: 'general' | 'tech' | 'finance' | 'education' | 'marketing';
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, options } = await request.json();
+    const { prompt, options }: { prompt: string; options?: LogoOptions } = await request.json();
     
     if (!prompt) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
@@ -32,21 +38,25 @@ export async function POST(request: NextRequest) {
     };
 
     const enhancedPrompt = `Create a professional logo design for: ${prompt}. 
-    Style: ${styleDescriptors[options.style] || styleDescriptors.professional}. 
-    Colors: ${colorDescriptors[options.color] || colorDescriptors.modern}. 
-    Industry: ${industryDescriptors[options.industry] || industryDescriptors.general}. 
+    Style: ${options?.style ? styleDescriptors[options.style] : styleDescriptors.professional}. 
+    Colors: ${options?.color ? colorDescriptors[options.color] : colorDescriptors.modern}. 
+    Industry: ${options?.industry ? industryDescriptors[options.industry] : industryDescriptors.general}. 
     Requirements: High-quality vector-style logo, scalable, professional branding, clean typography, memorable, timeless design, suitable for business cards and websites, no text in the logo itself, just the symbol/icon, modern and contemporary aesthetic, award-winning design quality.`;
 
+    // Use OpenAI DALL-E API
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
+        model: 'dall-e-3',
         prompt: enhancedPrompt,
         n: 1,
-        size: "1024x1024"
+        size: '1024x1024',
+        quality: 'standard',
+        style: 'natural'
       }),
     });
 
@@ -57,6 +67,11 @@ export async function POST(request: NextRequest) {
     }
 
     const data = await response.json();
+    
+    if (!data.data || !data.data[0] || !data.data[0].url) {
+      console.error('Invalid response from OpenAI:', data);
+      return NextResponse.json({ error: 'Invalid response from AI service' }, { status: 500 });
+    }
     
     return NextResponse.json({
       success: true,
