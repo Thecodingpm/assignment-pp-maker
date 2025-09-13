@@ -356,8 +356,9 @@ function LogoEditorContent() {
         const parsedData = JSON.parse(aiData);
         console.log('Raw AI logo data from localStorage:', parsedData);
         
-        // Create a slide with the generated logo image
+        // Handle single logo or multiple variations
         if (parsedData && parsedData.imageUrl) {
+          // Single logo
           console.log('Creating logo slide with AI-generated image:', parsedData.imageUrl);
           
           const logoSlide = {
@@ -386,8 +387,38 @@ function LogoEditorContent() {
           localStorage.removeItem('aiGeneratedLogo');
           
           console.log('AI logo loaded successfully');
+        } else if (parsedData && parsedData.logos && Array.isArray(parsedData.logos)) {
+          // Multiple logo variations
+          console.log('Creating slides with AI-generated logo variations:', parsedData.logos);
+          
+          const logoSlides = parsedData.logos.map((logo: any, index: number) => ({
+            id: `slide-${index + 1}`,
+            backgroundColor: '#ffffff',
+            elements: [{
+              id: `logo-image-${index + 1}`,
+              type: 'image' as const,
+              x: 200,
+              y: 150,
+              width: 400,
+              height: 300,
+              src: logo.imageUrl,
+              alt: `AI Generated Logo - ${logo.style}`,
+              rotation: 0,
+              zIndex: 1,
+              selected: false,
+              isEditing: false
+            }]
+          }));
+          
+          console.log('Setting AI-generated logo variations slides:', logoSlides);
+          setSlides(logoSlides);
+          
+          // Clear the localStorage after loading to prevent reloading on refresh
+          localStorage.removeItem('aiGeneratedLogo');
+          
+          console.log('AI logo variations loaded successfully');
         } else {
-          console.warn('Invalid AI logo structure - no imageUrl found:', parsedData);
+          console.warn('Invalid AI logo structure - no imageUrl or logos found:', parsedData);
           createDefaultSlide('AI Logo - Invalid Data');
         }
       } catch (error) {
