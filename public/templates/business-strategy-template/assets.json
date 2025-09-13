@@ -1,0 +1,19 @@
+{
+  "images": [],
+  "icons": [],
+  "fonts": [
+    {
+      "id": "font-1",
+      "name": "Inter",
+      "path": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap",
+      "type": "google-font",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ]
+    }
+  ],
+  "backgrounds": []
+}

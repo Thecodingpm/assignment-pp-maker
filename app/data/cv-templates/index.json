@@ -1,0 +1,44 @@
+{
+  "templates": [
+    {
+      "id": "rick-tang-cv",
+      "name": "Rick Tang CV Template",
+      "description": "Professional two-column CV with green sidebar - exact replica of Rick Tang's design",
+      "category": "professional",
+      "preview": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=225&fit=crop&crop=center",
+      "file": "professional/rick-tang-cv.json"
+    },
+    {
+      "id": "minimalist-cv",
+      "name": "Modern Minimalist CV",
+      "description": "Clean, modern CV with subtle gradients and minimalist design",
+      "category": "modern",
+      "preview": "https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=400&h=225&fit=crop&crop=center",
+      "file": "modern/minimalist-cv.json"
+    },
+    {
+      "id": "creative-designer-cv",
+      "name": "Creative Designer CV",
+      "description": "Bold, colorful CV perfect for creative professionals and designers",
+      "category": "creative",
+      "preview": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=400&h=225&fit=crop&crop=center",
+      "file": "creative/creative-designer-cv.json"
+    },
+    {
+      "id": "executive-professional-cv",
+      "name": "Executive Professional CV",
+      "description": "Sophisticated CV design for senior executives and C-level positions",
+      "category": "executive",
+      "preview": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=225&fit=crop&crop=center",
+      "file": "executive/executive-professional-cv.json"
+    },
+    {
+      "id": "tech-developer-cv",
+      "name": "Tech Developer CV",
+      "description": "Modern tech-focused CV perfect for developers and engineers",
+      "category": "modern",
+      "preview": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center",
+      "file": "modern/tech-developer-cv.json"
+    }
+  ]
+}

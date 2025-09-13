@@ -1,0 +1,27 @@
+{
+  "title": "Business Strategy Presentation",
+  "description": "Professional business strategy template",
+  "keywords": [
+    "business",
+    "strategy",
+    "planning"
+  ],
+  "category": "Business",
+  "subcategory": "Strategy",
+  "targetAudience": "Executives, Managers",
+  "difficulty": "Intermediate",
+  "estimatedDuration": "15-20 minutes",
+  "slideCount": 6,
+  "createdAt": "2024-01-15T10:00:00Z",
+  "updatedAt": "2024-01-15T10:00:00Z",
+  "author": "System",
+  "version": "1.0.0",
+  "license": "MIT",
+  "tags": [
+    "business",
+    "strategy",
+    "professional"
+  ],
+  "language": "en",
+  "region": "global"
+}

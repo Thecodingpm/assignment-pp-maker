@@ -1,0 +1,36 @@
+{
+  "name": "Business Professional",
+  "colors": {
+    "primary": "#1a365d",
+    "secondary": "#4a5568",
+    "accent": "#3182ce",
+    "background": "#ffffff",
+    "surface": "#f7fafc",
+    "text": "#2d3748",
+    "textSecondary": "#718096"
+  },
+  "fonts": {
+    "heading": "Inter",
+    "body": "Inter",
+    "accent": "Inter"
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 24,
+    "xl": 32,
+    "xxl": 48
+  },
+  "borderRadius": {
+    "sm": 4,
+    "md": 8,
+    "lg": 12,
+    "xl": 16
+  },
+  "shadows": {
+    "sm": "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+    "md": "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+    "lg": "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
+  }
+}

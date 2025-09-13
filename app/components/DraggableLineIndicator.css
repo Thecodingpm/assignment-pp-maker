@@ -1,0 +1,89 @@
+.draggable-line-indicator {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1000;
+  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  opacity: 0;
+}
+
+.draggable-line-indicator.visible {
+  opacity: 1;
+}
+
+.draggable-line-indicator .line {
+  position: absolute;
+  background: #ff6b35;
+  width: 3px;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 107, 53, 0.4);
+  transition: all 0.15s ease-in-out;
+  height: 100%;
+}
+
+.draggable-line-indicator.snapped .line {
+  background: #ff4500;
+  box-shadow: 0 0 12px rgba(255, 69, 0, 0.6);
+  width: 5px;
+}
+
+.draggable-line-indicator .line.vibrate {
+  animation: vibrate 150ms ease-in-out;
+}
+
+@keyframes vibrate {
+  0%, 100% { 
+    transform: translateX(0); 
+  }
+  25% { 
+    transform: translateX(-2px); 
+  }
+  75% { 
+    transform: translateX(2px); 
+  }
+}
+
+.draggable-line-indicator .line::before,
+.draggable-line-indicator .line::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  background: #ff6b35;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.draggable-line-indicator .line::before {
+  top: -4px;
+}
+
+.draggable-line-indicator .line::after {
+  bottom: -4px;
+}
+
+.draggable-line-indicator.snapped .line::before,
+.draggable-line-indicator.snapped .line::after {
+  background: #ff4500;
+  width: 10px;
+  height: 10px;
+}
+
+/* Custom line colors */
+.draggable-line-indicator.custom-color .line {
+  background: var(--line-color, #ff6b35);
+}
+
+.draggable-line-indicator.custom-color .line::before,
+.draggable-line-indicator.custom-color .line::after {
+  background: var(--line-color, #ff6b35);
+}
+
+.draggable-line-indicator.custom-color.snapped .line {
+  background: var(--snap-color, #ff4500);
+}
+
+.draggable-line-indicator.custom-color.snapped .line::before,
+.draggable-line-indicator.custom-color.snapped .line::after {
+  background: var(--snap-color, #ff4500);
+}

@@ -1,0 +1,19 @@
+{
+  "images": [],
+  "icons": [],
+  "fonts": [
+    {
+      "id": "font-1",
+      "name": "Poppins",
+      "path": "https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap",
+      "type": "google-font",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ]
+    }
+  ],
+  "backgrounds": []
+}

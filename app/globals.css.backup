@@ -1,0 +1,875 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS for AI generation features */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Animation utilities */
+@keyframes breathe {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ===== KONVA CANVAS STYLES - CLEAN AND OPTIMIZED ===== */
+/* Essential Konva styles to prevent glitches and ensure smooth operation */
+.konvajs-content {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Remove any conflicting styles */
+.konvajs-content canvas {
+  display: block !important;
+  touch-action: none !important;
+  image-rendering: -webkit-optimize-contrast !important;
+  image-rendering: crisp-edges !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+/* Ensure smooth canvas rendering */
+.konvajs-content {
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  transform: translateZ(0) !important;
+  backface-visibility: hidden !important;
+  perspective: 1000px !important;
+}
+
+/* Prevent any CSS conflicts with Konva */
+.konvajs-content * {
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ===== PRESENTATION EDITOR SPECIFIC STYLES ===== */
+/* Clean styles for the presentation editor */
+.presentation-editor {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Textarea overlay styles for editing */
+.presentation-editor textarea {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+  outline: none !important;
+  border: none !important;
+  background: transparent !important;
+  resize: none !important;
+  overflow: hidden !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+
+/* ===== CLEAN LEXICAL EDITOR STYLES ===== */
+/* Remove ALL conflicting styles and create clean, minimal editor styles */
+
+/* Basic editor container */
+.lexical-editor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ContentEditable - Clean and minimal */
+.lexical-editor [contenteditable="true"] {
+  outline: none !important;
+  border: none !important;
+  background: transparent !important;
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.5 !important;
+  caret-color: var(--cursor-color, #000000) !important;
+  -webkit-caret-color: var(--cursor-color, #000000) !important;
+  -moz-caret-color: var(--cursor-color, #000000) !important;
+  
+  /* Remove ALL transitions and animations */
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  
+  /* Ensure proper text selection */
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
+  
+  /* Remove any margin/padding that could cause glitches */
+  margin: 0 !important;
+  padding: 0 !important;
+  
+  /* Ensure smooth typing */
+  text-rendering: optimizeLegibility !important;
+  -webkit-font-smoothing: antialiased !important;
+  -moz-osx-font-smoothing: grayscale !important;
+}
+
+/* Remove ALL focus styles that could interfere */
+.lexical-editor [contenteditable="true"]:focus {
+  outline: none !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Remove ALL transitions from editor children */
+.lexical-editor [contenteditable="true"] *,
+.lexical-editor * {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* EXCEPTION: Allow image containers to have transforms and transitions for dragging */
+.lexical-editor .image-container,
+.lexical-editor .image-container * {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+  animation: none !important;
+  pointer-events: auto !important;
+}
+
+/* Allow image containers to be draggable */
+.lexical-editor .image-container {
+  position: relative !important;
+  display: inline-block !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  pointer-events: auto !important;
+  z-index: 1 !important;
+}
+
+/* Ensure images are draggable */
+.lexical-editor .inserted-image {
+  pointer-events: auto !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  -webkit-user-drag: none !important;
+  -khtml-user-drag: none !important;
+  -moz-user-drag: none !important;
+  -o-user-drag: none !important;
+  user-drag: none !important;
+}
+
+/* When dragging */
+.lexical-editor .image-container.dragging {
+  cursor: grabbing !important;
+  z-index: 1000 !important;
+}
+
+/* Clean text nodes - allow color inheritance */
+.lexical-editor [data-lexical-text="true"] {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean paragraph nodes */
+.lexical-editor p {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean span nodes */
+.lexical-editor span {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean div nodes */
+.lexical-editor div {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean selection styles */
+.lexical-editor::selection,
+.lexical-editor *::selection {
+  background-color: #b3d4fc !important;
+}
+
+/* Remove ALL conflicting data-lexical-editor styles */
+[data-lexical-editor] {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ===== PAGE CONTAINER STYLES ===== */
+.page-container {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  will-change: auto !important;
+  scroll-margin-top: 0 !important;
+  scroll-margin-bottom: 0 !important;
+}
+
+/* ===== COLOR BOX STYLES ===== */
+.color-box {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.color-box:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.color-box.selected {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px #007acc;
+}
+
+/* ===== BASIC RESET ===== */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden !important;
+  scroll-behavior: auto !important;
+}
+
+/* ===== TOOLBAR STYLES ===== */
+.left-toolbar {
+  position: fixed !important;
+  z-index: 50 !important;
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* Custom scrollbar for left toolbar */
+.left-toolbar .overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .left-toolbar .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #94a3b8;
+}
+
+/* ===== SCROLLBAR STYLES ===== */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== TRANSLATION BUTTON STYLES ===== */
+.translation-button-top {
+  position: relative;
+  z-index: 10;
+}
+
+.translation-button-top:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+/* ===== TOOLBAR POSITIONING ===== */
+.top-toolbar button {
+  flex-shrink: 0;
+}
+
+.top-toolbar {
+  position: relative;
+  z-index: 100;
+}
+
+.translation-button-container {
+  position: relative;
+  z-index: 1000;
+  background: white;
+}
+
+.top-toolbar + * {
+  margin-top: 20px;
+  padding-top: 10px;
+}
+
+.sticky.top-0 {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  margin-bottom: 20px;
+}
+
+main, .main-content, .editor-content {
+  margin-top: 20px !important;
+  padding-top: 10px !important;
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* ===== MATH SYMBOLS DROPDOWN STYLES ===== */
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar {
+  width: 8px;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #64748b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+.dark .math-symbols-dropdown .overflow-y-auto::-webkit-scrollbar-thumb:active {
+  background: #94a3b8;
+}
+
+/* ===== FONT SIZE AND LINE SPACING SUPPORT ===== */
+/* Line spacing support - allow dynamic line-height changes */
+.lexical-editor[data-line-spacing] {
+  line-height: var(--line-spacing, 1.5) !important;
+}
+
+.lexical-editor[data-line-spacing] * {
+  line-height: var(--line-spacing, 1.5) !important;
+}
+
+/* Font size support - allow dynamic font-size changes */
+.lexical-editor[data-font-size] {
+  font-size: var(--current-font-size, 16px) !important;
+}
+
+.lexical-editor[data-font-size] * {
+  font-size: var(--current-font-size, 16px) !important;
+}
+
+/* Font family support - allow dynamic font-family changes */
+.lexical-editor[data-font-family] {
+  font-family: var(--current-font-family, "Inter", sans-serif) !important;
+}
+
+.lexical-editor[data-font-family] * {
+  font-family: var(--current-font-family, "Inter", sans-serif) !important;
+}
+
+/* ===== CUSTOM SCROLLBAR STYLES ===== */
+/* Thin scrollbar for font dropdown */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  transition: background-color 0.2s ease;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Dark mode scrollbar */
+.dark .scrollbar-thin::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.dark .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Font dropdown specific scrollbar */
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+  margin: 4px 0;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+  transform: scaleX(1.2);
+}
+
+/* Dark mode font dropdown scrollbar */
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+.dark .font-dropdown-container .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Enhanced font dropdown scrolling */
+.font-dropdown-container .overflow-y-auto {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.dark .font-dropdown-container .overflow-y-auto {
+  scrollbar-color: #475569 #1e293b;
+}
+
+/* Smooth scrolling for font dropdown */
+.font-dropdown-container * {
+  scroll-behavior: smooth;
+}
+
+/* ===== DRAGGABLE LINE INDICATOR STYLES ===== */
+/* Import the draggable line indicator styles */
+@import './components/DraggableLineIndicator.css';
+
+/* Draggable elements */
+.draggable-block {
+  cursor: grab;
+  user-select: none;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.draggable-block:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.draggable-block:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.draggable-block.dragging {
+  opacity: 0.5;
+  transform: rotate(2deg);
+  z-index: 1000;
+}
+
+/* Editor elements that can be dragged */
+.lexical-editor [data-lexical-key] {
+  cursor: grab;
+  transition: background-color 0.2s ease;
+}
+
+.lexical-editor [data-lexical-key]:hover {
+  background-color: rgba(255, 107, 53, 0.05);
+}
+
+.lexical-editor [data-lexical-key].dragging {
+  opacity: 0.7;
+  background-color: rgba(255, 107, 53, 0.1);
+}
+
+/* ===== IMAGE STYLES ===== */
+/* Ensure images display properly in the editor */
+.lexical-editor .image-container {
+  display: inline-block !important;
+  margin: 8px 0;
+  max-width: 100%;
+  position: relative !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+}
+
+.lexical-editor .inserted-image {
+  max-width: 100%;
+  height: auto;
+  display: block !important;
+  cursor: grab !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transform: inherit !important;
+  pointer-events: auto !important;
+}
+
+/* Image selection and interaction styles */
+.lexical-editor .image-container:hover {
+  outline: 2px solid rgba(59, 130, 246, 0.3);
+  outline-offset: 2px;
+}
+
+.lexical-editor .image-container.selected {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Resize handle styles */
+.lexical-editor .resize-handle {
+  position: absolute;
+  background: #3b82f6;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: nwse-resize;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+}
+
+.lexical-editor .resize-handle:hover {
+  transform: scale(1.2);
+  background: #2563eb;
+}
+
+/* Drag handle styles */
+.lexical-editor .drag-handle {
+  position: absolute;
+  background: rgba(59, 130, 246, 0.9);
+  border: 3px solid white;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
+}
+
+.lexical-editor .drag-handle:hover {
+  transform: scale(1.1);
+}
+
+.lexical-editor .drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Delete button styles */
+.lexical-editor .delete-button {
+  position: absolute;
+  background: #ef4444;
+  border: 2px solid white;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease;
+  color: white;
+  font-size: 10px;
+}
+
+.lexical-editor .delete-button:hover {
+  transform: scale(1.2);
+  background: #dc2626;
+}
+
+/* Clean heading styles */
+.lexical-editor h1,
+.lexical-editor h2,
+.lexical-editor h3,
+.lexical-editor h4,
+.lexical-editor h5,
+.lexical-editor h6 {
+  margin: 0 !important;
+  padding: 0 !important;
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean list styles */
+.lexical-editor ul,
+.lexical-editor ol {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor li {
+  margin: 0 !important;
+  padding: 0 !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean formatting styles */
+.lexical-editor strong,
+.lexical-editor b {
+  font-weight: bold !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor em,
+.lexical-editor i {
+  font-style: italic !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor u {
+  text-decoration: underline !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+.lexical-editor s,
+.lexical-editor strike {
+  text-decoration: line-through !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Clean selection styles */
+.lexical-editor::selection,
+.lexical-editor *::selection {
+  background-color: #b3d4fc !important;
+}
+
+/* Remove ALL conflicting data-lexical-editor styles */
+[data-lexical-editor] {
+  font-family: inherit !important;
+  line-height: inherit !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* ===== EDITOR ELEMENT POSITIONING FIXES ===== */
+/* Ensure editor elements can be positioned freely without interference */
+.presentation-editor .slide-canvas {
+  position: relative !important;
+  overflow: visible !important;
+}
+
+/* Remove the problematic global positioning that was breaking everything */
+.presentation-editor .slide-canvas * {
+  /* Remove the absolute positioning that was breaking element display */
+  position: static !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Allow elements to be positioned absolutely when they have the absolute class */
+.presentation-editor .slide-canvas .absolute {
+  position: absolute !important;
+}
+
+/* Ensure proper element display without interfering with positioning */
+.presentation-editor .slide-canvas .image-element,
+.presentation-editor .slide-canvas [data-type="image"] {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+}
+
+.presentation-editor .slide-canvas .text-element,
+.presentation-editor .slide-canvas [data-type="text"] {
+  display: block !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+
+.presentation-editor .slide-canvas .shape-element,
+.presentation-editor .slide-canvas [data-type="shape"] {
+  display: block !important;
+}
+
+/* Remove any CSS that might interfere with element positioning */
+.presentation-editor * {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+}
+
+/* ===== ADDITIONAL ELEMENT DISPLAY FIXES ===== */
+/* Ensure all editor elements are visible and properly positioned */
+.presentation-editor .slide-canvas .absolute {
+  position: absolute !important;
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix image display issues */
+.presentation-editor .slide-canvas img {
+  display: block !important;
+  max-width: 100% !important;
+  height: auto !important;
+  object-fit: cover !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Fix text element display */
+.presentation-editor .slide-canvas .text-element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: pre-wrap !important;
+  word-wrap: break-word !important;
+}
+
+/* Fix shape element display */
+.presentation-editor .slide-canvas .shape-element {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Ensure no elements are hidden by default */
+.presentation-editor .slide-canvas * {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ===== END EDITOR ELEMENT POSITIONING FIXES ===== */
+

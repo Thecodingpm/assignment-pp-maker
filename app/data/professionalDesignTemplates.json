@@ -1,0 +1,192 @@
+{
+  "templates": [
+    {
+      "id": "modern-creative-portfolio",
+      "name": "Modern Creative Portfolio",
+      "description": "Professional creative design showcase",
+      "category": "creative",
+      "preview": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=225&fit=crop&crop=center",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#f8f6f0",
+          "backgroundImage": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop&crop=center",
+          "elements": [
+            {
+              "id": "overlay",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "fillColor": "#f8f6f0CC",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            },
+            {
+              "id": "title-text",
+              "type": "text",
+              "content": "Creative Portfolio",
+              "x": 960,
+              "y": 400,
+              "width": 400,
+              "height": 80,
+              "fontSize": 48,
+              "fontFamily": "Playfair Display",
+              "fontWeight": 700,
+              "color": "#2c3e50",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            },
+            {
+              "id": "subtitle-text",
+              "type": "text",
+              "content": "Showcasing creative excellence",
+              "x": 960,
+              "y": 500,
+              "width": 400,
+              "height": 40,
+              "fontSize": 20,
+              "fontFamily": "Inter",
+              "fontWeight": 400,
+              "color": "#7f8c8d",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            }
+          ],
+          "imageRequests": []
+        }
+      ]
+    },
+    {
+      "id": "business-presentation",
+      "name": "Business Presentation",
+      "description": "Professional business presentation template",
+      "category": "business",
+      "preview": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=225&fit=crop&crop=center",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#ffffff",
+          "elements": [
+            {
+              "id": "header-bg",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 200,
+              "fillColor": "#1e3a8a",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            },
+            {
+              "id": "title-text",
+              "type": "text",
+              "content": "Business Presentation",
+              "x": 960,
+              "y": 400,
+              "width": 500,
+              "height": 80,
+              "fontSize": 42,
+              "fontFamily": "Inter",
+              "fontWeight": 700,
+              "color": "#1e3a8a",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            },
+            {
+              "id": "subtitle-text",
+              "type": "text",
+              "content": "Professional business template",
+              "x": 960,
+              "y": 500,
+              "width": 400,
+              "height": 40,
+              "fontSize": 18,
+              "fontFamily": "Inter",
+              "fontWeight": 400,
+              "color": "#6b7280",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            }
+          ],
+          "imageRequests": []
+        }
+      ]
+    },
+    {
+      "id": "startup-pitch",
+      "name": "Startup Pitch Deck",
+      "description": "Modern startup pitch presentation template",
+      "category": "startup",
+      "preview": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=225&fit=crop&crop=center",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#ffffff",
+          "elements": [
+            {
+              "id": "gradient-bg",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "fillColor": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            },
+            {
+              "id": "title-text",
+              "type": "text",
+              "content": "Startup Pitch",
+              "x": 960,
+              "y": 400,
+              "width": 400,
+              "height": 80,
+              "fontSize": 48,
+              "fontFamily": "Inter",
+              "fontWeight": 800,
+              "color": "#ffffff",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            },
+            {
+              "id": "subtitle-text",
+              "type": "text",
+              "content": "Innovation meets opportunity",
+              "x": 960,
+              "y": 500,
+              "width": 400,
+              "height": 40,
+              "fontSize": 20,
+              "fontFamily": "Inter",
+              "fontWeight": 400,
+              "color": "#e2e8f0",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            }
+          ],
+          "imageRequests": []
+        }
+      ]
+    }
+  ]
+}
+

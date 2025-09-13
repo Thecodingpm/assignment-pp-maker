@@ -1,0 +1,262 @@
+{
+  "templates": [
+    {
+      "id": "modern-business-pitch",
+      "name": "Modern Business Pitch",
+      "description": "Professional business presentation with modern design",
+      "category": "business",
+      "preview": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=225&fit=crop",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#1e40af",
+          "backgroundImage": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop&crop=center",
+          "elements": [
+            {
+              "id": "overlay",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "fillColor": "rgba(30, 64, 175, 0.8)",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            },
+            {
+              "id": "main-title",
+              "type": "text",
+              "content": "Your Company Name",
+              "x": 960,
+              "y": 350,
+              "width": 800,
+              "height": 120,
+              "fontSize": 56,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ffffff",
+              "textAlign": "center",
+              "zIndex": 2
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "content": "Revolutionary Solution for Modern Business",
+              "x": 960,
+              "y": 500,
+              "width": 600,
+              "height": 80,
+              "fontSize": 28,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#e0e7ff",
+              "textAlign": "center",
+              "zIndex": 2
+            },
+            {
+              "id": "accent-line",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 860,
+              "y": 480,
+              "width": 200,
+              "height": 4,
+              "fillColor": "#3b82f6",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 2
+            }
+          ]
+        },
+        {
+          "id": "slide-2",
+          "type": "content",
+          "backgroundColor": "#ffffff",
+          "elements": [
+            {
+              "id": "slide-title",
+              "type": "text",
+              "content": "The Problem",
+              "x": 960,
+              "y": 150,
+              "width": 800,
+              "height": 80,
+              "fontSize": 42,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#1e40af",
+              "textAlign": "center",
+              "zIndex": 1
+            },
+            {
+              "id": "problem-content",
+              "type": "text",
+              "content": "• Current solutions are outdated and inefficient\n• High costs and low productivity\n• Poor user experience and satisfaction\n• Limited scalability and flexibility",
+              "x": 960,
+              "y": 300,
+              "width": 700,
+              "height": 300,
+              "fontSize": 26,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#374151",
+              "textAlign": "left",
+              "zIndex": 1
+            },
+            {
+              "id": "problem-image",
+              "type": "image",
+              "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=400&fit=crop&crop=center",
+              "alt": "Problem illustration",
+              "x": 1200,
+              "y": 250,
+              "width": 500,
+              "height": 400,
+              "zIndex": 1
+            },
+            {
+              "id": "accent-shape",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 200,
+              "y": 280,
+              "width": 6,
+              "height": 120,
+              "fillColor": "#3b82f6",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            }
+          ]
+        },
+        {
+          "id": "slide-3",
+          "type": "content",
+          "backgroundColor": "#f8fafc",
+          "elements": [
+            {
+              "id": "slide-title",
+              "type": "text",
+              "content": "Our Solution",
+              "x": 960,
+              "y": 150,
+              "width": 800,
+              "height": 80,
+              "fontSize": 42,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#059669",
+              "textAlign": "center",
+              "zIndex": 1
+            },
+            {
+              "id": "solution-content",
+              "type": "text",
+              "content": "• AI-powered automation and optimization\n• 50% cost reduction and 3x productivity\n• Intuitive design with seamless UX\n• Cloud-native and infinitely scalable",
+              "x": 960,
+              "y": 300,
+              "width": 700,
+              "height": 300,
+              "fontSize": 26,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#374151",
+              "textAlign": "left",
+              "zIndex": 1
+            },
+            {
+              "id": "solution-image",
+              "type": "image",
+              "src": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&h=400&fit=crop&crop=center",
+              "alt": "Solution illustration",
+              "x": 1200,
+              "y": 250,
+              "width": 500,
+              "height": 400,
+              "zIndex": 1
+            },
+            {
+              "id": "accent-shape",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 200,
+              "y": 280,
+              "width": 6,
+              "height": 120,
+              "fillColor": "#10b981",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "startup-pitch-modern",
+      "name": "Modern Startup Pitch",
+      "description": "Clean and modern startup presentation",
+      "category": "startup",
+      "preview": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=225&fit=crop",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#059669",
+          "backgroundImage": "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1920&h=1080&fit=crop&crop=center",
+          "elements": [
+            {
+              "id": "overlay",
+              "type": "shape",
+              "shapeType": "rectangle",
+              "x": 0,
+              "y": 0,
+              "width": 1920,
+              "height": 1080,
+              "fillColor": "rgba(5, 150, 105, 0.85)",
+              "strokeColor": "transparent",
+              "strokeWidth": 0,
+              "zIndex": 1
+            },
+            {
+              "id": "main-title",
+              "type": "text",
+              "content": "StartupName",
+              "x": 960,
+              "y": 350,
+              "width": 800,
+              "height": 120,
+              "fontSize": 56,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ffffff",
+              "textAlign": "center",
+              "zIndex": 2
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "content": "The Future of Innovation",
+              "x": 960,
+              "y": 500,
+              "width": 600,
+              "height": 80,
+              "fontSize": 28,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#d1fae5",
+              "textAlign": "center",
+              "zIndex": 2
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+
+

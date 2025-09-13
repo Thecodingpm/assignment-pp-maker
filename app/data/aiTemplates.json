@@ -1,0 +1,140 @@
+{
+  "templates": [
+    {
+      "id": "business-pitch",
+      "name": "Business Pitch",
+      "description": "Professional business presentation template",
+      "category": "business",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "title": "Business Pitch",
+          "layout": "title",
+          "backgroundColor": "#ffffff",
+          "backgroundImage": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&h=1080&fit=crop&crop=center",
+          "elements": [
+            {
+              "id": "main-title",
+              "type": "text",
+              "content": "Your Company Name",
+              "x": 960,
+              "y": 300,
+              "width": 800,
+              "height": 120,
+              "fontSize": 48,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ffffff",
+              "textAlign": "center"
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "content": "Tagline or Value Proposition",
+              "x": 960,
+              "y": 450,
+              "width": 600,
+              "height": 80,
+              "fontSize": 24,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#f3f4f6",
+              "textAlign": "center"
+            }
+          ]
+        },
+        {
+          "id": "slide-2",
+          "type": "content",
+          "title": "Problem Statement",
+          "content": "• Current market challenges\\n• Pain points for customers\\n• Opportunity for disruption",
+          "layout": "content",
+          "backgroundColor": "#ffffff",
+          "elements": [
+            {
+              "id": "title-element",
+              "type": "text",
+              "content": "Problem Statement",
+              "x": 960,
+              "y": 200,
+              "width": 800,
+              "height": 80,
+              "fontSize": 36,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#1f2937",
+              "textAlign": "center"
+            },
+            {
+              "id": "content-element",
+              "type": "text",
+              "content": "• Current market challenges\\n• Pain points for customers\\n• Opportunity for disruption",
+              "x": 960,
+              "y": 350,
+              "width": 700,
+              "height": 200,
+              "fontSize": 24,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#374151",
+              "textAlign": "left"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "educational",
+      "name": "Educational Presentation",
+      "description": "Learning-focused presentation template",
+      "category": "education",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "title": "Educational Topic",
+          "layout": "title",
+          "backgroundColor": "#f8fafc",
+          "backgroundImage": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop&crop=center",
+          "elements": [
+            {
+              "id": "main-title",
+              "type": "text",
+              "content": "Topic Title",
+              "x": 960,
+              "y": 300,
+              "width": 800,
+              "height": 120,
+              "fontSize": 48,
+              "fontFamily": "Inter",
+              "fontWeight": "bold",
+              "color": "#ffffff",
+              "textAlign": "center"
+            },
+            {
+              "id": "subtitle",
+              "type": "text",
+              "content": "Learning Objectives",
+              "x": 960,
+              "y": 450,
+              "width": 600,
+              "height": 80,
+              "fontSize": 24,
+              "fontFamily": "Inter",
+              "fontWeight": "normal",
+              "color": "#f1f5f9",
+              "textAlign": "center"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "defaultSettings": {
+    "theme": "professional",
+    "colorScheme": "blue",
+    "fontFamily": "Inter",
+    "defaultFontSize": 24
+  }
+}

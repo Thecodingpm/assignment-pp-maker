@@ -1,0 +1,48 @@
+[
+  {
+    "id": "slide-1",
+    "title": "Startup Pitch",
+    "type": "title",
+    "layout": "title-slide",
+    "elements": [
+      {
+        "id": "title-1",
+        "type": "heading",
+        "content": "Startup Name",
+        "position": {
+          "x": 100,
+          "y": 200
+        },
+        "style": {
+          "fontSize": 56,
+          "fontWeight": "bold",
+          "color": "#2d3748",
+          "fontFamily": "Poppins"
+        }
+      }
+    ]
+  },
+  {
+    "id": "slide-2",
+    "title": "Problem Statement",
+    "type": "content",
+    "layout": "problem-solution",
+    "elements": [
+      {
+        "id": "heading-2",
+        "type": "heading",
+        "content": "The Problem",
+        "position": {
+          "x": 100,
+          "y": 100
+        },
+        "style": {
+          "fontSize": 42,
+          "fontWeight": "bold",
+          "color": "#2d3748",
+          "fontFamily": "Poppins"
+        }
+      }
+    ]
+  }
+]

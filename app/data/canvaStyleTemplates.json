@@ -1,0 +1,71 @@
+{
+  "templates": [
+    {
+      "id": "corporate-excellence",
+      "name": "Corporate Excellence",
+      "description": "Professional corporate presentation template",
+      "category": "business",
+      "preview": "https://images.unsplash.com/photo-1557804506-669a67965ba0?w=400&h=225&fit=crop&crop=center",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#ffffff",
+          "elements": [
+            {
+              "id": "title-text",
+              "type": "text",
+              "content": "Corporate Excellence",
+              "x": 960,
+              "y": 400,
+              "width": 500,
+              "height": 80,
+              "fontSize": 42,
+              "fontFamily": "Inter",
+              "fontWeight": 700,
+              "color": "#1e3a8a",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            }
+          ],
+          "imageRequests": []
+        }
+      ]
+    },
+    {
+      "id": "creative-modern",
+      "name": "Creative Modern",
+      "description": "Modern creative presentation template",
+      "category": "creative",
+      "preview": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=225&fit=crop&crop=center",
+      "slides": [
+        {
+          "id": "slide-1",
+          "type": "title",
+          "backgroundColor": "#f8f6f0",
+          "elements": [
+            {
+              "id": "title-text",
+              "type": "text",
+              "content": "Creative Modern",
+              "x": 960,
+              "y": 400,
+              "width": 400,
+              "height": 80,
+              "fontSize": 48,
+              "fontFamily": "Playfair Display",
+              "fontWeight": 700,
+              "color": "#2c3e50",
+              "textAlign": "center",
+              "lineHeight": 1.2,
+              "zIndex": 10
+            }
+          ],
+          "imageRequests": []
+        }
+      ]
+    }
+  ]
+}
+

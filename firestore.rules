@@ -1,0 +1,32 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Templates collection
+    match /templates/{templateId} {
+      // Anyone can read templates (for public access)
+      allow read: if true;
+      
+      // Only authenticated users can create templates
+      allow create: if request.auth != null;
+      
+      // Only the user who created the template or admin can update/delete
+      allow update, delete: if request.auth != null && 
+        (request.auth.token.email == resource.data.uploadedBy || 
+         request.auth.token.email == 'ahmadmuaaz292@gmail.com');
+    }
+    
+    // Users collection (if you want to store user profiles)
+    match /users/{userId} {
+      // Users can read/write their own profile
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Documents collection
+    match /documents/{documentId} {
+      // Users can read/write their own documents
+      allow read, write: if request.auth != null && request.auth.uid == resource.data.userId;
+      // Users can create documents
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.userId;
+    }
+  }
+} 
