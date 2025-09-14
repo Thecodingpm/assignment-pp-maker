@@ -9,9 +9,9 @@ import { mapAIToEditorFormat } from '../utils/aiTemplateMapper';
 
 // Import components individually to debug
 import SlideList from '../components/Sidebar/SlideList';
-import SlideCanvas from '../components/Editor/SlideCanvas';
-import MainToolbar from '../components/Toolbar/MainToolbar';
-import PropertyPanel from '../components/PropertyPanel';
+import LogoCanvas from '../components/Editor/LogoCanvas';
+import LogoEditorToolbar from '../components/Toolbar/LogoEditorToolbar';
+import LogoPropertyPanel from '../components/PropertyPanel/LogoPropertyPanel';
 import RightCornerToolbar from '../components/RightToolbar/RightCornerToolbar';
 import PresentationModeModal from '../components/PresentationModeModal';
 import PresentationMode from '../components/PresentationMode';
@@ -441,21 +441,21 @@ function LogoEditorContent() {
 
   return (
     <div className="h-screen flex flex-col bg-gray-50">
-      {/* Top Toolbar */}
-      <MainToolbar />
+      {/* Top Toolbar - Logo Editor Specific */}
+      <LogoEditorToolbar />
       
       {/* Main Content - Add top padding for fixed toolbar and bottom padding for properties bar */}
-      <div className="flex-1 flex overflow-hidden pt-20 pb-16 pr-32">
+      <div className="flex-1 flex overflow-hidden pt-20 pb-16">
         {/* Left Sidebar - Slide List */}
         <SlideList />
         
-        {/* Center - Slide Canvas */}
+        {/* Center - Logo Canvas */}
         <div className="flex-1 flex flex-col">
-          <SlideCanvas />
+          <LogoCanvas />
         </div>
         
-        {/* Right Sidebar - Property Panel */}
-        <PropertyPanel />
+        {/* Right Sidebar - Logo Property Panel */}
+        <LogoPropertyPanel />
       </div>
       
       {/* Right Corner Toolbar */}

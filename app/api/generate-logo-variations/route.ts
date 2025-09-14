@@ -26,16 +26,13 @@ export async function POST(request: NextRequest) {
     // Generate multiple logos in parallel
     const logoPromises = promptVariations.map(async (variationPrompt, index) => {
       try {
-        const response = await fetch('https://api.openai.com/v1/images/generations', {
+        const response = await fetch('https://zo610bsfc-496ff2e9c6d22116-0-colab.googleusercontent.com/outputframe.html?vrz=colab_20250909-060057_RC00_804833152/generate-logo', {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            prompt: variationPrompt,
-            n: 1,
-            size: "1024x1024"
+            prompt: variationPrompt
           }),
         });
 

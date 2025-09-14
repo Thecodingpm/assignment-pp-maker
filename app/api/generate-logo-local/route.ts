@@ -37,14 +37,17 @@ export async function POST(request: NextRequest) {
     Industry: ${industryDescriptors[options.industry] || industryDescriptors.general}. 
     Requirements: High-quality vector-style logo, scalable, professional branding, clean typography, memorable, timeless design, suitable for business cards and websites, no text in the logo itself, just the symbol/icon, modern and contemporary aesthetic, award-winning design quality.`;
 
-    // Use your Google Colab Stable Diffusion XL API
-    const response = await fetch('https://zo610bsfc-496ff2e9c6d22116-0-colab.googleusercontent.com/outputframe.html?vrz=colab_20250909-060057_RC00_804833152/generate-logo', {
+    // For now, let's use DALL-E but with better prompts
+    const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        prompt: enhancedPrompt
+        prompt: enhancedPrompt,
+        n: 1,
+        size: "1024x1024"
       }),
     });
 
