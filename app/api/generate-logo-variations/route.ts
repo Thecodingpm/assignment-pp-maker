@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const logoPromises = promptVariations.map(async (variationPrompt, index) => {
       try {
         // Use your Google Colab Stable Diffusion XL API
-        const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a47546173b4d.ngrok-free.app';
+        const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a965e496e690.ngrok-free.app';
         
         // Temporary mock response for testing (remove this when you have Colab set up)
         if (COLAB_API_URL.includes('YOUR_NGROK_URL_HERE') || COLAB_API_URL.includes('a47546173b4d')) {

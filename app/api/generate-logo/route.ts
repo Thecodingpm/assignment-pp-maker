@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Use your Google Colab Stable Diffusion XL API
     // Replace this URL with your actual ngrok URL from Colab
-    const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a47546173b4d.ngrok-free.app';
+    const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a965e496e690.ngrok-free.app';
     
     // Test if Colab API is reachable
     console.log('🔗 Testing Colab API connection...');
