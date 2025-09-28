@@ -43,11 +43,13 @@ export default function Home() {
 
   // Login modal handlers
   const handleLoginClick = () => {
-    router.push('/login?redirect=/dashboard');
+    setLoginMode('login');
+    setIsLoginModalOpen(true);
   };
 
   const handleSignupClick = () => {
-    router.push('/login?redirect=/dashboard');
+    setLoginMode('signup');
+    setIsLoginModalOpen(true);
   };
 
   // Logo preview modal handlers
@@ -1136,10 +1138,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-6">Get started with 10xEditor</h2>
-              <button 
-                onClick={() => router.push('/login?redirect=/dashboard')}
-                className="bg-orange-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-orange-600 transition-colors"
-              >
+              <button className="bg-orange-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-orange-600 transition-colors">
                 Sign up for free
               </button>
                     </div>

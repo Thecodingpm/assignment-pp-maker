@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword, 
   signOut, 
   updateProfile,
+  sendPasswordResetEmail,
   User as FirebaseUser 
 } from 'firebase/auth';
 import { auth } from './config';
@@ -63,4 +64,12 @@ export const getCurrentUser = (): User | null => {
     email: user.email || '',
     name: user.displayName || 'User'
   };
+};
+
+export const resetPassword = async (email: string): Promise<void> => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 }; 

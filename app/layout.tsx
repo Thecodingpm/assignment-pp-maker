@@ -8,6 +8,8 @@ import { ThemeProvider } from './components/ThemeProvider';
 import { CollaborationProvider } from './contexts/CollaborationContext';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
+import SessionWarningModal from './components/SessionWarningModal';
+import PerformanceMonitor from './components/PerformanceMonitor';
 // TopToolbarWrapper removed
 import { usePathname } from 'next/navigation';
 
@@ -81,6 +83,7 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
                 <main className="flex-1">
                   {children}
                 </main>
+                <SessionWarningModal />
               </CollaborationProvider>
             </AdminProvider>
           </AuthProvider>
