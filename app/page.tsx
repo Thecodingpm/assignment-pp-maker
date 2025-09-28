@@ -874,19 +874,23 @@ export default function Home() {
                 initial={{ opacity: 0, x: 50, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                className="relative lg:col-span-1 -mt-8"
+                className="relative lg:col-span-1 -mt-4 -ml-16 -mr-64 -mb-4"
+                style={{ 
+                  width: 'calc(100% + 20rem)',
+                  maxWidth: 'none'
+                }}
               >
                 <motion.div
-                  className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden"
+                  className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden w-full"
                   whileHover={{ y: -8, scale: 1.03 }}
                   transition={{ duration: 0.4 }}
                 >
                   {/* Hero Image */}
-                  <div className="relative h-[500px] overflow-hidden">
+                  <div className="relative h-[600px] overflow-hidden w-full">
                     <img 
                       src="/heroSection/hero.png"
                       alt="10xEditor Hero Dashboard"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-contain"
                       onError={(e) => {
                         // Fallback to a gradient background if image fails to load
                         e.currentTarget.style.display = 'none';
