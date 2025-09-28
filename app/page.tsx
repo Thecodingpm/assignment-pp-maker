@@ -8,11 +8,16 @@ import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import AIGenerationModal from './components/AIGenerationModal';
 import LogoPreviewModal from './components/LogoPreviewModal';
 import LoginModal from './components/LoginModal';
+import CardSwap, { Card } from './components/CardSwap';
+import Shuffle from './components/Shuffle';
+import TrueFocus from './components/TrueFocus';
+import { LayoutTextFlip } from './components/ui/layout-text-flip';
+import VariableProximity from './components/VariableProximity';
+import RotatingText from './components/RotatingText';
 
 export default function Home() {
   const { user } = useAuth();
   const router = useRouter();
-  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
   const [activeVideo, setActiveVideo] = useState("build-presentations");
   const [isAIGenerationModalOpen, setIsAIGenerationModalOpen] = useState(false);
   const [isLogoPreviewModalOpen, setIsLogoPreviewModalOpen] = useState(false);
@@ -22,6 +27,7 @@ export default function Home() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const videoSectionRef = useRef<HTMLDivElement>(null);
   const templateSectionRef = useRef<HTMLDivElement>(null);
+  const heroSectionRef = useRef<HTMLDivElement>(null);
   const isVideoInView = useInView(videoSectionRef, { once: true, amount: 0.3 });
   
   // Scroll-based animations
@@ -497,21 +503,21 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900" style={{ display: 'block !important' }}>
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200" style={{ display: 'block !important' }}>
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                <span className="text-indigo-600 font-bold text-lg">P</span>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg">10</span>
               </div>
-              <span className="text-white font-semibold text-xl">Pitch</span>
+              <span className="text-gray-900 font-semibold text-xl">10xEditor</span>
             </div>
 
             {/* Navigation */}
             <div className="flex items-center space-x-6">
               <div className="relative group">
-                <div className="flex items-center space-x-1 text-white font-medium text-base hover:text-indigo-200 cursor-pointer">
+                <div className="flex items-center space-x-1 text-gray-700 font-medium text-base hover:text-blue-600 cursor-pointer">
                   <span>Product</span>
                   <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -563,7 +569,7 @@ export default function Home() {
               </div>
               
               <div className="relative group">
-                <div className="flex items-center space-x-1 text-white font-medium text-base hover:text-indigo-200 cursor-pointer">
+                <div className="flex items-center space-x-1 text-gray-700 font-medium text-base hover:text-blue-600 cursor-pointer">
                   <span>Use Cases</span>
                   <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -572,16 +578,16 @@ export default function Home() {
                 {/* Use Cases Dropdown */}
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-out z-50 pointer-events-none group-hover:pointer-events-auto hover:opacity-100 hover:visible hover:pointer-events-auto transform group-hover:translate-y-0 translate-y-[-10px] group-hover:scale-100 scale-95">
                   <div className="py-2">
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Sales Teams</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Marketing</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Education</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Startups</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Sales Teams</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Marketing</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Education</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Startups</a>
                   </div>
                 </div>
               </div>
               
               <div className="relative group">
-                <div className="flex items-center space-x-1 text-white font-medium text-base hover:text-indigo-200 cursor-pointer">
+                <div className="flex items-center space-x-1 text-gray-700 font-medium text-base hover:text-blue-600 cursor-pointer">
                   <span>Templates</span>
                   <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -591,15 +597,15 @@ export default function Home() {
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto">
                   <div className="py-2">
                     <a href="/templates" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">All Templates</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Business</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Creative</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Education</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Business</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Creative</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Education</a>
                   </div>
                 </div>
               </div>
               
               <div className="relative group">
-                <div className="flex items-center space-x-1 text-white font-medium text-base hover:text-indigo-200 cursor-pointer">
+                <div className="flex items-center space-x-1 text-gray-700 font-medium text-base hover:text-blue-600 cursor-pointer">
                   <span>Resources</span>
                   <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -608,16 +614,16 @@ export default function Home() {
                 {/* Resources Dropdown */}
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto">
                   <div className="py-2">
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Blog</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Help Center</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Community</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Webinars</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Blog</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Help Center</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Community</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Webinars</a>
                   </div>
                 </div>
               </div>
               
               <div className="relative group">
-                <div className="flex items-center space-x-1 text-white font-medium text-base hover:text-indigo-200 cursor-pointer">
+                <div className="flex items-center space-x-1 text-gray-700 font-medium text-base hover:text-blue-600 cursor-pointer">
                   <span>Pricing</span>
                   <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -626,10 +632,10 @@ export default function Home() {
                 {/* Pricing Dropdown */}
                 <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none group-hover:pointer-events-auto">
                   <div className="py-2">
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Free Plan</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Pro Plan</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Enterprise</a>
-                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 transition-colors">Compare Plans</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Free Plan</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Pro Plan</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Enterprise</a>
+                    <a href="#" className="block px-4 py-2 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors">Compare Plans</a>
                   </div>
                 </div>
               </div>
@@ -639,13 +645,13 @@ export default function Home() {
             <div className="flex items-center space-x-4">
               <button 
                 onClick={handleLoginClick}
-                className="text-white hover:text-indigo-200 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-white/10"
+                className="text-gray-700 hover:text-blue-600 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-gray-50"
               >
                 Log in
               </button>
               <button 
                 onClick={handleSignupClick}
-                className="bg-white text-indigo-600 px-4 py-2 rounded-lg font-medium hover:bg-indigo-50 transition-colors border border-white/20"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Sign up
               </button>
@@ -657,404 +663,369 @@ export default function Home() {
       {/* Main Content */}
       <main className="pt-16">
         {/* Hero Section */}
-        <motion.section 
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.3 }}
-          className="bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden min-h-screen"
-        >
-                    {/* Modern Curved Blue Lines Background */}
+        <section ref={heroSectionRef} className="bg-white relative overflow-hidden min-h-screen">
+          {/* Animated Background */}
           <div className="absolute inset-0">
-            {/* Dot Matrix Grid */}
-            <div className="absolute inset-0 grid grid-cols-12 gap-16 p-16 opacity-20">
-              {/* Row 1 */}
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-breathe"></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '0.5s' }}></div>
-              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '1s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '1.5s' }}></div>
-              <div className="w-2 h-2 bg-indigo-300 rounded-full animate-breathe" style={{ animationDelay: '2s' }}></div>
-              <div className="w-1 h-1 bg-purple-300 rounded-full animate-breathe" style={{ animationDelay: '2.5s' }}></div>
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-breathe" style={{ animationDelay: '3s' }}></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '3.5s' }}></div>
-              <div className="w-2 h-2 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '4s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '4.5s' }}></div>
-              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-breathe" style={{ animationDelay: '5s' }}></div>
-              <div className="w-1 h-1 bg-purple-300 rounded-full animate-breathe" style={{ animationDelay: '5.5s' }}></div>
-              
-              {/* Row 2 */}
-              <div className="w-1 h-1 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '0.3s' }}></div>
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-breathe" style={{ animationDelay: '0.8s' }}></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '1.3s' }}></div>
-              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '1.8s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '2.3s' }}></div>
-              <div className="w-2 h-2 bg-indigo-300 rounded-full animate-breathe" style={{ animationDelay: '2.8s' }}></div>
-              <div className="w-1 h-1 bg-purple-300 rounded-full animate-breathe" style={{ animationDelay: '3.3s' }}></div>
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-breathe" style={{ animationDelay: '3.8s' }}></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '4.3s' }}></div>
-              <div className="w-2 h-2 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '4.8s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '5.3s' }}></div>
-              <div className="w-1.5 h-1.5 bg-indigo-300 rounded-full animate-breathe" style={{ animationDelay: '5.8s' }}></div>
-              
-              {/* Row 3 */}
-              <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '0.2s' }}></div>
-              <div className="w-1 h-1 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '0.7s' }}></div>
-              <div className="w-2 h-2 bg-blue-400 rounded-full animate-breathe" style={{ animationDelay: '1.2s' }}></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '1.7s' }}></div>
-              <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '2.2s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '2.7s' }}></div>
-              <div className="w-2 h-2 bg-indigo-300 rounded-full animate-breathe" style={{ animationDelay: '3.2s' }}></div>
-              <div className="w-1 h-1 bg-purple-300 rounded-full animate-breathe" style={{ animationDelay: '3.7s' }}></div>
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-breathe" style={{ animationDelay: '4.2s' }}></div>
-              <div className="w-1 h-1 bg-indigo-400 rounded-full animate-breathe" style={{ animationDelay: '4.7s' }}></div>
-              <div className="w-2 h-2 bg-purple-400 rounded-full animate-breathe" style={{ animationDelay: '5.2s' }}></div>
-              <div className="w-1 h-1 bg-blue-300 rounded-full animate-breathe" style={{ animationDelay: '5.7s' }}></div>
+            <motion.div 
+              className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-blue-50 to-indigo-100 rounded-full blur-3xl opacity-60"
+              animate={{
+                scale: [1, 1.1, 1],
+                rotate: [0, 5, 0],
+              }}
+              transition={{
+                duration: 8,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            ></motion.div>
+            <motion.div 
+              className="absolute bottom-0 left-0 w-80 h-80 bg-gradient-to-tr from-purple-50 to-pink-100 rounded-full blur-3xl opacity-60"
+              animate={{
+                scale: [1, 1.2, 1],
+                rotate: [0, -5, 0],
+              }}
+              transition={{
+                duration: 10,
+                repeat: Infinity,
+                ease: "easeInOut",
+                delay: 2
+              }}
+            ></motion.div>
+            
+            {/* Floating particles */}
+            {[...Array(6)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 bg-blue-400 rounded-full opacity-30"
+                style={{
+                  left: `${20 + i * 15}%`,
+                  top: `${30 + i * 10}%`,
+                }}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                }}
+                transition={{
+                  duration: 3 + i * 0.5,
+                  repeat: Infinity,
+                  delay: i * 0.5,
+                }}
+              />
+            ))}
             </div>
             
-            {/* Large Curved Blue Shapes */}
-            <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-gradient-to-br from-blue-400/15 via-indigo-500/12 to-purple-600/10 rounded-full blur-3xl transform translate-x-1/3 -translate-y-1/4"></div>
-            <div className="absolute bottom-0 left-0 w-[600px] h-[500px] bg-gradient-to-tr from-indigo-400/12 via-blue-500/10 to-purple-600/8 rounded-full blur-3xl transform -translate-x-1/4 translate-y-1/3"></div>
-            
-            {/* Curved Line Elements */}
-            <div className="absolute top-1/4 right-1/4 w-[400px] h-[300px] border-2 border-blue-400/20 rounded-full blur-sm"></div>
-            <div className="absolute bottom-1/4 left-1/4 w-[300px] h-[250px] border-2 border-indigo-400/15 rounded-full blur-sm"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[400px] border border-purple-400/10 rounded-full blur-sm"></div>
-            
-            {/* Flowing Curved Lines */}
-            <div className="absolute top-1/6 right-1/6 w-[200px] h-[150px] border-t-2 border-blue-400/25 rounded-t-full blur-sm"></div>
-            <div className="absolute bottom-1/6 left-1/6 w-[180px] h-[120px] border-b-2 border-indigo-400/20 rounded-b-full blur-sm"></div>
-            <div className="absolute top-2/3 right-1/3 w-[160px] h-[100px] border-l-2 border-purple-400/15 rounded-l-full blur-sm"></div>
-            
-            {/* Subtle Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-br from-transparent via-blue-900/5 to-indigo-900/5"></div>
-            
-            {/* Beautiful Geometric Shapes */}
-            {/* Hexagon */}
-            <div className="absolute top-1/6 right-1/6 w-32 h-32 bg-gradient-to-br from-blue-400/8 to-indigo-500/6 rounded-full blur-xl animate-float" style={{ animationDelay: '1s' }}>
-              <div className="w-full h-full bg-gradient-to-br from-blue-400/4 to-indigo-500/3 rounded-full animate-pulse"></div>
-            </div>
-            
-            {/* Diamond */}
-            <div className="absolute bottom-1/6 left-1/6 w-24 h-24 bg-gradient-to-br from-purple-400/10 to-pink-500/8 transform rotate-45 blur-lg animate-float" style={{ animationDelay: '3s' }}></div>
-            
-            {/* Triangle */}
-            <div className="absolute top-1/2 left-1/4 w-0 h-0 border-l-[20px] border-r-[20px] border-b-[35px] border-l-transparent border-r-transparent border-b-indigo-400/12 blur-md animate-float" style={{ animationDelay: '2s' }}></div>
-            
-            {/* Star */}
-            <div className="absolute top-1/3 right-1/4 w-16 h-16 bg-gradient-to-br from-blue-300/8 to-indigo-400/6 transform rotate-12 blur-lg animate-float" style={{ animationDelay: '4s' }}>
-              <div className="w-full h-full bg-gradient-to-br from-blue-300/4 to-indigo-400/3 transform rotate-45 animate-pulse"></div>
-            </div>
-            
-            {/* Octagon */}
-            <div className="absolute bottom-1/3 right-1/3 w-28 h-28 bg-gradient-to-br from-purple-300/6 to-pink-400/4 rounded-lg blur-xl animate-float" style={{ animationDelay: '1.5s' }}>
-              <div className="w-full h-full bg-gradient-to-br from-purple-300/3 to-pink-400/2 rounded-lg animate-pulse"></div>
-            </div>
-            
-            {/* Crescent */}
-            <div className="absolute top-2/3 left-1/3 w-20 h-20 bg-gradient-to-br from-indigo-300/8 to-blue-400/6 rounded-full blur-lg animate-float" style={{ animationDelay: '2.5s' }}>
-              <div className="w-12 h-12 bg-gradient-to-br from-slate-900 to-slate-900 rounded-full transform translate-x-2 translate-y-1"></div>
-        </div>
-
-            {/* Floating Accent Dots */}
-            <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-blue-400/40 rounded-full animate-float"></div>
-            <div className="absolute top-1/3 right-1/3 w-2 h-2 bg-indigo-400/35 rounded-full animate-float" style={{ animationDelay: '2s' }}></div>
-            <div className="absolute bottom-1/4 left-1/3 w-2.5 h-2.5 bg-purple-400/30 rounded-full animate-float" style={{ animationDelay: '4s' }}></div>
-            <div className="absolute top-2/3 right-1/4 w-1.5 h-1.5 bg-blue-300/25 rounded-full animate-float" style={{ animationDelay: '1s' }}></div>
-            
-            {/* Subtle Grid Lines */}
-            <div className="absolute inset-0 opacity-5" style={{
-              backgroundImage: `
-                linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-              `,
-              backgroundSize: '120px 120px'
-            }}></div>
-          </div>
-
-          <div className="relative z-10 w-full px-6 py-20 text-center">
-            {/* Typewriter-style heading */}
+          <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+            <div className="grid lg:grid-cols-2 gap-16 items-center min-h-screen">
+              {/* Left Content */}
+              <div className="text-left">
             <motion.div
-              variants={fadeInUp}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
               className="mb-8"
             >
-              <h1 className="text-6xl md:text-8xl font-bold text-white leading-tight mt-8">
+                  <motion.div 
+                    className="inline-flex items-center px-4 py-2 bg-blue-50 text-blue-700 rounded-full text-sm font-medium mb-6"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, delay: 0.2 }}
+                  >
                 <motion.span
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                >
-                  Win more deals.
-                </motion.span>
+                      className="w-2 h-2 bg-blue-500 rounded-full mr-2"
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    ></motion.span>
+                    New: AI-powered presentations
+                  </motion.div>
+                  
+                  <motion.h1 
+                    className="text-6xl lg:text-7xl font-bold text-gray-900 leading-tight mb-6"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
+                  >
+                    Create stunning
                 <br />
                 <motion.span 
-                  className="text-indigo-200"
-                  initial={{ opacity: 0, x: -50 }}
+                      className="text-blue-600 inline-block"
+                      initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
-                >
-                  Pitch.
+                      transition={{ duration: 0.8, delay: 0.5 }}
+                    >
+                      <RotatingText
+                        texts={['presentations', 'assignments', 'logos']}
+                        mainClassName="text-blue-600 inline-block whitespace-nowrap"
+                        staggerFrom="last"
+                        initial={{ y: "100%" }}
+                        animate={{ y: 0 }}
+                        exit={{ y: "-120%" }}
+                        staggerDuration={0.05}
+                        splitLevelClassName="overflow-hidden"
+                        transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                        rotationInterval={4000}
+                      />
                 </motion.span>
-              </h1>
-            </motion.div>
+                    <motion.span 
+                      className="text-gray-900 inline-block ml-2 whitespace-nowrap"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.8, delay: 0.7 }}
+                    >
+                      in minutes
+                    </motion.span>
+                  </motion.h1>
 
-            <motion.p 
-              variants={fadeInUp}
-              className="text-xl text-white/90 max-w-2xl mx-auto leading-relaxed mb-12"
-            >
-              Pitch turns presentations into your team's superpower. 
-              Close deals, win clients, and expand accounts — all while staying on brand.
-            </motion.p>
-
-            {/* Demo and Signup Buttons - Before Feature Navigation */}
             <motion.div 
-              variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
-            >
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link 
-                  href="/presentation-editor"
-                  className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-all duration-300 shadow-lg"
-                >
-                  Start New Presentation
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link
-                  href="/templates"
-                  className="bg-indigo-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-600 transition-all duration-300 border-2 border-white/20"
-                >
-                  Get a demo
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <button
-                  onClick={() => setIsAIGenerationModalOpen(true)}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-300 border-2 border-white/20 flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                  </svg>
-                  AI Generate
-                </button>
-              </motion.div>
-            </motion.div>
-
-            {/* Feature Navigation Section - Inside Hero */}
-            <motion.div 
-              variants={staggerContainer}
-              className="flex justify-center space-x-16 mb-16"
-            >
-              
-              {[
-                {
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                  ),
-                  title: "PITCH",
-                  description: "Build presentations",
-                  videoId: "build-presentations",
-                  videoSrc: "/videos/build-presentations.mp4"
-                },
-                {
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                    </svg>
-                  ),
-                  title: "DESIGN",
-                  description: "Beautiful templates",
-                  videoId: "beautiful-templates",
-                  videoSrc: "/videos/beautiful-templates.mp4"
-                },
-                {
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                      <circle cx="9" cy="7" r="4"/>
-                      <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                    </svg>
-                  ),
-                  title: "COLLABORATE",
-                  description: "Real-time editing",
-                  videoId: "real-time-editing",
-                  videoSrc: "/videos/real-time-editing.mp4"
-                },
-                {
-                  icon: (
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2">
-                      <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                    </svg>
-                  ),
-                  title: "ANALYZE",
-                  description: "Track progress",
-                  videoId: "track-progress",
-                  videoSrc: "/videos/track-progress.mp4"
-                }
-              ].map((feature, index) => (
-                <motion.div
-                  key={feature.title}
-                  variants={fadeInUp}
-                  whileHover={{ y: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-center cursor-pointer group"
-                  onClick={() => setActiveVideo(feature.videoId)}
-                >
-                  <div className="mb-3">
-                    <div className={`w-12 h-12 rounded-lg flex items-center justify-center mx-auto transition-all duration-300 ${
-                      activeVideo === feature.videoId 
-                        ? 'bg-indigo-400/80 shadow-lg shadow-indigo-400/30' 
-                        : 'bg-white/20 group-hover:bg-indigo-300/40'
-                    }`}>
-                      <div className={`${activeVideo === feature.videoId ? 'text-white' : 'text-white/70 group-hover:text-indigo-200'}`}>
-                        {feature.icon}
-                  </div>
-                </div>
-              </div>
-                  <h3 className={`text-sm font-medium tracking-wider ${
-                    activeVideo === feature.videoId 
-                      ? 'text-indigo-200' 
-                      : 'text-white/70 group-hover:text-indigo-200'
-                  }`}>{feature.title}</h3>
-                  <p className={`text-xs mt-1 ${
-                    activeVideo === feature.videoId 
-                      ? 'text-indigo-300/80' 
-                      : 'text-white/50 group-hover:text-indigo-300/60'
-                  }`}>{feature.description}</p>
-                </motion.div>
-              ))}
-            </motion.div>
-
-                        {/* Video Section - Inside Hero */}
-            <motion.div 
-              ref={videoSectionRef}
-              variants={fadeIn}
-              className="mb-20 mt-12 w-full flex justify-center items-center -mx-6"
-            >
-              <motion.div 
-                className="relative w-[60vw] h-[720px] bg-gradient-to-br from-slate-800 to-indigo-900 rounded-3xl shadow-2xl border border-slate-600 overflow-hidden"
-                key={activeVideo}
-                initial={{ opacity: 0, scale: 0.95, rotateY: -15 }}
-                animate={{ 
-                  opacity: 1, 
-                  scale: 1, 
-                  rotateY: 0,
-                  transition: { 
-                    duration: 0.6, 
-                    ease: [0.25, 0.46, 0.45, 0.94],
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 15
-                  }
-                }}
-                exit={{ opacity: 0, scale: 0.95, rotateY: 15 }}
-                whileHover={{ 
-                  scale: 1.02,
-                  transition: { duration: 0.3 }
-                }}
-              >
-                {/* Video Player */}
-                <motion.div 
-                  className="w-full h-full relative"
-                  initial={{ opacity: 0 }}
-                  animate={{ 
-                    opacity: 1,
-                    transition: { 
-                      delay: 0.2,
-                      duration: 0.5 
-                    }
-                  }}
-                >
-                  <motion.video
-                    ref={videoRef}
-                    key={activeVideo}
-                    className="w-full h-full object-contain"
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    initial={{ opacity: 0, scale: 1.1 }}
-                    animate={{ 
-                      opacity: 1, 
-                      scale: 1,
-                      transition: { 
-                        duration: 0.8,
-                        ease: [0.25, 0.46, 0.45, 0.94]
-                      }
-                    }}
-                    onError={(e) => console.error('Video error:', e)}
-                    onLoadStart={() => console.log('Video loading started')}
-                    onCanPlay={() => console.log('Video can play')}
-                    onEnded={() => {
-                      if (videoRef.current) {
-                        videoRef.current.currentTime = 0;
-                        videoRef.current.play().catch(err => console.log('Video restart failed:', err));
-                      }
-                    }}
+                    className="text-xl text-gray-600 leading-relaxed mb-8 max-w-2xl"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
                   >
-                    <source src="/videos/video1.mov" type="video/quicktime" />
-                    <source src="/videos/video1.mov" type="video/mp4" />
-                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </motion.video>
-                  
-                  {/* Animated Overlay */}
+                    <VariableProximity
+                      label="Build beautiful presentations with our intuitive editor. Collaborate in real-time, access premium templates, and present with confidence."
+                      className="text-xl text-gray-600 leading-relaxed"
+                      fromFontVariationSettings="'wght' 400, 'opsz' 9"
+                      toFontVariationSettings="'wght' 1000, 'opsz' 40"
+                      containerRef={heroSectionRef}
+                      radius={120}
+                      falloff="exponential"
+                    />
+                  </motion.div>
+                </motion.div>
+
+                {/* CTA Buttons */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.1 }}
+                  className="flex flex-col sm:flex-row gap-4 mb-12"
+                >
+                  <motion.button 
+                    onClick={() => router.push('/presentation-editor')}
+                    className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                    Start creating →
+                  </motion.button>
+                  <motion.button 
+                    onClick={() => setIsLoginModalOpen(true)}
+                    className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-lg font-semibold text-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-300"
+                    whileHover={{ scale: 1.05, y: -2 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Watch demo
+                  </motion.button>
+              </motion.div>
+
+                {/* Trust Indicators */}
+              <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.8, delay: 1.3 }}
+                  className="flex items-center gap-8"
+                >
+                  <motion.div 
+                    className="flex items-center gap-2"
+                whileHover={{ scale: 1.05 }}
+                  >
+                    <div className="flex -space-x-2">
+                      <motion.div 
+                        className="w-8 h-8 bg-blue-500 rounded-full border-2 border-white"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0 }}
+                      ></motion.div>
+                      <motion.div 
+                        className="w-8 h-8 bg-green-500 rounded-full border-2 border-white"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0.2 }}
+                      ></motion.div>
+                      <motion.div 
+                        className="w-8 h-8 bg-purple-500 rounded-full border-2 border-white"
+                        animate={{ y: [0, -5, 0] }}
+                        transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                      ></motion.div>
+                    </div>
+                    <span className="text-sm text-gray-600">Join 50,000+ users</span>
+              </motion.div>
+              <motion.div
+                    className="flex items-center gap-1"
+                whileHover={{ scale: 1.05 }}
+                  >
+                    {[...Array(5)].map((_, i) => (
+                      <motion.svg 
+                        key={i} 
+                        className="w-5 h-5 text-yellow-400" 
+                        fill="currentColor" 
+                        viewBox="0 0 20 20"
+                        animate={{ scale: [1, 1.1, 1] }}
+                        transition={{ duration: 1, repeat: Infinity, delay: i * 0.1 }}
+                      >
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </motion.svg>
+                    ))}
+                    <span className="text-sm text-gray-600 ml-2">4.9/5 rating</span>
+              </motion.div>
+            </motion.div>
+              </div>
+
+              {/* Right Content - Dashboard Preview */}
+            <motion.div 
+                initial={{ opacity: 0, x: 50, scale: 0.9 }}
+                animate={{ opacity: 1, x: 0, scale: 1 }}
+                transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+                className="relative"
+              >
+                <motion.div
+                  className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
+                  whileHover={{ y: -5, scale: 1.02 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {/* Dashboard Header */}
+                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                          <span className="text-white font-bold text-sm">10</span>
+                  </div>
+                        <span className="font-semibold text-gray-900">10xEditor</span>
+                </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+              </div>
+                    </div>
+                  </div>
+
+                  {/* Dashboard Content */}
+                  <div className="p-6">
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+            <motion.div 
+                        className="bg-blue-50 rounded-lg p-4"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-blue-700">Total Presentations</span>
+                          <motion.span 
+                            className="text-2xl font-bold text-blue-900"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.5, delay: 1.5 }}
+                          >
+                            127
+                          </motion.span>
+                        </div>
+                        <div className="text-xs text-blue-600">+12 this month</div>
+                      </motion.div>
+                <motion.div 
+                        className="bg-green-50 rounded-lg p-4"
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-green-700">Views</span>
+                          <motion.span 
+                            className="text-2xl font-bold text-green-900"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.5, delay: 1.7 }}
+                          >
+                            2.4K
+                          </motion.span>
+                        </div>
+                        <div className="text-xs text-green-600">+23% from last month</div>
+                      </motion.div>
+                    </div>
+
+                    <div className="space-y-3">
+                      {[
+                        { icon: "Q1", title: "Q1 Sales Review", time: "Updated 2 hours ago", color: "green" },
+                        { icon: "PR", title: "Product Launch", time: "Updated yesterday", color: "yellow" },
+                        { icon: "BD", title: "Board Meeting", time: "Updated 3 days ago", color: "gray" }
+                      ].map((item, index) => (
                   <motion.div
-                    className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent"
-                    initial={{ opacity: 0 }}
-                    animate={{ 
-                      opacity: 1,
-                      transition: { 
-                        delay: 0.4,
-                        duration: 0.6 
-                      }
-                    }}
-                  />
-                  
-                  {/* Glowing Border Effect */}
+                          key={index}
+                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.5, delay: 1.8 + index * 0.1 }}
+                          whileHover={{ scale: 1.02, x: 5 }}
+                        >
+                          <div className={`w-10 h-10 bg-gradient-to-br ${
+                            index === 0 ? 'from-blue-500 to-purple-600' :
+                            index === 1 ? 'from-green-500 to-teal-600' :
+                            'from-purple-500 to-pink-600'
+                          } rounded-lg flex items-center justify-center`}>
+                            <span className="text-white font-bold text-sm">{item.icon}</span>
+                          </div>
+                          <div className="flex-1">
+                            <div className="font-medium text-gray-900">{item.title}</div>
+                            <div className="text-sm text-gray-500">{item.time}</div>
+                          </div>
+                          <div className={`w-2 h-2 rounded-full ${
+                            item.color === 'green' ? 'bg-green-500' :
+                            item.color === 'yellow' ? 'bg-yellow-500' :
+                            'bg-gray-400'
+                          }`}></div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Floating Elements */}
                   <motion.div
-                    className="absolute inset-0 rounded-3xl"
-                    style={{
-                      background: 'linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.1), transparent)',
-                      backgroundSize: '200% 200%'
-                    }}
+                  className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg flex items-center justify-center"
                     animate={{
-                      backgroundPosition: ['0% 0%', '100% 100%', '0% 0%'],
+                    rotate: [0, 5, -5, 0],
+                    scale: [1, 1.1, 1]
                     }}
                     transition={{
-                      duration: 3,
+                    duration: 4, 
                       repeat: Infinity,
-                      ease: "linear"
-                    }}
-                  />
-                </motion.div>
+                    ease: "easeInOut"
+                  }}
+                >
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
               </motion.div>
             </motion.div>
         </div>
-        </motion.section>
+          </div>
+        </section>
 
         {/* Templates Section */}
-        <section ref={templateSectionRef} className="py-20 bg-white relative overflow-hidden">
+        <section ref={templateSectionRef} className="py-20 bg-gray-50 relative overflow-hidden">
           <div className="w-full px-6">
-            <motion.div 
+            <motion.div
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
               variants={fadeInUp}
               className="text-center mb-16 px-6"
             >
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Get a head start with free templates</h2>
+              <div className="mb-6">
+                <Shuffle
+                  text="Get a head start with free templates"
+                  tag="h2"
+                  className="text-2xl font-bold text-gray-900"
+                  shuffleDirection="right"
+                  duration={0.35}
+                  animationMode="evenodd"
+                  shuffleTimes={1}
+                  ease="power3.out"
+                  stagger={0.03}
+                  threshold={0.1}
+                  triggerOnce={false}
+                  triggerOnHover={false}
+                  loop={true}
+                  loopDelay={3}
+                  respectReducedMotion={true}
+                />
+              </div>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8">
                 Choose from 100+ fully customizable templates crafted by subject matter experts and presentation design pros. Or upload your existing PPTX file.
               </p>
@@ -1072,52 +1043,32 @@ export default function Home() {
             {/* Animated Template Grid */}
             <div className="relative w-full -mx-6">
               {/* Row 1 - Moving Left */}
-              <motion.div 
+            <motion.div 
                 style={{ x: x1 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
-              >
+            >
                 {templates.slice(0, 10).map((template, index) => (
-                  <motion.div
+              <motion.div
                     key={template.id}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
                     className="group cursor-pointer flex-shrink-0"
-                    onMouseEnter={() => setHoveredCard(template.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
                   >
-                    <div className={`
-                      relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-500 w-64 h-40 flex-shrink-0
-                      ${hoveredCard === template.id ? 'shadow-xl scale-105' : 'hover:shadow-lg hover:scale-102'}
-                    `}>
-                      <div className={`${template.color} h-full flex items-center justify-center relative overflow-hidden`}>
-                        {/* Random template image for all */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">
-                            <span className="text-white text-2xl">{template.icon}</span>
-                          </div>
+                    <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white w-64 h-40 flex-shrink-0">
+                      <img 
+                        src={`/templates/icons/img${(index % 6) + 1}.png`}
+                        alt={template.title}
+                        className="w-full h-full object-cover"
+                      />
             </div>
-
-                      </div>
-                      
-                      {/* Hover overlay */}
-                      <div className={`
-                        absolute inset-0 bg-indigo-600/90 flex items-center justify-center opacity-0 transition-opacity duration-300
-                        ${hoveredCard === template.id ? 'opacity-100' : ''}
-                      `}>
-                        <div className="text-white text-center">
-                          <div className="text-2xl mb-2">✨</div>
-                          <div className="text-sm font-medium">Use Template</div>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+              </motion.div>
                 ))}
               </motion.div>
 
               {/* Row 2 - Moving Right */}
-              <motion.div 
+              <motion.div
                 style={{ x: x2 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1129,52 +1080,20 @@ export default function Home() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
                     className="group cursor-pointer flex-shrink-0"
-                  onMouseEnter={() => setHoveredCard(template.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
                 >
-                  <div className={`
-                      relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-500 w-64 h-40 flex-shrink-0
-                      ${hoveredCard === template.id ? 'shadow-xl scale-105' : 'hover:shadow-lg hover:scale-102'}
-                    `}>
-                      <div className={`${template.color} h-full flex items-center justify-center relative overflow-hidden`}>
-                        {/* Random template image for all */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">
-                            <span className="text-white text-2xl">{template.icon}</span>
-                          </div>
-                      </div>
-                      
-                      <div className="text-center text-white relative z-10">
-                          <div className="text-2xl mb-2">{template.icon}</div>
-                          <div className="text-xs font-medium bg-white/20 px-2 py-1 rounded">
-                          {template.content}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-4 bg-white">
-                      <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-indigo-600 transition-colors">
-                        {template.title}
-                      </h3>
-                      <p className="text-gray-500 text-xs">{template.category}</p>
-                    </div>
-                    
-                    {/* Hover overlay */}
-                    <div className={`
-                      absolute inset-0 bg-indigo-600/90 flex items-center justify-center opacity-0 transition-opacity duration-300
-                      ${hoveredCard === template.id ? 'opacity-100' : ''}
-                    `}>
-                      <div className="text-white text-center">
-                        <div className="text-2xl mb-2">✨</div>
-                        <div className="text-sm font-medium">Use Template</div>
-                      </div>
-                    </div>
+                  <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white w-64 h-40 flex-shrink-0">
+                      <img 
+                        src={`/templates/icons/img${(index % 6) + 1}.png`}
+                        alt={template.title}
+                        className="w-full h-full object-cover"
+                      />
                   </div>
-                  </motion.div>
+              </motion.div>
                 ))}
               </motion.div>
 
               {/* Row 3 - Moving Left */}
-              <motion.div 
+              <motion.div
                 style={{ x: x3 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1186,170 +1105,145 @@ export default function Home() {
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
                     className="group cursor-pointer flex-shrink-0"
-                    onMouseEnter={() => setHoveredCard(template.id)}
-                    onMouseLeave={() => setHoveredCard(null)}
                   >
-                    <div className={`
-                      relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-500 w-64 h-40 flex-shrink-0
-                      ${hoveredCard === template.id ? 'shadow-xl scale-105' : 'hover:shadow-lg hover:scale-102'}
-                    `}>
-                      <div className={`${template.color} h-full flex items-center justify-center relative overflow-hidden`}>
-                        {/* Random template image for all */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">
-                            <span className="text-white text-2xl">{template.icon}</span>
-            </div>
-                        </div>
-                        
-                      </div>
-                      
-                      {/* Hover overlay */}
-                      <div className={`
-                        absolute inset-0 bg-indigo-600/90 flex items-center justify-center opacity-0 transition-opacity duration-300
-                        ${hoveredCard === template.id ? 'opacity-100' : ''}
-                      `}>
-                        <div className="text-white text-center">
-                          <div className="text-2xl mb-2">✨</div>
-                          <div className="text-sm font-medium">Use Template</div>
-                        </div>
-                      </div>
+                    <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white w-64 h-40 flex-shrink-0">
+                      <img 
+                        src={`/templates/icons/img${(index % 6) + 1}.png`}
+                        alt={template.title}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
-                  </motion.div>
-                ))}
               </motion.div>
+                ))}
+            </motion.div>
 
             </div>
           </div>
         </section>
 
-        {/* Manual Scroller Section */}
-        <section className="py-16 bg-gray-50">
+        {/* CardSwap Templates Section */}
+        <section className="py-20 bg-gray-50 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-12">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Browse All Templates</h3>
-              <p className="text-gray-600">Use the controls below to manually scroll through our template collection</p>
-            </div>
-
-            {/* Manual Scroller Controls */}
-            <div className="flex items-center justify-center space-x-4 mb-8">
-              <button 
-                onClick={() => {
-                  const container = document.getElementById('manual-scroll-container');
-                  if (container) {
-                    container.scrollBy({ left: -300, behavior: 'smooth' });
-                  }
-                }}
-                className="flex items-center justify-center w-12 h-12 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors shadow-sm"
-              >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              
-              <div className="flex space-x-2">
-                <div className="w-3 h-3 bg-indigo-600 rounded-full"></div>
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
-                <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+            <div className="text-left mb-16">
+              <div className="mb-6 flex justify-start">
+                <TrueFocus 
+                  sentence="Browse All Templates"
+                  manualMode={false}
+                  blurAmount={5}
+                  borderColor="red"
+                  animationDuration={2}
+                  pauseBetweenAnimations={1}
+                />
               </div>
-              
-              <button 
-                onClick={() => {
-                  const container = document.getElementById('manual-scroll-container');
-                  if (container) {
-                    container.scrollBy({ left: 300, behavior: 'smooth' });
-                  }
-                }}
-                className="flex items-center justify-center w-12 h-12 bg-white border border-gray-300 rounded-full hover:bg-gray-50 transition-colors shadow-sm"
-              >
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
+              <p className="text-xl text-gray-600 max-w-2xl">
+                Use the controls below to manually scroll through our template collection
+              </p>
             </div>
 
-            {/* Manual Scroll Container */}
-            <div 
-              id="manual-scroll-container"
-              className="flex gap-4 overflow-x-auto scrollbar-hide pb-4"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            >
-              {templates.map((template, index) => (
-                <div
-                  key={template.id}
-                  className="group cursor-pointer flex-shrink-0"
-                  onMouseEnter={() => setHoveredCard(template.id)}
-                  onMouseLeave={() => setHoveredCard(null)}
+            {/* CardSwap Container */}
+            <div className="flex justify-center items-center min-h-[600px] relative">
+              <div className="relative">
+                <CardSwap
+                  cardDistance={100}
+                  verticalDistance={80}
+                  delay={3000}
+                  pauseOnHover={true}
+                  width={350}
+                  height={250}
+                  skewAmount={10}
+                  easing="elastic"
+                  onCardClick={(idx) => {
+                    console.log('Template clicked:', idx);
+                    // You can add navigation logic here
+                  }}
                 >
-                  <div className={`
-                    relative overflow-hidden rounded-lg border border-gray-200 bg-white transition-all duration-500 w-64 h-40
-                    ${hoveredCard === template.id ? 'shadow-xl scale-105' : 'hover:shadow-lg hover:scale-102'}
-                  `}>
-                    <div className={`${template.color} h-full flex items-center justify-center relative overflow-hidden`}>
-                      {/* Template image */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-20 h-20 bg-white/20 rounded-lg flex items-center justify-center shadow-lg">
-                          <span className="text-white text-2xl">{template.icon}</span>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img1.png" 
+                    alt="Sales Deck Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img2.png" 
+                    alt="Pitch Deck Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img3.png" 
+                    alt="Analytics Report Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img4.png" 
+                    alt="Creative Brief Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img5.png" 
+                    alt="Team Update Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+                <Card className="bg-white p-2 cursor-pointer hover:scale-105 transition-transform">
+                  <img 
+                    src="/templates/icons/img6.png" 
+                    alt="Business Plan Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                </Card>
+              </CardSwap>
+              </div>
+                      </div>
+                      
+            {/* Call to Action */}
+            <div className="text-center mt-12">
+              <button className="bg-indigo-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition-colors shadow-lg">
+                Explore All Templates
+              </button>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Hover overlay */}
-                    <div className={`
-                      absolute inset-0 bg-indigo-600/90 flex items-center justify-center opacity-0 transition-opacity duration-300
-                      ${hoveredCard === template.id ? 'opacity-100' : ''}
-                    `}>
-                      <div className="text-white text-center">
-                        <div className="text-2xl mb-2">✨</div>
-                        <div className="text-sm font-medium">Use Template</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Scroll Progress Indicator */}
-            <div className="mt-6 flex justify-center">
-              <div className="w-32 h-1 bg-gray-200 rounded-full overflow-hidden">
-                <div className="h-full bg-indigo-600 rounded-full transition-all duration-300" style={{ width: '25%' }}></div>
-              </div>
-            </div>
-          </div>
         </section>
 
         {/* Dashboard Preview Section */}
         <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 relative overflow-hidden">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-white mb-6">Get started with Pitch</h2>
+              <h2 className="text-4xl font-bold text-white mb-6">Get started with 10xEditor</h2>
               <button className="bg-orange-500 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-orange-600 transition-colors">
                 Sign up for free
               </button>
-            </div>
+                    </div>
 
             {/* Features List */}
             <div className="flex justify-center space-x-12 mb-16">
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                    </svg>
                 <span className="text-lg">Unlimited presentations</span>
               </div>
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                    </svg>
                 <span className="text-lg">Unlimited sharing links</span>
               </div>
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                </svg>
+                    </svg>
                 <span className="text-lg">Custom templates</span>
               </div>
-            </div>
-
+                    </div>
+                    
             {/* Dashboard Mockup */}
             <div className="relative">
               {/* Main Dashboard */}
@@ -1361,23 +1255,23 @@ export default function Home() {
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                    </div>
+                      </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
                         <span className="text-white text-xs font-bold">P</span>
-                      </div>
+                    </div>
                       <span className="font-semibold text-gray-900">SW SpaceWork</span>
                       <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
+                    </svg>
                   </div>
+            </div>
                   <div className="flex items-center space-x-4">
                     <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 0 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 0 1 15 0v5z" />
                       </svg>
-                    </div>
+              </div>
                     <span className="text-gray-600 font-medium">Recents</span>
                   </div>
                 </div>
@@ -1556,192 +1450,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section className="py-20 bg-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-gray-900 mb-6">Simple, transparent pricing</h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Choose the plan that's right for your team. All plans include our core features with no hidden fees.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-              {/* Free Plan */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-8 relative">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold text-gray-900">$0</span>
-                    <span className="text-gray-500">/month</span>
-                  </div>
-                  <p className="text-gray-600 mb-8">Perfect for individuals and small teams getting started</p>
-                  
-                  <button className="w-full bg-gray-100 text-gray-900 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                    Get started
-                  </button>
-                </div>
-                
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Up to 3 presentations</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Basic templates</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Public sharing</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Basic analytics</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Pro Plan */}
-              <div className="bg-indigo-600 text-white rounded-2xl p-8 relative transform scale-105 shadow-2xl">
-                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-orange-500 text-white px-4 py-1 rounded-full text-sm font-semibold">Most Popular</span>
-                </div>
-                
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold mb-2">Pro</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold">$20</span>
-                    <span className="text-indigo-200">/month</span>
-                  </div>
-                  <p className="text-indigo-200 mb-8">Perfect for growing teams and professionals</p>
-                  
-                  <button className="w-full bg-white text-indigo-600 py-3 px-6 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-                    Start free trial
-                  </button>
-                </div>
-                
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Unlimited presentations</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Premium templates</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>AI-powered features</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Advanced analytics</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Team collaboration</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Priority support</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Enterprise Plan */}
-              <div className="bg-white border border-gray-200 rounded-2xl p-8 relative">
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-                  <div className="mb-6">
-                    <span className="text-4xl font-bold text-gray-900">Custom</span>
-                  </div>
-                  <p className="text-gray-600 mb-8">For large organizations with advanced needs</p>
-                  
-                  <button className="w-full bg-gray-100 text-gray-900 py-3 px-6 rounded-lg font-semibold hover:bg-gray-200 transition-colors">
-                    Contact sales
-                  </button>
-                </div>
-                
-                <div className="mt-8 space-y-4">
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Everything in Pro</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Custom integrations</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">SSO & security</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Dedicated support</span>
-                  </div>
-                  <div className="flex items-center">
-                    <svg className="w-5 h-5 text-green-500 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-gray-700">Custom branding</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* FAQ Section */}
-            <div className="mt-20">
-              <h3 className="text-3xl font-bold text-gray-900 text-center mb-12">Frequently asked questions</h3>
-              <div className="max-w-3xl mx-auto space-y-8">
-                <div className="border-b border-gray-200 pb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Can I change plans anytime?</h4>
-                  <p className="text-gray-600">Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate any billing differences.</p>
-                </div>
-                <div className="border-b border-gray-200 pb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Is there a free trial?</h4>
-                  <p className="text-gray-600">Yes, we offer a 14-day free trial for all paid plans. No credit card required to get started.</p>
-                </div>
-                <div className="border-b border-gray-200 pb-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">What payment methods do you accept?</h4>
-                  <p className="text-gray-600">We accept all major credit cards, PayPal, and bank transfers for Enterprise plans.</p>
-                </div>
-                <div>
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Can I cancel anytime?</h4>
-                  <p className="text-gray-600">Yes, you can cancel your subscription at any time. You'll continue to have access to your account until the end of your billing period.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         {/* Testimonials Section */}
         <section className="py-20 bg-gray-50">
@@ -1749,7 +1457,7 @@ export default function Home() {
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-gray-900 mb-6">Loved by teams worldwide</h2>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                See what our customers are saying about their experience with Pitch
+                See what our customers are saying about their experience with 10xEditor
               </p>
             </div>
 
@@ -1766,7 +1474,7 @@ export default function Home() {
                   </div>
                 </div>
                 <p className="text-gray-700 leading-relaxed">
-                  "Pitch has completely transformed how we create presentations. What used to take hours now takes minutes, and our clients are blown away by the quality."
+                  "10xEditor has completely transformed how we create presentations. What used to take hours now takes minutes, and our clients are blown away by the quality."
                 </p>
                 <div className="flex text-yellow-400 mt-4">
                   {[...Array(5)].map((_, i) => (
@@ -1846,21 +1554,231 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Pricing Section */}
+        <section className="py-24 bg-white relative overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-50 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50 transform -translate-x-1/2 translate-y-1/2"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="text-center mb-20">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-5xl font-bold text-gray-900 mb-6">Simple, transparent pricing</h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Choose the plan that's right for you. No hidden fees, no surprises. 
+                  <span className="text-indigo-600 font-semibold"> Start free, upgrade anytime.</span>
+                </p>
+              </motion.div>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Free Plan */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-200 transition-colors">
+                    <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-gray-900">$0</span>
+                    <span className="text-gray-500 text-lg">/month</span>
+                  </div>
+                  <p className="text-gray-600 mb-8 text-lg">Perfect for individuals getting started</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">3 presentations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Basic templates</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Standard support</span>
+                    </li>
+                  </ul>
+                  
+                  <button className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+                    Get started free
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Pro Plan */}
+                <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 relative group scale-105"
+              >
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
+                  </span>
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-white/30 transition-colors">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-white">$20</span>
+                    <span className="text-white/80 text-lg">/month</span>
+                  </div>
+                  <p className="text-white/90 mb-8 text-lg">Perfect for growing teams</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-white font-medium">Unlimited presentations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-white font-medium">Premium templates</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-white font-medium">Team collaboration</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-white font-medium">Priority support</span>
+                    </li>
+                  </ul>
+                  
+                  <button className="w-full bg-white text-indigo-600 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg">
+                    Start free trial
+                  </button>
+        </div>
+              </motion.div>
+
+              {/* Enterprise Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
+                    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-gray-900">Custom</span>
+                  </div>
+                  <p className="text-gray-600 mb-8 text-lg">For large organizations</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Everything in Pro</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Advanced analytics</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Custom integrations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Dedicated support</span>
+                    </li>
+                  </ul>
+                  
+                  <button className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+                    Contact sales
+                  </button>
+                        </div>
+              </motion.div>
+                      </div>
+                    </div>
+        </section>
+
         {/* CTA Section */}
-        <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700">
+        <section className="py-20 bg-blue-600">
           <div className="max-w-4xl mx-auto text-center px-6">
             <h2 className="text-4xl font-bold text-white mb-6">Ready to create amazing presentations?</h2>
-            <p className="text-xl text-indigo-100 mb-8">
-              Join thousands of teams already using Pitch to create, collaborate, and present with confidence.
+            <p className="text-xl text-blue-100 mb-8">
+              Join thousands of teams already using 10xEditor to create, collaborate, and present with confidence.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-indigo-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+              <button className="bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
                 Start free trial
               </button>
-              <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-indigo-600 transition-colors">
+              <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors">
                 Schedule a demo
               </button>
-            </div>
+                    </div>
           </div>
         </section>
 
@@ -1871,10 +1789,10 @@ export default function Home() {
               <div>
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                    <span className="text-indigo-600 font-bold text-lg">P</span>
-                  </div>
-                  <span className="text-white font-semibold text-xl">Pitch</span>
-                </div>
+                    <span className="text-blue-600 font-bold text-lg">10</span>
+                      </div>
+                  <span className="text-white font-semibold text-xl">10xEditor</span>
+                    </div>
                 <p className="text-gray-400 mb-4">
                   The modern way to create, collaborate, and present with confidence.
                 </p>
@@ -1894,8 +1812,8 @@ export default function Home() {
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </svg>
                   </a>
-                </div>
-              </div>
+                  </div>
+            </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Product</h3>
@@ -1905,7 +1823,7 @@ export default function Home() {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Integrations</a></li>
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">API</a></li>
                 </ul>
-              </div>
+            </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Company</h3>
@@ -1915,7 +1833,7 @@ export default function Home() {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
                 </ul>
-              </div>
+          </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Support</h3>
@@ -1929,7 +1847,7 @@ export default function Home() {
             </div>
             
             <div className="border-t border-gray-800 mt-12 pt-8 text-center">
-              <p className="text-gray-400">&copy; 2024 Pitch. All rights reserved.</p>
+              <p className="text-gray-400">&copy; 2024 10xEditor. All rights reserved.</p>
             </div>
           </div>
         </footer>
