@@ -715,9 +715,9 @@ export default function Home() {
             </div>
             
           <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
-            <div className="grid lg:grid-cols-2 gap-16 items-center min-h-screen">
+            <div className="grid lg:grid-cols-3 gap-16 items-start min-h-screen pt-16">
               {/* Left Content */}
-              <div className="text-left">
+              <div className="text-left lg:col-span-2">
             <motion.div
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -869,129 +869,43 @@ export default function Home() {
             </motion.div>
               </div>
 
-              {/* Right Content - Dashboard Preview */}
+              {/* Right Content - Hero Image */}
             <motion.div 
                 initial={{ opacity: 0, x: 50, scale: 0.9 }}
                 animate={{ opacity: 1, x: 0, scale: 1 }}
                 transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
-                className="relative"
+                className="relative lg:col-span-1 -mt-8"
               >
                 <motion.div
-                  className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden"
-                  whileHover={{ y: -5, scale: 1.02 }}
-                  transition={{ duration: 0.3 }}
+                  className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden"
+                  whileHover={{ y: -8, scale: 1.03 }}
+                  transition={{ duration: 0.4 }}
                 >
-                  {/* Dashboard Header */}
-                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">10</span>
+                  {/* Hero Image */}
+                  <div className="relative h-[500px] overflow-hidden">
+                    <img 
+                      src="/heroSection/hero.png"
+                      alt="10xEditor Hero Dashboard"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // Fallback to a gradient background if image fails to load
+                        e.currentTarget.style.display = 'none';
+                        e.currentTarget.nextElementSibling.style.display = 'flex';
+                      }}
+                    />
+                    {/* Fallback gradient background */}
+                    <div className="hidden w-full h-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                          <span className="text-white font-bold text-3xl">10</span>
                   </div>
-                        <span className="font-semibold text-gray-900">10xEditor</span>
+                        <h3 className="text-2xl font-bold text-gray-800 mb-2">10xEditor Dashboard</h3>
+                        <p className="text-gray-600">Create stunning presentations</p>
                 </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
               </div>
-                    </div>
-                  </div>
-
-                  {/* Dashboard Content */}
-                  <div className="p-6">
-                    <div className="grid grid-cols-2 gap-4 mb-6">
-            <motion.div 
-                        className="bg-blue-50 rounded-lg p-4"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-blue-700">Total Presentations</span>
-                          <motion.span 
-                            className="text-2xl font-bold text-blue-900"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: 1.5 }}
-                          >
-                            127
-                          </motion.span>
-                        </div>
-                        <div className="text-xs text-blue-600">+12 this month</div>
-                      </motion.div>
-                <motion.div 
-                        className="bg-green-50 rounded-lg p-4"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="text-sm font-medium text-green-700">Views</span>
-                          <motion.span 
-                            className="text-2xl font-bold text-green-900"
-                            initial={{ scale: 0 }}
-                            animate={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: 1.7 }}
-                          >
-                            2.4K
-                          </motion.span>
-                        </div>
-                        <div className="text-xs text-green-600">+23% from last month</div>
-                      </motion.div>
-                    </div>
-
-                    <div className="space-y-3">
-                      {[
-                        { icon: "Q1", title: "Q1 Sales Review", time: "Updated 2 hours ago", color: "green" },
-                        { icon: "PR", title: "Product Launch", time: "Updated yesterday", color: "yellow" },
-                        { icon: "BD", title: "Board Meeting", time: "Updated 3 days ago", color: "gray" }
-                      ].map((item, index) => (
-                  <motion.div
-                          key={index}
-                          className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.5, delay: 1.8 + index * 0.1 }}
-                          whileHover={{ scale: 1.02, x: 5 }}
-                        >
-                          <div className={`w-10 h-10 bg-gradient-to-br ${
-                            index === 0 ? 'from-blue-500 to-purple-600' :
-                            index === 1 ? 'from-green-500 to-teal-600' :
-                            'from-purple-500 to-pink-600'
-                          } rounded-lg flex items-center justify-center`}>
-                            <span className="text-white font-bold text-sm">{item.icon}</span>
-                          </div>
-                          <div className="flex-1">
-                            <div className="font-medium text-gray-900">{item.title}</div>
-                            <div className="text-sm text-gray-500">{item.time}</div>
-                          </div>
-                          <div className={`w-2 h-2 rounded-full ${
-                            item.color === 'green' ? 'bg-green-500' :
-                            item.color === 'yellow' ? 'bg-yellow-500' :
-                            'bg-gray-400'
-                          }`}></div>
-                        </motion.div>
-                      ))}
-                    </div>
                   </div>
                 </motion.div>
 
-                {/* Floating Elements */}
-                  <motion.div
-                  className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl shadow-lg flex items-center justify-center"
-                    animate={{
-                    rotate: [0, 5, -5, 0],
-                    scale: [1, 1.1, 1]
-                    }}
-                    transition={{
-                    duration: 4, 
-                      repeat: Infinity,
-                    ease: "easeInOut"
-                  }}
-                >
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-              </motion.div>
             </motion.div>
         </div>
           </div>
@@ -1000,7 +914,7 @@ export default function Home() {
         {/* Templates Section */}
         <section ref={templateSectionRef} className="py-20 bg-gray-50 relative overflow-hidden">
           <div className="w-full px-6">
-            <motion.div
+            <motion.div 
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.3 }}
@@ -1043,12 +957,12 @@ export default function Home() {
             {/* Animated Template Grid */}
             <div className="relative w-full -mx-6">
               {/* Row 1 - Moving Left */}
-            <motion.div 
+              <motion.div 
                 style={{ x: x1 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
             >
                 {templates.slice(0, 10).map((template, index) => (
-              <motion.div
+                <motion.div 
                     key={template.id}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -1068,7 +982,7 @@ export default function Home() {
               </motion.div>
 
               {/* Row 2 - Moving Right */}
-              <motion.div
+                  <motion.div
                 style={{ x: x2 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1093,7 +1007,7 @@ export default function Home() {
               </motion.div>
 
               {/* Row 3 - Moving Left */}
-              <motion.div
+                  <motion.div
                 style={{ x: x3 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1113,11 +1027,11 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-              </motion.div>
+                </motion.div>
                 ))}
-            </motion.div>
+              </motion.div>
 
-            </div>
+        </div>
           </div>
         </section>
 
@@ -1591,8 +1505,8 @@ export default function Home() {
                   <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-200 transition-colors">
                     <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                  </div>
+                </svg>
+            </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
                   <div className="mb-6">
                     <span className="text-6xl font-bold text-gray-900">$0</span>
@@ -1645,7 +1559,7 @@ export default function Home() {
                   <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
                     Most Popular
                   </span>
-                </div>
+                      </div>
                 <div className="text-center">
                   <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-white/30 transition-colors">
                     <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1665,7 +1579,7 @@ export default function Home() {
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                      </div>
+                        </div>
                       <span className="text-white font-medium">Unlimited presentations</span>
                     </li>
                     <li className="flex items-center">
@@ -1681,7 +1595,7 @@ export default function Home() {
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                      </div>
+                    </div>
                       <span className="text-white font-medium">Team collaboration</span>
                     </li>
                     <li className="flex items-center">
@@ -1689,7 +1603,7 @@ export default function Home() {
                         <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                      </div>
+                    </div>
                       <span className="text-white font-medium">Priority support</span>
                     </li>
                   </ul>
@@ -1697,7 +1611,7 @@ export default function Home() {
                   <button className="w-full bg-white text-indigo-600 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg">
                     Start free trial
                   </button>
-        </div>
+                      </div>
               </motion.div>
 
               {/* Enterprise Plan */}
@@ -1713,7 +1627,7 @@ export default function Home() {
                     <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
-            </div>
+                    </div>
                   <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
                   <div className="mb-6">
                     <span className="text-6xl font-bold text-gray-900">Custom</span>
@@ -1726,7 +1640,7 @@ export default function Home() {
                         <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                         </svg>
-                      </div>
+            </div>
                       <span className="text-gray-700 font-medium">Everything in Pro</span>
                     </li>
                     <li className="flex items-center">
@@ -1760,8 +1674,8 @@ export default function Home() {
                   </button>
                         </div>
               </motion.div>
-                      </div>
-                    </div>
+            </div>
+          </div>
         </section>
 
         {/* CTA Section */}
