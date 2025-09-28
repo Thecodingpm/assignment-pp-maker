@@ -31,97 +31,100 @@ export async function POST(request: NextRequest) {
       marketing: "dynamic, creative, attention-grabbing, memorable"
     };
 
-    // Use a simpler prompt for testing
-    const enhancedPrompt = `Simple logo design for ${prompt}, clean and modern, professional, vector style, no text, just icon`;
+    // Enhanced prompt for better logo generation
+    const enhancedPrompt = `logo design, ${prompt}, ${options?.style || 'professional'} style, ${options?.color || 'modern'} colors, ${options?.industry || 'business'} industry, high quality, professional, vector style, no text, just icon, clean design, scalable, iconic, memorable, brand identity, minimalist, modern logo design`;
 
-    // Use your Google Colab Stable Diffusion XL API
-    // Replace this URL with your actual ngrok URL from Colab
-    const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a965e496e690.ngrok-free.app';
+    // Use AI Logo Generator as primary option
+    console.log('🎨 Using AI Logo Generator for real AI logos...');
     
-    // Test if Colab API is reachable
-    console.log('🔗 Testing Colab API connection...');
     try {
-      const healthResponse = await fetch(`${COLAB_API_URL}/health`, {
+      // Call AI Logo Generator API
+      const aiResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/generate-logo-ai`, {
+        method: 'POST',
         headers: {
-          'ngrok-skip-browser-warning': 'true',
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({ prompt, options }),
       });
-      console.log('🏥 Health check status:', healthResponse.status);
-    } catch (healthError) {
-      console.error('❌ Colab API not reachable:', healthError);
-      console.log('🎨 Falling back to mock response...');
-      // Fall back to mock response when Colab is not reachable
-    }
-    
-    // Temporary mock response for testing (remove this when you have Colab set up)
-    if (COLAB_API_URL.includes('YOUR_NGROK_URL_HERE') || COLAB_API_URL.includes('a47546173b4d')) {
-      console.log('🎨 Using mock logo response for testing...');
-      
-      // Generate different mock logos based on prompt and options
-      const mockLogos = [
-        // Tech Startup - Blue Circle
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM2MzY2RjEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM4QjVDQjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTAwIiBmaWxsPSJ3aGl0ZSIgZmlsbC1vcGFjaXR5PSIwLjkiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjQ4IiBmaWxsPSIjMzMzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBkeT0iLjNlbSI+VEVDSDwvdGV4dD48L3N2Zz4=',
-        // Creative Agency - Orange Diamond
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjYzNDciLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNGRkM5MDAiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxwb2x5Z29uIHBvaW50cz0iMjU2LDEwMCAzNTAsMjU2IDI1Niw0MTIgMTYyLDI1NiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNSRUFURTwvdGV4dD48L3N2Zz4=',
-        // Coffee Shop - Brown Oval
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM4QjQ1MTMiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNEQ0E5NzYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxlbGxpcHNlIGN4PSIyNTYiIGN5PSIyNTYiIHJ4PSI4MCIgcnk9IjEwMCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkNPRkZFRTwvdGV4dD48L3N2Zz4=',
-        // Healthcare - Green Square
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMEJCNzciLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM0QERCNzciLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHg9IjIwNiIgeT0iMjA2IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSI0MCIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkhFQUxUSDwvdGV4dD48L3N2Zz4=',
-        // Finance - Black Square
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiMwMDAwMDAiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM2NjY2NjYiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxyZWN0IHg9IjIwNiIgeT0iMjA2IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC45Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIzNiIgZmlsbD0iIzMzMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkZJTkFOQ0U8L3RleHQ+PC9zdmc+',
-        // Purple Triangle
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiM5QzI3QjAiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNFOTM0RjMiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxwb2x5Z29uIHBvaW50cz0iMjU2LDEwMCAzNTAsMzAwIDE2MiwzMDAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzIiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5ERVNJR048L3RleHQ+PC9zdmc+',
-        // Red Hexagon
-        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0b3AtY29sb3I9IiNGRjMzMzMiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiNGRkY0RjQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgZmlsbD0idXJsKCNnKSIvPjxwb2x5Z29uIHBvaW50cz0iMjU2LDEwMCAzMzAsMTUwIDMzMCwyNjIgMjU2LDMxMiAxODIsMjYyIDE4MiwxNTAiIGZpbGw9IndoaXRlIiBmaWxsLW9wYWNpdHk9IjAuOSIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMzAiIGZpbGw9IiMzMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5CUkFORDwvdGV4dD48L3N2Zz4='
-      ];
-      
-      // Select logo based on prompt content with more randomness
-      let logoIndex = 0;
-      const promptLower = prompt.toLowerCase();
-      
-      // Add timestamp for more randomness
-      const timestamp = Date.now();
-      const randomSeed = timestamp % 100;
-      
-      if (promptLower.includes('tech') || promptLower.includes('startup')) {
-        logoIndex = 0 + (randomSeed % 2); // 0 or 1
-      } else if (promptLower.includes('creative') || promptLower.includes('agency')) {
-        logoIndex = 1 + (randomSeed % 2); // 1 or 2
-      } else if (promptLower.includes('coffee') || promptLower.includes('shop')) {
-        logoIndex = 2 + (randomSeed % 2); // 2 or 3
-      } else if (promptLower.includes('health') || promptLower.includes('medical')) {
-        logoIndex = 3 + (randomSeed % 2); // 3 or 4
-      } else if (promptLower.includes('finance') || promptLower.includes('fintech')) {
-        logoIndex = 4;
+
+      if (aiResponse.ok) {
+        const data = await aiResponse.json();
+        return NextResponse.json(data);
       } else {
-        logoIndex = Math.floor(Math.random() * mockLogos.length); // Random for other prompts
+        console.error('AI Logo Generator failed, trying fallback...');
       }
+    } catch (error) {
+      console.error('AI Logo Generator error:', error);
+    }
+
+    // Fallback to local services if Hugging Face fails
+    const FREE_LOCAL_API_URL = process.env.FREE_LOCAL_API_URL || 'http://localhost:5001';
+    
+    // Test if local API is reachable
+    console.log('🔗 Testing local API connection...');
+    let localReachable = true;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
       
-      // Ensure index is within bounds
-      logoIndex = logoIndex % mockLogos.length;
-      
-      console.log(`🎨 Selected logo ${logoIndex} for prompt: "${prompt}" (${promptLower})`);
-      
-      return NextResponse.json({
-        success: true,
-        imageUrl: mockLogos[logoIndex],
-        prompt: enhancedPrompt
+      const healthResponse = await fetch(`${FREE_LOCAL_API_URL}/health`, {
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      localReachable = healthResponse.ok;
+    } catch (healthError) {
+      console.error('❌ Local API not reachable:', healthError.message);
+      localReachable = false;
+    }
+
+    if (!localReachable) {
+      return NextResponse.json({
+        error: 'AI logo generation service is not available. Please try again later.' 
+      }, { status: 503 });
     }
     
-    const response = await fetch(`${COLAB_API_URL}/generate-logo`, {
+    // Prepare optional LoRA configuration
+    const loraEnabled = (options?.loraEnabled ?? (process.env.LORA_ENABLED === 'true')) || false;
+    const loraName = options?.loraName || process.env.LORA_NAME || process.env.LORA_PATH || undefined;
+    const loraScaleEnv = process.env.LORA_SCALE ? Number(process.env.LORA_SCALE) : undefined;
+    const loraScale = typeof options?.loraScale === 'number' ? options.loraScale : (Number.isFinite(loraScaleEnv as number) ? (loraScaleEnv as number) : undefined);
+
+    const requestBody: Record<string, unknown> = {
+      prompt: enhancedPrompt,
+      style: options.style || 'professional',
+      color: options.color || 'modern',
+      industry: options.industry || 'general',
+      shape: options.shape || 'circle',
+      width: 512,
+      height: 512,
+      upscale: options.upscale || false,
+      convert_to_svg: options.convert_to_svg || false,
+      use_advanced: options.use_advanced || false  // New advanced option
+    };
+
+    if (loraEnabled || loraName || typeof loraScale === 'number') {
+      requestBody.lora = {
+        enabled: loraEnabled,
+        name: loraName,
+        scale: loraScale
+      };
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+    const response = await fetch(`${FREE_LOCAL_API_URL}/generate-logo`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'ngrok-skip-browser-warning': 'true',
       },
-      body: JSON.stringify({
-        prompt: enhancedPrompt,
-        style: options.style || 'professional',
-        color: options.color || 'modern',
-        industry: options.industry || 'general'
-      }),
+      body: JSON.stringify(requestBody),
+      signal: controller.signal
     });
+    
+    clearTimeout(timeoutId);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -137,8 +140,10 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      imageUrl: `data:image/png;base64,${data.image}`,
-      prompt: enhancedPrompt
+      imageUrl: data.imageUrl || data.image || `data:image/png;base64,${data.image_base64 || data.image}`,
+      prompt: enhancedPrompt,
+      model: data.model || data.engine || undefined,
+      lora: data.lora || requestBody.lora || undefined
     });
   } catch (error) {
     console.error('Logo generation error:', error);

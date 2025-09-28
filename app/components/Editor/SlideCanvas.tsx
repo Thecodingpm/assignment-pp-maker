@@ -9,9 +9,11 @@ import TextElementComponent from './TextElement';
 import { AnimatedTextElement, AnimatedElement } from '../AnimationSystem';
 import ResizeHandles from './ResizeHandles';
 import SelectionBox from './SelectionBox';
+import TableEditor from './TableEditor';
 import { snapToGuides } from '../../utils/magneticSnapping';
 import ReactECharts from 'echarts-for-react';
 import ChartEditor from './ChartEditor';
+import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 interface SlideCanvasProps {
   width?: number;
@@ -44,6 +46,9 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
   const [selectedChartElement, setSelectedChartElement] = useState<ChartElement | null>(null);
   const [dragStartPosition, setDragStartPosition] = useState({ x: 0, y: 0 });
   const [isDragStarted, setIsDragStarted] = useState(false);
+
+  // Enable keyboard shortcuts
+  useKeyboardShortcuts();
 
   // Visual guide types
   interface VisualGuide {
@@ -490,56 +495,316 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                     {/* Render shape types */}
                     {shapeElement.shapeType === 'rectangle' && (
                       <div
-                        className="w-full h-full"
+                        className="w-full h-full relative"
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
                           borderRadius: shapeElement.isRounded ? '1rem' : '0.5rem',
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Start editing text if double-clicked
+                          if (e.detail === 2) {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { isEditingText: true });
+                          }
+                        }}
+                      >
+                        {/* Text inside shape */}
+                        {shapeElement.text && (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center p-2 cursor-pointer"
+                            style={{
+                              color: shapeElement.textColor || '#9CA3AF',
+                              fontSize: shapeElement.textSize || 16,
+                              textAlign: shapeElement.textAlign || 'center',
+                              alignItems: shapeElement.textVerticalAlign === 'top' ? 'flex-start' : 
+                                         shapeElement.textVerticalAlign === 'bottom' ? 'flex-end' : 'center',
+                            }}
+                          >
+                            {shapeElement.isEditingText ? (
+                              <textarea
+                                className="w-full h-full resize-none border-none outline-none bg-transparent text-center"
+                                style={{
+                                  color: shapeElement.textColor || '#9CA3AF',
+                                  fontSize: shapeElement.textSize || 16,
+                                  textAlign: shapeElement.textAlign || 'center',
+                                }}
+                                value={shapeElement.text}
+                                onChange={(e) => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { text: e.target.value });
+                                }}
+                                onBlur={() => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                  }
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span>{shapeElement.text}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {shapeElement.shapeType === 'circle' && (
                       <div
-                        className="w-full h-full rounded-full"
+                        className="w-full h-full rounded-full relative"
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Start editing text if double-clicked
+                          if (e.detail === 2) {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { isEditingText: true });
+                          }
+                        }}
+                      >
+                        {/* Text inside circle */}
+                        {shapeElement.text && (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center p-2 cursor-pointer"
+                            style={{
+                              color: shapeElement.textColor || '#9CA3AF',
+                              fontSize: shapeElement.textSize || 16,
+                              textAlign: shapeElement.textAlign || 'center',
+                              alignItems: shapeElement.textVerticalAlign === 'top' ? 'flex-start' : 
+                                         shapeElement.textVerticalAlign === 'bottom' ? 'flex-end' : 'center',
+                            }}
+                          >
+                            {shapeElement.isEditingText ? (
+                              <textarea
+                                className="w-full h-full resize-none border-none outline-none bg-transparent text-center"
+                                style={{
+                                  color: shapeElement.textColor || '#9CA3AF',
+                                  fontSize: shapeElement.textSize || 16,
+                                  textAlign: shapeElement.textAlign || 'center',
+                                }}
+                                value={shapeElement.text}
+                                onChange={(e) => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { text: e.target.value });
+                                }}
+                                onBlur={() => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                  }
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span>{shapeElement.text}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
                     
                     {shapeElement.shapeType === 'triangle' && (
                       <div
-                        className="w-full h-full"
+                        className="w-full h-full relative"
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
                           clipPath: 'polygon(50% 0%, 0% 100%, 100% 100%)',
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Start editing text if double-clicked
+                          if (e.detail === 2) {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { isEditingText: true });
+                          }
+                        }}
+                      >
+                        {/* Text inside triangle */}
+                        {shapeElement.text && (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center p-2 cursor-pointer"
+                            style={{
+                              color: shapeElement.textColor || '#9CA3AF',
+                              fontSize: shapeElement.textSize || 16,
+                              textAlign: shapeElement.textAlign || 'center',
+                              alignItems: shapeElement.textVerticalAlign === 'top' ? 'flex-start' : 
+                                         shapeElement.textVerticalAlign === 'bottom' ? 'flex-end' : 'center',
+                            }}
+                          >
+                            {shapeElement.isEditingText ? (
+                              <textarea
+                                className="w-full h-full resize-none border-none outline-none bg-transparent text-center"
+                                style={{
+                                  color: shapeElement.textColor || '#9CA3AF',
+                                  fontSize: shapeElement.textSize || 16,
+                                  textAlign: shapeElement.textAlign || 'center',
+                                }}
+                                value={shapeElement.text}
+                                onChange={(e) => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { text: e.target.value });
+                                }}
+                                onBlur={() => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                  }
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span>{shapeElement.text}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
 
                     {shapeElement.shapeType === 'diamond' && (
                       <div
-                        className="w-full h-full"
+                        className="w-full h-full relative"
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
                           clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)',
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Start editing text if double-clicked
+                          if (e.detail === 2) {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { isEditingText: true });
+                          }
+                        }}
+                      >
+                        {/* Text inside diamond */}
+                        {shapeElement.text && (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center p-2 cursor-pointer"
+                            style={{
+                              color: shapeElement.textColor || '#9CA3AF',
+                              fontSize: shapeElement.textSize || 16,
+                              textAlign: shapeElement.textAlign || 'center',
+                              alignItems: shapeElement.textVerticalAlign === 'top' ? 'flex-start' : 
+                                         shapeElement.textVerticalAlign === 'bottom' ? 'flex-end' : 'center',
+                            }}
+                          >
+                            {shapeElement.isEditingText ? (
+                              <textarea
+                                className="w-full h-full resize-none border-none outline-none bg-transparent text-center"
+                                style={{
+                                  color: shapeElement.textColor || '#9CA3AF',
+                                  fontSize: shapeElement.textSize || 16,
+                                  textAlign: shapeElement.textAlign || 'center',
+                                }}
+                                value={shapeElement.text}
+                                onChange={(e) => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { text: e.target.value });
+                                }}
+                                onBlur={() => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                  }
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span>{shapeElement.text}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
 
                     {shapeElement.shapeType === 'star' && (
                       <div
-                        className="w-full h-full"
+                        className="w-full h-full relative"
                         style={{
                           backgroundColor: shapeElement.fillColor,
                           border: shapeElement.strokeWidth > 0 ? `${shapeElement.strokeWidth}px solid ${shapeElement.strokeColor}` : 'none',
                           clipPath: 'polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%)',
                         }}
-                      />
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          // Start editing text if double-clicked
+                          if (e.detail === 2) {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { isEditingText: true });
+                          }
+                        }}
+                      >
+                        {/* Text inside star */}
+                        {shapeElement.text && (
+                          <div
+                            className="absolute inset-0 flex items-center justify-center p-2 cursor-pointer"
+                            style={{
+                              color: shapeElement.textColor || '#9CA3AF',
+                              fontSize: shapeElement.textSize || 16,
+                              textAlign: shapeElement.textAlign || 'center',
+                              alignItems: shapeElement.textVerticalAlign === 'top' ? 'flex-start' : 
+                                         shapeElement.textVerticalAlign === 'bottom' ? 'flex-end' : 'center',
+                            }}
+                          >
+                            {shapeElement.isEditingText ? (
+                              <textarea
+                                className="w-full h-full resize-none border-none outline-none bg-transparent text-center"
+                                style={{
+                                  color: shapeElement.textColor || '#9CA3AF',
+                                  fontSize: shapeElement.textSize || 16,
+                                  textAlign: shapeElement.textAlign || 'center',
+                                }}
+                                value={shapeElement.text}
+                                onChange={(e) => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { text: e.target.value });
+                                }}
+                                onBlur={() => {
+                                  const { updateElement } = useEditorStore.getState();
+                                  updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    const { updateElement } = useEditorStore.getState();
+                                    updateElement(currentSlide.id, element.id, { isEditingText: false });
+                                  }
+                                }}
+                                autoFocus
+                              />
+                            ) : (
+                              <span>{shapeElement.text}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     )}
 
                     {shapeElement.shapeType === 'line' && (
@@ -613,6 +878,71 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                             />
                           )}
                         </div>
+                      </div>
+                    )}
+                    
+                    {/* Floating Shape Toolbar */}
+                    {selectedElementIds.includes(element.id) && (
+                      <div className="absolute -top-14 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 flex items-center space-x-2 z-20 backdrop-blur-sm">
+                        {/* Fill Option */}
+                        <button
+                          onClick={() => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              fillColor: shapeElement.fillColor === 'transparent' ? '#E5E7EB' : 'transparent' 
+                            });
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            shapeElement.fillColor !== 'transparent' 
+                              ? 'bg-blue-50 text-blue-600 border border-blue-200' 
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          Fill
+                        </button>
+
+                        {/* Border Option */}
+                        <button
+                          onClick={() => {
+                            const { updateElement } = useEditorStore.getState();
+                            updateElement(currentSlide.id, element.id, { 
+                              strokeWidth: shapeElement.strokeWidth > 0 ? 0 : 1 
+                            });
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            shapeElement.strokeWidth > 0 
+                              ? 'bg-blue-50 text-blue-600 border border-blue-200' 
+                              : 'hover:bg-gray-50'
+                          }`}
+                        >
+                          Border
+                        </button>
+
+                        {/* Border Width Input */}
+                        {shapeElement.strokeWidth > 0 && (
+                          <div className="flex items-center space-x-1">
+                            <input
+                              type="number"
+                              min="0"
+                              max="10"
+                              value={shapeElement.strokeWidth}
+                              onChange={(e) => {
+                                const { updateElement } = useEditorStore.getState();
+                                updateElement(currentSlide.id, element.id, { 
+                                  strokeWidth: parseInt(e.target.value) || 0 
+                                });
+                              }}
+                              className="w-12 px-2 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                          </div>
+                        )}
+
+                        {/* More Options */}
+                        <button className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+                          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                          </svg>
+                        </button>
                       </div>
                     )}
                     
@@ -971,226 +1301,18 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
               if (element.type === 'table') {
                 const tableElement = element as TableElement;
                 return (
-                  <AnimatedElement key={element.id} element={element}>
-                    <div
-                      className="absolute cursor-move select-none"
-                      style={{
-                        left: element.x,
-                        top: element.y,
-                        width: element.width,
-                        height: element.height,
-                        transform: `rotate(${element.rotation}deg)`,
-                        zIndex: element.zIndex,
-                      }}
-                    >
-                    {/* Selection border area */}
-                    <div 
-                      className={`absolute -inset-2 z-10 cursor-pointer border-2 transition-colors ${
-                        selectedElementIds.includes(element.id) 
-                          ? 'border-blue-500' 
-                          : 'border-transparent hover:border-blue-300'
-                      }`}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        selectElement(element.id, e.shiftKey);
-                      }}
-                      onMouseDown={(e) => {
-                        const rect = e.currentTarget.getBoundingClientRect();
-                        const canvasRect = canvasRef.current?.getBoundingClientRect();
-                        if (canvasRect) {
-                          const offsetX = (e.clientX - canvasRect.left) / zoom - element.x;
-                          const offsetY = (e.clientY - canvasRect.top) / zoom - element.y;
-                          setDragOffset({ x: offsetX, y: offsetY });
-                        }
-                        setDraggingElement(element);
-                      }}
-                    />
-                    <div className="w-full h-full bg-white rounded-lg border border-gray-200 overflow-hidden">
-                      <table className="w-full h-full border-collapse text-xs">
-                        <thead>
-                          <tr>
-                            {tableElement.headers?.map((header: string, index: number) => (
-                              <th 
-                                key={index}
-                                className="border border-gray-300 bg-gray-50 px-3 py-2 text-xs font-medium text-gray-700 text-center min-w-[60px] cursor-text hover:bg-gray-100 transition-colors"
-                                title="Click to edit column name"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  // Start editing this header
-                                  const newHeaders = [...tableElement.headers];
-                                  newHeaders[index] = newHeaders[index] || '';
-                                  
-                                  const { updateElement } = useEditorStore.getState();
-                                  updateElement(currentSlide.id, element.id, { 
-                                    headers: newHeaders 
-                                  } as Partial<TableElement>);
-                                  
-                                  // Create editable input
-                                  const input = document.createElement('input');
-                                  input.type = 'text';
-                                  input.value = newHeaders[index];
-                                  input.className = 'w-full h-full border-none outline-none text-left text-xs font-medium bg-transparent border-2 border-blue-400 rounded px-1';
-                                  input.style.width = '100%';
-                                  input.style.height = '100%';
-                                  
-                                  // Replace header content with input
-                                  const headerElement = e.currentTarget;
-                                  headerElement.innerHTML = '';
-                                  headerElement.appendChild(input);
-                                  input.focus();
-                                  input.select();
-                                  
-                                  // Handle input completion
-                                  const handleInputComplete = () => {
-                                    const newValue = input.value;
-                                    const updatedHeaders = [...tableElement.headers];
-                                    updatedHeaders[index] = newValue;
-                                    
-                                    const { updateElement } = useEditorStore.getState();
-                                    updateElement(currentSlide.id, element.id, { 
-                                      headers: updatedHeaders 
-                                    } as Partial<TableElement>);
-                                    
-                                    // Restore header display
-                                    headerElement.innerHTML = newValue || `Column ${index + 1}`;
-                                  };
-                                  
-                                  input.addEventListener('blur', handleInputComplete);
-                                  input.addEventListener('keydown', (keyEvent) => {
-                                    if (keyEvent.key === 'Enter') {
-                                      keyEvent.preventDefault();
-                                      input.blur();
-                                    } else if (keyEvent.key === 'Escape') {
-                                      keyEvent.preventDefault();
-                                      headerElement.innerHTML = newHeaders[index] || `Column ${index + 1}`;
-                                      input.blur();
-                                    }
-                                  });
-                                }}
-                              >
-                                {header || `Column ${index + 1}`}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {tableElement.data?.map((row: string[], rowIndex: number) => (
-                            <tr key={rowIndex}>
-                              {row.map((cell: string, colIndex: number) => (
-                                <td 
-                                  key={colIndex}
-                                  className="border border-gray-300 px-3 py-2 text-xs text-gray-600 text-center min-w-[60px] min-h-[30px] cursor-text hover:bg-gray-50 transition-colors"
-                                  title="Click to edit cell content"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    // Start editing this cell
-                                    const newData = [...tableElement.data];
-                                    newData[rowIndex][colIndex] = newData[rowIndex][colIndex] || '';
-                                    
-                                    const { updateElement } = useEditorStore.getState();
-                                    updateElement(currentSlide.id, element.id, { 
-                                      data: newData 
-                                    } as Partial<TableElement>);
-                                    
-                                    // Create editable input
-                                    const input = document.createElement('input');
-                                    input.type = 'text';
-                                    input.value = newData[rowIndex][colIndex];
-                                    input.className = 'w-full h-full border-none outline-none text-left text-xs bg-transparent border-2 border-blue-400 rounded px-1';
-                                    input.style.width = '100%';
-                                    input.style.height = '100%';
-                                    
-                                    // Replace cell content with input
-                                    const cellElement = e.currentTarget;
-                                    cellElement.innerHTML = '';
-                                    cellElement.appendChild(input);
-                                    input.focus();
-                                    input.select();
-                                    
-                                    // Handle input completion
-                                    const handleInputComplete = () => {
-                                      const newValue = input.value;
-                                      const updatedData = [...tableElement.data];
-                                      updatedData[rowIndex][colIndex] = newValue;
-                                      
-                                      const { updateElement } = useEditorStore.getState();
-                                      updateElement(currentSlide.id, element.id, { 
-                                        data: updatedData 
-                                      } as Partial<TableElement>);
-                                      
-                                      // Restore cell display
-                                      cellElement.innerHTML = newValue || '';
-                                    };
-                                    
-                                    input.addEventListener('blur', handleInputComplete);
-                                    input.addEventListener('keydown', (keyEvent) => {
-                                      if (keyEvent.key === 'Enter') {
-                                        keyEvent.preventDefault();
-                                        input.blur();
-                                      } else if (keyEvent.key === 'Escape') {
-                                        keyEvent.preventDefault();
-                                        cellElement.innerHTML = newData[rowIndex][colIndex] || '';
-                                        input.blur();
-                                      }
-                                    });
-                                  }}
-                                >
-                                  {cell || ''}
-                                </td>
-                              ))}
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    
-                    {/* Resize handles for selected tables */}
-                    {selectedElementIds.includes(element.id) && (
-                      <>
-                        <ResizeHandles
-                          element={element}
-                          onResize={(newWidth, newHeight) => {
-                            const { updateElement } = useEditorStore.getState();
-                            updateElement(currentSlide.id, element.id, { 
-                              width: newWidth, 
-                              height: newHeight 
-                            });
-                          }}
-                        />
-                        
-                        {/* Rotation handle */}
-                        <div
-                          className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-6 h-6 bg-blue-500 rounded-full cursor-grab hover:bg-blue-600 transition-colors flex items-center justify-center"
-                          onMouseDown={(e) => {
-                            e.stopPropagation();
-                            const startY = e.clientY;
-                            const startRotation = element.rotation;
-                            
-                            const handleMouseMove = (moveEvent: MouseEvent) => {
-                              const deltaY = moveEvent.clientY - startY;
-                              const newRotation = startRotation + (deltaY * 0.5);
-                              
-                              const { updateElement } = useEditorStore.getState();
-                              updateElement(currentSlide.id, element.id, { rotation: newRotation });
-                            };
-                            
-                            const handleMouseUp = () => {
-                              document.removeEventListener('mousemove', handleMouseMove);
-                              document.removeEventListener('mouseup', handleMouseUp);
-                            };
-                            
-                            document.addEventListener('mousemove', handleMouseMove);
-                            document.addEventListener('mouseup', handleMouseUp);
-                          }}
-                        >
-                          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
-                          </svg>
-                        </div>
-                      </>
-                    )}
-                    </div>
-                  </AnimatedElement>
+                  <TableEditor 
+                    key={element.id}
+                    element={element}
+                    tableElement={tableElement}
+                    currentSlide={currentSlide}
+                    selectedElementIds={selectedElementIds}
+                    selectElement={selectElement}
+                    setDragOffset={setDragOffset}
+                    setDraggingElement={setDraggingElement}
+                    zoom={zoom}
+                    canvasRef={canvasRef}
+                  />
                 );
               }
               

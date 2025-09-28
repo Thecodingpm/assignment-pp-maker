@@ -361,6 +361,12 @@ function LogoEditorContent() {
           // Single logo
           console.log('Creating logo slide with AI-generated image:', parsedData.imageUrl);
           
+          // Handle base64 images
+          let imageSrc = parsedData.imageUrl;
+          if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
+            imageSrc = `data:image/png;base64,${imageSrc}`;
+          }
+          
           const logoSlide = {
             id: 'slide-1',
             backgroundColor: '#ffffff',
@@ -371,7 +377,7 @@ function LogoEditorContent() {
               y: 150,
               width: 400,
               height: 300,
-              src: parsedData.imageUrl,
+              src: imageSrc,
               alt: 'AI Generated Logo',
               rotation: 0,
               zIndex: 1,
@@ -391,24 +397,32 @@ function LogoEditorContent() {
           // Multiple logo variations
           console.log('Creating slides with AI-generated logo variations:', parsedData.logos);
           
-          const logoSlides = parsedData.logos.map((logo: any, index: number) => ({
-            id: `slide-${index + 1}`,
-            backgroundColor: '#ffffff',
-            elements: [{
-              id: `logo-image-${index + 1}`,
-              type: 'image' as const,
-              x: 200,
-              y: 150,
-              width: 400,
-              height: 300,
-              src: logo.imageUrl,
-              alt: `AI Generated Logo - ${logo.style}`,
-              rotation: 0,
-              zIndex: 1,
-              selected: false,
-              isEditing: false
-            }]
-          }));
+          const logoSlides = parsedData.logos.map((logo: any, index: number) => {
+            // Handle base64 images
+            let imageSrc = logo.imageUrl;
+            if (imageSrc && !imageSrc.startsWith('http') && !imageSrc.startsWith('data:')) {
+              imageSrc = `data:image/png;base64,${imageSrc}`;
+            }
+            
+            return {
+              id: `slide-${index + 1}`,
+              backgroundColor: '#ffffff',
+              elements: [{
+                id: `logo-image-${index + 1}`,
+                type: 'image' as const,
+                x: 200,
+                y: 150,
+                width: 400,
+                height: 300,
+                src: imageSrc,
+                alt: `AI Generated Logo - ${logo.style}`,
+                rotation: 0,
+                zIndex: 1,
+                selected: false,
+                isEditing: false
+              }]
+            };
+          });
           
           console.log('Setting AI-generated logo variations slides:', logoSlides);
           setSlides(logoSlides);

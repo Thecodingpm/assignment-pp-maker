@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Home, 
   Menu, 
@@ -38,6 +39,7 @@ import ExportModal from '../ExportModal';
 import { useEditorStore } from '../../stores/useEditorStore';
 
 const MainToolbar: React.FC = () => {
+  const router = useRouter();
   const [showMediaPopup, setShowMediaPopup] = useState(false);
   const [mediaPopupPosition, setMediaPopupPosition] = useState({ x: 0, y: 0 });
   const [showShapePopup, setShowShapePopup] = useState(false);
@@ -90,6 +92,10 @@ const MainToolbar: React.FC = () => {
 
   const handlePlusClick = () => {
     setShowAddContentModal(true);
+  };
+
+  const handleHomeClick = () => {
+    router.push('/dashboard');
   };
 
   const handleMediaClick = (e: React.MouseEvent) => {
@@ -711,7 +717,13 @@ const MainToolbar: React.FC = () => {
         {/* Left Section - Presentation Info */}
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1.5">
-            <Home className="w-3.5 h-3.5 text-gray-600" />
+            <button 
+              onClick={handleHomeClick}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              title="Go to Dashboard"
+            >
+              <Home className="w-3.5 h-3.5 text-gray-600" />
+            </button>
             <button 
               onClick={handleMenuClick}
               className="p-1 hover:bg-gray-100 rounded transition-colors"

@@ -387,7 +387,7 @@ export const AnimationPopup: React.FC<AnimationPopupProps> = ({
   if (!isVisible) return null;
 
   return (
-    <div className="fixed right-2 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-40 flex flex-col rounded-lg border border-gray-200">
+    <div className="fixed right-2 top-16 h-[500px] w-64 bg-white shadow-xl z-40 flex flex-col rounded-lg border border-gray-200">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-2">

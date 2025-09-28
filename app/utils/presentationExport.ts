@@ -1,4 +1,4 @@
-import { Slide } from '../types/editor';
+import { Slide, TextElement, ShapeElement, ImageElement, ChartElement, TableElement, EmbedElement } from '../types/editor';
 
 export interface ExportOptions {
   format: 'pdf' | 'html' | 'pptx' | 'png' | 'jpg' | 'docx';
@@ -345,44 +345,275 @@ export async function exportToPDF(
 }
 
 /**
- * Export presentation to PPTX format (simplified)
+ * Export presentation to PPTX format using pptxgenjs
  */
 export async function exportToPPTX(
   presentationData: PresentationData,
   options: ExportOptions = { format: 'pptx' }
 ): Promise<void> {
-  const { slides, title } = presentationData;
+  const { slides, title, metadata } = presentationData;
   const filename = options.filename || `${title.replace(/[^a-zA-Z0-9]/g, '_')}.pptx`;
   
-  // For now, we'll create a simple XML-based PPTX structure
-  // This is a basic implementation that creates a valid PPTX file
-  
   try {
-    // Create a simple PPTX structure using XML
-    const pptxContent = createSimplePPTX(slides, title, presentationData.metadata);
+    // Dynamically import pptxgenjs to avoid SSR issues
+    const PptxGenJS = (await import('pptxgenjs')).default;
     
-    // Create and download the file
-    const blob = new Blob([pptxContent], { type: 'application/vnd.openxmlformats-officedocument.presentationml.presentation' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    // Create new presentation
+    const pptx = new PptxGenJS();
+    
+    // Set presentation properties
+    pptx.author = metadata?.author || 'Presentation Editor';
+    pptx.company = metadata?.company || '';
+    pptx.subject = metadata?.subject || title;
+    pptx.title = title;
+    pptx.description = metadata?.description || `Presentation created with Presentation Editor`;
+    
+    // Set slide size (16:9 aspect ratio) - standard for modern presentations
+    pptx.defineLayout({ name: 'LAYOUT_16x9', width: 10, height: 5.625 });
+    pptx.layout = 'LAYOUT_16x9';
+    
+    // Set default font for better compatibility
+    pptx.defineSlideMaster({
+      title: 'MASTER_SLIDE',
+      background: { color: 'FFFFFF' },
+      objects: [
+        {
+          placeholder: {
+            options: {
+              name: 'title',
+              type: 'title',
+              x: 0.5,
+              y: 0.2,
+              w: 9,
+              h: 1,
+              fontSize: 32,
+              fontFace: 'Arial',
+              color: '000000'
+            }
+          }
+        }
+      ]
+    });
+    
+    // Process each slide
+    for (let i = 0; i < slides.length; i++) {
+      const slide = slides[i];
+      const pptxSlide = pptx.addSlide();
+      
+      // Set slide background if specified
+      if (slide.backgroundColor) {
+        pptxSlide.background = { color: slide.backgroundColor };
+      } else if (slide.backgroundImage) {
+        pptxSlide.background = { 
+          path: slide.backgroundImage,
+          fill: 'stretch'
+        };
+      }
+      
+      // Process slide elements
+      for (const element of slide.elements) {
+        await addElementToSlide(pptxSlide, element);
+      }
+    }
+    
+    // Generate and download the file
+    console.log('Generating PPTX file...');
+    await pptx.writeFile({ 
+      fileName: filename,
+      compression: 'FAST'
+    });
+    
+    console.log('PPTX file generated successfully!');
     
   } catch (error) {
     console.error('PPTX export failed:', error);
+    
+    // Show user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    console.log('Error details:', errorMessage);
+    
     // Fallback to HTML export
     console.log('Falling back to HTML export...');
-    await exportToHTML(presentationData, { ...options, format: 'html' });
-    alert('PPTX export failed. Your presentation has been exported as HTML instead.');
+    try {
+      await exportToHTML(presentationData, { ...options, format: 'html' });
+      alert(`PPTX export failed: ${errorMessage}\n\nYour presentation has been exported as HTML instead.`);
+    } catch (htmlError) {
+      console.error('HTML fallback also failed:', htmlError);
+      alert(`Both PPTX and HTML export failed. Please try again or contact support.`);
+    }
   }
 }
 
 /**
- * Create a simple PPTX structure
+ * Add element to PowerPoint slide
+ */
+async function addElementToSlide(pptxSlide: any, element: TextElement | ShapeElement | ImageElement | ChartElement | TableElement | EmbedElement): Promise<void> {
+  // Convert coordinates from our system (0-1920, 0-1080) to PowerPoint inches
+  const x = (element.x / 1920) * 10; // Convert to inches (10 inches = slide width)
+  const y = (element.y / 1080) * 5.625; // Convert to inches (5.625 inches = slide height)
+  const width = (element.width / 1920) * 10;
+  const height = (element.height / 1080) * 5.625;
+  
+  switch (element.type) {
+    case 'text':
+      const textElement = element as TextElement;
+      pptxSlide.addText(textElement.content || '', {
+        x: x,
+        y: y,
+        w: width,
+        h: height,
+        fontSize: textElement.fontSize || 16,
+        fontFace: textElement.fontFamily || 'Arial',
+        color: textElement.color || '000000',
+        align: textElement.textAlign || 'left',
+        valign: 'top',
+        bold: textElement.fontWeight === 'bold' || textElement.fontWeight === '700',
+        italic: textElement.fontStyle === 'italic',
+        rotation: textElement.rotation || 0,
+        wrap: true,
+        lineSpacing: textElement.lineHeight ? textElement.lineHeight * 100 : 120
+      });
+      break;
+      
+    case 'image':
+      const imageElement = element as ImageElement;
+      if (imageElement.src) {
+        try {
+          // Handle different image source types
+          let imageData = imageElement.src;
+          
+          // If it's a data URL, use it directly
+          if (imageData.startsWith('data:')) {
+            imageData = imageData;
+          } 
+          // If it's a URL, we need to fetch it first
+          else if (imageData.startsWith('http')) {
+            // For external URLs, we'll add them as links
+            // This is a limitation of pptxgenjs - it can't directly use external URLs
+            imageData = imageData;
+          }
+          
+          pptxSlide.addImage({
+            data: imageData,
+            x: x,
+            y: y,
+            w: width,
+            h: height,
+            rotation: imageElement.rotation || 0,
+            sizing: {
+              type: 'contain',
+              w: width,
+              h: height
+            }
+          });
+        } catch (error) {
+          console.warn('Failed to add image:', error);
+          // Add placeholder text if image fails
+          pptxSlide.addText(`[Image: ${imageElement.alt || 'Image'}]`, {
+            x: x,
+            y: y,
+            w: width,
+            h: height,
+            fontSize: 12,
+            color: '666666',
+            align: 'center',
+            valign: 'middle',
+            fill: { color: 'F8F9FA' },
+            line: { color: 'DEE2E6', width: 1 }
+          });
+        }
+      }
+      break;
+      
+    case 'shape':
+      const shapeElement = element as ShapeElement;
+      const shapeType = getShapeType(shapeElement.shapeType);
+      pptxSlide.addShape(shapeType, {
+        x: x,
+        y: y,
+        w: width,
+        h: height,
+        fill: { color: shapeElement.fillColor || '4472C4' },
+        line: { 
+          color: shapeElement.strokeColor || '000000',
+          width: shapeElement.strokeWidth || 1
+        },
+        rotation: shapeElement.rotation || 0
+      });
+      break;
+      
+    case 'chart':
+      const chartElement = element as ChartElement;
+      // For charts, we'll create a simple representation
+      pptxSlide.addText(`[Chart: ${chartElement.chartType || 'Bar Chart'}]`, {
+        x: x,
+        y: y,
+        w: width,
+        h: height,
+        fontSize: 14,
+        color: '333333',
+        align: 'center',
+        valign: 'middle',
+        fill: { color: 'F8F9FA' },
+        line: { color: 'DEE2E6', width: 1 }
+      });
+      break;
+      
+    case 'table':
+      const tableElement = element as TableElement;
+      if (tableElement.data && Array.isArray(tableElement.data)) {
+        const tableData = tableElement.data.map((row: any[]) => 
+          row.map((cell: any) => ({ text: cell || '', options: { fontSize: 12 } }))
+        );
+        
+        pptxSlide.addTable(tableData, {
+          x: x,
+          y: y,
+          w: width,
+          h: height,
+          border: { type: 'solid', color: 'DEE2E6', pt: 1 },
+          fill: { color: 'FFFFFF' }
+        });
+      }
+      break;
+      
+    default:
+      // Unknown element type, add placeholder
+      pptxSlide.addText(`[${element.type || 'Element'}]`, {
+        x: x,
+        y: y,
+        w: width,
+        h: height,
+        fontSize: 12,
+        color: '999999',
+        align: 'center',
+        valign: 'middle'
+      });
+  }
+}
+
+/**
+ * Convert our shape types to PowerPoint shape types
+ */
+function getShapeType(shapeType: string): string {
+  switch (shapeType) {
+    case 'rectangle':
+      return 'rect';
+    case 'circle':
+      return 'ellipse';
+    case 'triangle':
+      return 'triangle';
+    case 'diamond':
+      return 'diamond';
+    case 'star':
+      return 'star5';
+    default:
+      return 'rect';
+  }
+}
+
+/**
+ * Create a simple PPTX structure (legacy function - not used anymore)
  */
 function createSimplePPTX(slides: Slide[], title: string, metadata?: any): string {
   // This is a very basic PPTX structure

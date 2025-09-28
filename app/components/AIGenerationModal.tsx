@@ -17,7 +17,11 @@ export default function AIGenerationModal({ isOpen, onClose, onGenerate }: AIGen
   const [options, setOptions] = useState({
     style: 'professional',
     color: 'modern',
-    industry: 'general'
+    industry: 'general',
+    shape: 'circle',
+    upscale: true,
+    convert_to_svg: false,
+    use_advanced: false  // New advanced option
   });
 
   const handleGenerate = async () => {
@@ -224,6 +228,64 @@ export default function AIGenerationModal({ isOpen, onClose, onGenerate }: AIGen
               </select>
             </div>
           </div>
+          
+          {/* Enhanced Logo Options */}
+          {selectedType === 'logo' && (
+            <div className="mt-4">
+              <h5 className="text-xs font-medium text-gray-600 mb-2">Enhanced Features</h5>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1">Shape Control</label>
+                  <select
+                    value={options.shape}
+                    onChange={(e) => setOptions({...options, shape: e.target.value})}
+                    className="w-full p-2 border border-gray-300 rounded text-sm"
+                  >
+                    <option value="circle">Circle</option>
+                    <option value="square">Square</option>
+                    <option value="hexagon">Hexagon</option>
+                    <option value="triangle">Triangle</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={options.upscale}
+                      onChange={(e) => setOptions({...options, upscale: e.target.checked})}
+                      className="rounded"
+                    />
+                    <span>AI Upscaling</span>
+                  </label>
+                  <label className="flex items-center gap-2 text-xs">
+                    <input
+                      type="checkbox"
+                      checked={options.convert_to_svg}
+                      onChange={(e) => setOptions({...options, convert_to_svg: e.target.checked})}
+                      className="rounded"
+                    />
+                    <span>Vector Output</span>
+                  </label>
+                </div>
+              </div>
+              
+              {/* Advanced AI Option */}
+              <div className="mt-4 p-3 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg border border-blue-200">
+                <label className="flex items-center gap-2 text-sm font-medium text-blue-800">
+                  <input
+                    type="checkbox"
+                    checked={options.use_advanced}
+                    onChange={(e) => setOptions({...options, use_advanced: e.target.checked})}
+                    className="rounded border-blue-300"
+                  />
+                  <span>🚀 Advanced AI Generation (Google Gemini)</span>
+                </label>
+                <p className="text-xs text-blue-600 mt-1 ml-6">
+                  Professional-grade logos using Google's Gemini AI. Higher quality with AI-powered design suggestions.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Generate Button */}

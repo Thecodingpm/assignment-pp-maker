@@ -55,6 +55,13 @@ export interface ShapeElement extends EditorElement {
   hasBars?: boolean;
   isDashed?: boolean;
   lineStyle?: 'solid' | 'dashed';
+  // Text properties for shapes
+  text?: string;
+  textColor?: string;
+  textSize?: number;
+  textAlign?: 'left' | 'center' | 'right';
+  textVerticalAlign?: 'top' | 'middle' | 'bottom';
+  isEditingText?: boolean;
 }
 
 export interface ImageElement extends EditorElement {

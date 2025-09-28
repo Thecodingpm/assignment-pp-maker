@@ -23,14 +23,67 @@ export async function POST(request: NextRequest) {
       `Modern logo design for ${prompt}. Contemporary, trendy, fresh, ${options.style || 'modern'} aesthetic, ${options.color || 'contemporary'} color scheme, tech-forward, innovative, professional.`
     ];
 
-    // Generate multiple logos in parallel
+    // Style variations for each prompt
+    const styleVariations = ['minimalist', 'creative', 'professional', 'modern'];
+
+    // Use AI Logo Generator for variations
+    console.log('🎨 Using AI Logo Generator for logo variations...');
+    
+    try {
+      // Generate multiple variations using AI Logo Generator
+      const logoPromises = promptVariations.map(async (variationPrompt, index) => {
+        const aiResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/generate-logo-ai`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ 
+            prompt: variationPrompt, 
+            options: { ...options, style: styleVariations[index] || options.style }
+          }),
+        });
+
+        if (aiResponse.ok) {
+          const data = await aiResponse.json();
+          return {
+            id: index + 1,
+            imageUrl: data.imageUrl,
+            prompt: variationPrompt,
+            model: data.model,
+            style: styleVariations[index] || options.style
+          };
+        } else {
+          console.error(`AI Logo Generator failed for variation ${index + 1}`);
+          return null;
+        }
+      });
+
+      const results = await Promise.all(logoPromises);
+      const successfulLogos = results.filter(logo => logo !== null);
+
+      if (successfulLogos.length > 0) {
+        return NextResponse.json({
+          success: true,
+          logos: successfulLogos,
+          totalGenerated: successfulLogos.length,
+          service: 'AI Logo Generator'
+        });
+      } else {
+        console.error('All AI Logo Generator variations failed, trying fallback...');
+      }
+    } catch (error) {
+      console.error('AI Logo Generator variations error:', error);
+    }
+
+    // Fallback: Generate multiple logos in parallel using local services
     const logoPromises = promptVariations.map(async (variationPrompt, index) => {
       try {
-        // Use your Google Colab Stable Diffusion XL API
+        // Use your Google Colab Stable Diffusion XL API as fallback
         const COLAB_API_URL = process.env.COLAB_API_URL || 'https://a965e496e690.ngrok-free.app';
         
         // Temporary mock response for testing (remove this when you have Colab set up)
-        if (COLAB_API_URL.includes('YOUR_NGROK_URL_HERE') || COLAB_API_URL.includes('a47546173b4d')) {
+        const REQUIRE_SDXL = process.env.REQUIRE_SDXL === 'true';
+        if (!REQUIRE_SDXL && (COLAB_API_URL.includes('YOUR_NGROK_URL_HERE') || COLAB_API_URL.includes('a47546173b4d'))) {
           console.log('🎨 Using mock variations response for testing...');
           
           // Different mock logos for each variation
@@ -53,15 +106,30 @@ export async function POST(request: NextRequest) {
           };
         }
         
+        // Prepare optional LoRA configuration (env can act as defaults)
+        const loraEnabled = (options?.loraEnabled ?? (process.env.LORA_ENABLED === 'true')) || false;
+        const loraName = options?.loraName || process.env.LORA_NAME || process.env.LORA_PATH || undefined;
+        const loraScaleEnv = process.env.LORA_SCALE ? Number(process.env.LORA_SCALE) : undefined;
+        const loraScale = typeof options?.loraScale === 'number' ? options.loraScale : (Number.isFinite(loraScaleEnv as number) ? (loraScaleEnv as number) : undefined);
+
+        const requestBody: Record<string, unknown> = {
+          prompt: prompt
+        };
+        if (loraEnabled || loraName || typeof loraScale === 'number') {
+          (requestBody as any).lora = {
+            enabled: loraEnabled,
+            name: loraName,
+            scale: loraScale
+          };
+        }
+
         const response = await fetch(`${COLAB_API_URL}/generate-variations`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             'ngrok-skip-browser-warning': 'true',
           },
-          body: JSON.stringify({
-            prompt: prompt  // Use the original prompt for variations
-          }),
+          body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
@@ -73,7 +141,9 @@ export async function POST(request: NextRequest) {
           id: index + 1,
           imageUrl: data.variations ? `data:image/png;base64,${data.variations[index].image}` : data.imageUrl,
           prompt: data.variations ? data.variations[index].prompt : data.prompt,
-          style: data.variations ? data.variations[index].style : data.style
+          style: data.variations ? data.variations[index].style : data.style,
+          model: data.model || data.engine || undefined,
+          lora: data.lora || (requestBody as any).lora || undefined
         };
       } catch (error) {
         console.error(`Error generating logo variation ${index + 1}:`, error);

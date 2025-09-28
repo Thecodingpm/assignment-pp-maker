@@ -16,6 +16,9 @@ import RightCornerToolbar from '../components/RightToolbar/RightCornerToolbar';
 import PresentationModeModal from '../components/PresentationModeModal';
 import PresentationMode from '../components/PresentationMode';
 import SlidePropertiesBar from '../components/SlidePropertiesBar';
+import { useRealtimeCollaboration } from '../hooks/useRealtimeCollaboration';
+import UserPresence from '../components/Collaboration/UserPresence';
+import CursorIndicator from '../components/Collaboration/CursorIndicator';
 
 function PresentationEditorContent() {
   const searchParams = useSearchParams();
@@ -33,6 +36,22 @@ function PresentationEditorContent() {
     createShapeElement,
     setCanvasSize
   } = useEditorStore();
+
+  // Real-time collaboration
+  const {
+    isConnected,
+    users,
+    collaborativeAddElement,
+    collaborativeUpdateElement,
+    collaborativeDeleteElement,
+    collaborativeMoveElement,
+    handleCursorMove,
+    handleTextInput,
+    handleTextInputEnd,
+  } = useRealtimeCollaboration({
+    documentId: documentId || 'new',
+    enabled: !!documentId && documentId !== 'new'
+  });
 
 
   const loadImportedDocument = async (docId: string) => {
@@ -452,14 +471,37 @@ function PresentationEditorContent() {
       {/* Top Toolbar */}
       <MainToolbar />
       
+      {/* Collaboration Status Bar */}
+      {isConnected && (
+        <div className="bg-green-50 border-b border-green-200 px-4 py-2 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-700 font-medium">
+                Live Collaboration Active
+              </span>
+            </div>
+            <UserPresence className="flex items-center" />
+          </div>
+          <div className="text-xs text-green-600">
+            {Object.keys(users).length} user{Object.keys(users).length !== 1 ? 's' : ''} online
+          </div>
+        </div>
+      )}
+      
       {/* Main Content - Add top padding for fixed toolbar and bottom padding for properties bar */}
-      <div className="flex-1 flex overflow-hidden pt-20 pb-16 pr-32">
+      <div className="flex-1 flex overflow-hidden pt-20 pb-16 pr-32 relative">
         {/* Left Sidebar - Slide List */}
         <SlideList />
         
         {/* Center - Slide Canvas */}
-        <div className="flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col relative">
           <SlideCanvas />
+          {/* Cursor indicators for collaboration */}
+          <CursorIndicator 
+            containerRef={{ current: null }}
+            zoom={1}
+          />
         </div>
         
         {/* Right Sidebar - Property Panel */}

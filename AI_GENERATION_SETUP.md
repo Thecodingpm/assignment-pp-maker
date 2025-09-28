@@ -12,7 +12,19 @@ Create a `.env.local` file in your project root with:
 # OpenAI API Configuration
 OPENAI_API_KEY=your_openai_api_key_here
 
-# Replicate API Configuration (for Stable Diffusion - optional)
+# SDXL Colab Inference Server (ngrok URL)
+COLAB_API_URL=https://YOUR_NGROK_URL_HERE
+
+# Require SDXL server (disable mocks, fail if unreachable)
+REQUIRE_SDXL=true
+
+# Optional: SDXL LoRA settings (if your Colab server loads a LoRA)
+# When enabled, the client includes { lora: { enabled, name, scale } } in requests
+LORA_ENABLED=true
+LORA_NAME=logo_lora  # or LORA_PATH=/content/lora/logo_lora.safetensors
+LORA_SCALE=0.8
+
+# Replicate API Configuration (optional / not used by default)
 REPLICATE_API_TOKEN=your_replicate_token_here
 ```
 
@@ -32,7 +44,9 @@ REPLICATE_API_TOKEN=your_replicate_token_here
 - **UI**: Beautiful modal with type selection, prompt input, and customization options
 
 ### ✅ API Endpoints
-- **`/api/generate-logo`**: Generates logos using DALL-E
+- **`/api/generate-logo`**: Generates logos via your SDXL Colab server (optional LoRA)
+- **`/api/generate-logo-variations`**: Generates multiple logo options via SDXL (optional LoRA)
+- **`/api/refine-logo`**: Refines logos using OpenAI Images (DALL·E)
 - **`/api/generate-presentation`**: Generates presentations using GPT-4
 - **`/api/ai-generate`**: Existing presentation generation (fallback)
 
@@ -56,7 +70,7 @@ REPLICATE_API_TOKEN=your_replicate_token_here
 1. User clicks "AI Generate" button
 2. Modal opens with type selection
 3. User selects "Logo" and enters prompt
-4. System calls `/api/generate-logo` endpoint
+4. System calls `/api/generate-logo` endpoint (includes LoRA fields if configured). If `REQUIRE_SDXL=true` and the server is unreachable, the request fails (no mock).
 5. Generated logo data is stored in localStorage
 6. User is redirected to logo editor
 
@@ -91,16 +105,17 @@ The modal includes:
 
 ## 8. Cost Considerations
 
-- **DALL-E**: ~$0.02-0.08 per logo generation
-- **GPT-4**: ~$0.01-0.03 per presentation generation
-- **Estimated monthly cost**: $50-200 for moderate usage
+- **SDXL on Colab**: GPU time (varies by runtime); LoRA adds no extra API cost
+- **DALL·E (refinement endpoint)**: ~$0.02-0.08 per image
+- **GPT-4 (presentations)**: ~$0.01-0.03 per generation
+- **Estimated monthly cost**: depends on usage and Colab runtime
 
 ## 9. Next Steps
 
 1. **Add your OpenAI API key** to `.env.local`
-2. **Test the feature** with sample prompts
-3. **Customize prompts** for your specific use cases
-4. **Add more AI models** (Stable Diffusion, Midjourney) for better results
+2. **Set `COLAB_API_URL`** to your SDXL Colab server (ngrok)
+3. (Optional) **Enable LoRA** with `LORA_ENABLED=true`, set `LORA_NAME`/`LORA_PATH`, and `LORA_SCALE`
+4. **Test the feature** with sample prompts
 5. **Implement post-processing** (background removal, vector conversion)
 
 ## 10. Troubleshooting

@@ -58,7 +58,7 @@ const TableDesignPopup: React.FC<TableDesignPopupProps> = ({ isVisible, onClose 
   if (!isVisible) return null;
 
   return (
-    <div className="fixed right-2 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-40 flex flex-col rounded-lg">
+    <div className="fixed right-2 top-16 h-[500px] w-64 bg-white shadow-xl z-40 flex flex-col rounded-lg">
       <div className="flex-1 overflow-y-auto p-4">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center space-x-2">

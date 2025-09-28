@@ -240,6 +240,32 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
     });
   },
 
+  duplicateElement: (slideId: string, elementId: string) => {
+    const { slides } = get();
+    const slideIndex = slides.findIndex(slide => slide.id === slideId);
+    
+    if (slideIndex === -1) return;
+    
+    const element = slides[slideIndex].elements.find(el => el.id === elementId);
+    if (!element) return;
+    
+    const duplicatedElement = {
+      ...element,
+      id: Date.now().toString(),
+      x: element.x + 20,
+      y: element.y + 20,
+      selected: false,
+    } as TextElement | ShapeElement | ImageElement;
+    
+    const newSlides = [...slides];
+    newSlides[slideIndex] = {
+      ...newSlides[slideIndex],
+      elements: [...newSlides[slideIndex].elements, duplicatedElement],
+    };
+    
+    set({ slides: newSlides });
+  },
+
   selectElement: (elementId: string, multiSelect = false) => {
     const { selectedElementIds } = get();
     
@@ -261,6 +287,10 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
 
   deselectAll: () => {
     set({ selectedElementIds: [] });
+  },
+
+  setSelectedElementIds: (elementIds: string[]) => {
+    set({ selectedElementIds: elementIds });
   },
 
   // Canvas controls
@@ -442,14 +472,21 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
       type: 'shape',
       x,
       y,
-      width: 100,
+      width: 200,
       height: 100,
       rotation: 0,
       zIndex: 1,
       shapeType,
-      fillColor: '#3B82F6',
-      strokeColor: '#1E40AF',
-      strokeWidth: 2,
+      fillColor: 'transparent',
+      strokeColor: '#9CA3AF',
+      strokeWidth: 1,
+      isRounded: true,
+      text: 'Add text',
+      textColor: '#9CA3AF',
+      textSize: 16,
+      textAlign: 'center',
+      textVerticalAlign: 'middle',
+      isEditingText: false,
     };
 
     addElement(currentSlide.id, newShapeElement);
@@ -599,4 +636,18 @@ export const useEditorStore = create<EditorStore>((set, get) => ({
       showDesignPopup: true 
     });
   },
+
+  // Undo/Redo functionality
+  undo: () => {
+    // TODO: Implement undo functionality
+    console.log('Undo not implemented yet');
+  },
+
+  redo: () => {
+    // TODO: Implement redo functionality
+    console.log('Redo not implemented yet');
+  },
+
+  canUndo: false,
+  canRedo: false,
 }));

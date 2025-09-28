@@ -36,12 +36,12 @@ function AcceptInvitePage() {
         const data = snap.data() as any;
         if (data.status === 'accepted') {
           setStatus('accepted');
-          router.replace(`/presentation-editor?id=${data.docId}&collaborate=true`);
+          router.replace(`/presentation-editor?id=${data.docId}&collaborate=true&permission=${data.permission || 'view'}`);
           return;
         }
         await updateDoc(ref, { status: 'accepted', acceptedAt: serverTimestamp() });
         setStatus('accepted');
-        router.replace(`/presentation-editor?id=${data.docId}&collaborate=true`);
+        router.replace(`/presentation-editor?id=${data.docId}&collaborate=true&permission=${data.permission || 'view'}`);
       } catch (e: any) {
         setStatus('error');
         setMessage(e?.message || 'Failed to accept invite');

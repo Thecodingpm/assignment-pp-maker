@@ -73,7 +73,7 @@ const TextDesignPopup: React.FC<TextDesignPopupProps> = ({ isVisible, onClose })
           border-radius: 4px;
         }
       `}</style>
-      <div className="fixed right-2 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-xl z-40 flex flex-col rounded-lg">
+      <div className="fixed right-2 top-16 h-[500px] w-64 bg-white shadow-xl z-40 flex flex-col rounded-lg">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <div className="flex items-center space-x-2">

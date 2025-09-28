@@ -83,28 +83,9 @@ const ToolbarTextPopup: React.FC<ToolbarTextPopupProps> = ({
               </button>
             </div>
             
-            {/* Quick Add Section */}
-            <div className="px-3 py-2 border-b border-gray-100">
-              <button
-                onClick={() => onStyleSelect('add-text')}
-                className="w-full flex items-center justify-center space-x-2 px-2 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors font-medium border border-gray-200 text-sm"
-              >
-                <Plus className="w-3 h-3" />
-                <span>Add New Text Element</span>
-              </button>
-              <p className="text-xs text-gray-500 text-center mt-1.5">
-                Select existing text first to apply styles
-              </p>
-            </div>
             
             {/* Style Options */}
             <div className="py-1">
-              {/* Selection Status */}
-              <div className="px-3 py-1.5 mb-1 bg-blue-50 border-l-4 border-blue-400">
-                <p className="text-xs text-blue-800">
-                  ✨ <strong>Click any style below</strong> to create a new text element with that formatting applied.
-                </p>
-              </div>
               
               {textStyles.map((style) => (
                 <button

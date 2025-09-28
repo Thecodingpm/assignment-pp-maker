@@ -5,6 +5,7 @@ import './globals.css';
 import { AuthProvider } from './components/AuthContext';
 import { AdminProvider } from './components/AdminContext';
 import { ThemeProvider } from './components/ThemeProvider';
+import { CollaborationProvider } from './contexts/CollaborationContext';
 import { useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -75,12 +76,14 @@ function LayoutContent({ children }: { children: React.ReactNode }) {
         <ThemeProvider>
           <AuthProvider>
             <AdminProvider>
-              {showNavbar && <Navbar />}
-              {/* TopToolbarWrapper removed */}
-              <main className="flex-1">
-                {children}
-              </main>
-              <Footer />
+              <CollaborationProvider>
+                {showNavbar && <Navbar />}
+                {/* TopToolbarWrapper removed */}
+                <main className="flex-1">
+                  {children}
+                </main>
+                <Footer />
+              </CollaborationProvider>
             </AdminProvider>
           </AuthProvider>
         </ThemeProvider>

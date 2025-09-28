@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { 
   Home, 
   Menu, 
@@ -36,6 +37,7 @@ import { useEditorStore } from '../../stores/useEditorStore';
 import LogoExportModal from '../Export/LogoExportModal';
 
 const LogoEditorToolbar: React.FC = () => {
+  const router = useRouter();
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLayerPanel, setShowLayerPanel] = useState(false);
   const [showGrid, setShowGrid] = useState(true);
@@ -112,6 +114,10 @@ const LogoEditorToolbar: React.FC = () => {
     setShowExportModal(true);
   };
 
+  const handleHomeClick = () => {
+    router.push('/dashboard');
+  };
+
   return (
     <div className="fixed top-2 left-2 right-2 z-50 bg-white rounded-lg shadow-lg">
       {/* Main Toolbar */}
@@ -120,7 +126,13 @@ const LogoEditorToolbar: React.FC = () => {
         {/* Left Section - Logo Info */}
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-1.5">
-            <Home className="w-3.5 h-3.5 text-gray-600" />
+            <button 
+              onClick={handleHomeClick}
+              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              title="Go to Dashboard"
+            >
+              <Home className="w-3.5 h-3.5 text-gray-600" />
+            </button>
             <button 
               onClick={() => setShowLayerPanel(!showLayerPanel)}
               className="p-1 hover:bg-gray-100 rounded transition-colors"

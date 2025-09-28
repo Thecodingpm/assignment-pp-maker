@@ -4,6 +4,17 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 
+// Unsplash Logo Component
+const UnsplashIcon = ({ className }: { className?: string }) => (
+  <svg 
+    className={className} 
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+  >
+    <path d="M7.5 6.75V0h9v6.75h-9zm0 0H0v9h7.5v-9zm0 0h9v6.75H7.5V6.75zM24 6.75h-7.5V0H24v6.75zm0 0v9h-7.5v-9H24zM16.5 24H7.5v-7.5h9V24zm0 0h7.5v-7.5h-7.5V24z"/>
+  </svg>
+);
+
 interface MediaPopupProps {
   isVisible: boolean;
   onClose: () => void;
@@ -51,8 +62,8 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
   const [imageQuality, setImageQuality] = useState<'high' | 'medium' | 'low'>('medium');
 
   const integrations = [
-    { id: 'unsplash', name: 'Unsplash', icon: '📷', color: 'bg-black' },
-    { id: 'tenor', name: 'Tenor', icon: '🎬', color: 'bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-500' },
+    { id: 'unsplash', name: 'Unsplash', icon: 'U', color: 'bg-black' },
+    { id: 'tenor', name: 'Tenor', icon: '🎬', color: 'bg-gradient-to-r from-blue-400 via-green-400 to-red-500' },
     { id: 'stickers', name: 'Stickers', icon: '⭐', color: 'bg-purple-500' },
     { id: 'icons', name: 'Icon sets', icon: '🐦', color: 'bg-teal-400' },
     { id: 'brandfetch', name: 'Brandfetch', icon: 'B̶', color: 'bg-black' },
@@ -64,13 +75,14 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
     { name: 'Abstract', query: 'abstract', bg: 'bg-gradient-to-r from-purple-400 via-orange-400 to-blue-500' },
     { name: 'Tech', query: 'technology', bg: 'bg-black' },
     { name: '3D Shapes', query: '3d shapes', bg: 'bg-gradient-to-r from-blue-400 to-purple-500' },
+    { name: '3D Objects', query: '3d objects', bg: 'bg-gradient-to-r from-indigo-500 to-cyan-500' },
   ];
 
   // Calculate adjusted position to prevent viewport overflow
   useEffect(() => {
     if (isVisible) {
-      const modalWidth = 800; // Increased width to match the design
-      const modalHeight = 600; // Increased height to match the design
+      const modalWidth = 900; // Increased width to match the design
+      const modalHeight = 700; // Increased height to match the design
       const viewportWidth = window.innerWidth;
       const viewportHeight = window.innerHeight;
       
@@ -397,7 +409,7 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -10 }}
             transition={{ duration: 0.15 }}
-            className="fixed z-50 bg-white rounded-lg shadow-xl border border-gray-200 w-[800px] h-[600px] flex overflow-hidden"
+            className="fixed z-50 bg-white rounded-2xl shadow-2xl border border-gray-200 w-[800px] h-[500px] flex overflow-hidden"
             style={{
               left: adjustedPosition.x,
               top: adjustedPosition.y,
@@ -406,44 +418,50 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
             }}
           >
             {/* Left Sidebar */}
-            <div className="w-48 bg-gray-50 border-r border-gray-200 p-4 flex flex-col flex-shrink-0">
+            <div className="w-44 bg-gradient-to-b from-gray-50 to-gray-100 border-r border-gray-200 p-4 flex flex-col flex-shrink-0">
               {/* Library Section */}
               <div className="mb-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">Library</h3>
+                <h3 className="text-xs font-bold text-gray-800 mb-3 uppercase tracking-wide">Library</h3>
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-3 p-2 bg-white rounded-lg border border-gray-200">
-                    <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
-                      <span className="text-white font-bold text-xs">A</span>
+                  <div className="flex items-center space-x-2 p-2 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-6 h-6 bg-gradient-to-br from-red-400 to-red-600 rounded-md flex items-center justify-center">
+                      <ImageIcon className="w-3 h-3 text-white" />
                     </div>
-                    <span className="text-sm text-gray-700">Images</span>
+                    <span className="text-xs font-medium text-gray-700">Images</span>
                   </div>
-                  <div className="flex items-center space-x-3 p-2 bg-white rounded-lg border border-gray-200">
-                    <div className="w-6 h-6 bg-red-500 rounded flex items-center justify-center">
-                      <span className="text-white font-bold text-xs">A</span>
+                  <div className="flex items-center space-x-2 p-2 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                    <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-md flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                      </svg>
                     </div>
-                    <span className="text-sm text-gray-700">Videos</span>
+                    <span className="text-xs font-medium text-gray-700">Videos</span>
                   </div>
                 </div>
               </div>
               
               {/* Integrations Section */}
               <div className="flex-1">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">Integrations</h3>
+                <h3 className="text-xs font-bold text-gray-800 mb-3 uppercase tracking-wide">Integrations</h3>
                 <div className="space-y-2">
                   {integrations.map((integration) => (
                     <button
                       key={integration.id}
                       onClick={() => handleIntegrationSwitch(integration.id)}
-                      className={`w-full flex items-center space-x-3 p-2 rounded-lg transition-colors text-left ${
+                      className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all duration-200 text-left ${
                         selectedIntegration === integration.id 
-                          ? 'bg-gray-200' 
-                          : 'hover:bg-gray-100'
+                          ? 'bg-white shadow-md border-2 border-purple-200' 
+                          : 'hover:bg-white hover:shadow-sm border-2 border-transparent'
                       }`}
                     >
-                      <div className={`w-6 h-6 ${integration.color} rounded flex items-center justify-center text-white text-sm font-bold`}>
-                        {integration.icon}
+                      <div className={`w-8 h-8 ${integration.color} rounded-lg flex items-center justify-center text-white text-sm font-bold shadow-sm`}>
+                        {integration.id === 'unsplash' ? (
+                          <UnsplashIcon className="w-5 h-5" />
+                        ) : (
+                          integration.icon
+                        )}
                       </div>
-                      <span className="text-sm text-gray-700">{integration.name}</span>
+                      <span className="text-sm font-medium text-gray-700">{integration.name}</span>
                     </button>
                   ))}
                 </div>
@@ -452,7 +470,7 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
               {/* Upload Button */}
               <button
                 onClick={() => onMediaSelect('upload')}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center space-x-2 text-sm"
+                className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-200 flex items-center justify-center space-x-2 text-sm shadow-lg hover:shadow-xl"
               >
                 <Upload className="w-4 h-4" />
                 <span>Upload media</span>
@@ -461,66 +479,53 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
             
             {/* Main Content Area */}
             <div className="flex-1 p-4 flex flex-col bg-white min-w-0">
-              {/* Integration Header */}
-              <div className="mb-3 p-2 bg-gray-100 rounded-lg">
-                <div className="flex items-center space-x-2">
-                  <div className={`w-4 h-4 rounded ${selectedIntegration === 'unsplash' ? 'bg-black' : selectedIntegration === 'tenor' ? 'bg-gradient-to-r from-blue-400 via-green-400 via-yellow-400 to-red-500' : selectedIntegration === 'stickers' ? 'bg-purple-500' : selectedIntegration === 'icons' ? 'bg-teal-400' : 'bg-gray-500'}`}></div>
-                  <span className="text-sm font-medium text-gray-700">
-                    {selectedIntegration === 'unsplash' ? '📸 Unsplash Photos' : 
-                     selectedIntegration === 'tenor' ? '🎬 Tenor GIFs' : 
-                     selectedIntegration === 'stickers' ? '⭐ Stickers' : 
-                     selectedIntegration === 'icons' ? '🐦 Icon Sets' : 
-                     `${selectedIntegration}`}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    ({selectedIntegration === 'unsplash' ? 'High-quality images' : 
-                      selectedIntegration === 'tenor' ? 'Animated GIFs' : 
-                      selectedIntegration === 'stickers' ? 'Fun stickers' : 
-                      selectedIntegration === 'icons' ? 'Vector icons' : 
-                      'Media content'})
-                  </span>
-                </div>
-              </div>
               
               {/* Search Bar */}
-              <div className="mb-4">
-                <div className="flex space-x-2">
+              <div className="mb-3">
+                <div className="flex space-x-3">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-600" />
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
                       placeholder={getSearchPlaceholder()}
-                      className="w-full pl-10 pr-4 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm"
+                      className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200"
                     />
                   </div>
                   
                   {/* Quality Selector */}
-                  <select 
-                    className="px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent text-sm bg-white"
-                    value={imageQuality}
-                    onChange={(e) => {
-                      setImageQuality(e.target.value as 'high' | 'medium' | 'low');
-                      console.log('Quality changed to:', e.target.value);
-                    }}
-                  >
-                    <option value="low">Low (Fast)</option>
-                    <option value="medium">Medium (Balanced)</option>
-                    <option value="high">High (Slow)</option>
-                  </select>
+                  <div className="relative">
+                    <select 
+                      className="px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm bg-gray-50 focus:bg-white transition-all duration-200 appearance-none pr-8"
+                      value={imageQuality}
+                      onChange={(e) => {
+                        setImageQuality(e.target.value as 'high' | 'medium' | 'low');
+                        console.log('Quality changed to:', e.target.value);
+                      }}
+                    >
+                      <option value="low">Low Quality (Fast)</option>
+                      <option value="medium">Medium Quality (Balanced)</option>
+                      <option value="high">High Quality (Slow)</option>
+                    </select>
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               {/* Category Buttons */}
-              <div className="mb-4">
-                <div className="flex space-x-2 overflow-x-auto pb-2">
+              <div className="mb-3">
+                <div className="flex space-x-3 overflow-x-auto pb-2">
                   {categories.map((category) => (
                     <button
                       key={category.name}
                       onClick={() => handleCategoryClick(category)}
-                      className={`px-3 py-2 rounded-lg text-xs font-medium text-white whitespace-nowrap hover:opacity-80 transition-opacity flex-shrink-0`}
+                      className={`px-4 py-2 rounded-full text-sm font-medium text-black whitespace-nowrap hover:scale-105 transition-all duration-200 flex-shrink-0 shadow-sm hover:shadow-md`}
                       style={{
                         background: category.bg.includes('gradient') 
                           ? category.bg 
@@ -537,57 +542,121 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
               <div className="flex-1 overflow-y-auto min-h-0">
                 {loading ? (
                   <div className="flex items-center justify-center h-full">
-                    <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+                    <div className="text-center">
+                      <Loader2 className="w-8 h-8 animate-spin text-purple-500 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">Loading images...</p>
+                    </div>
                   </div>
                 ) : mediaItems.length > 0 ? (
                   <div className="space-y-2">
-                    <div className="text-xs text-gray-500 mb-2">
-                      Showing {mediaItems.length} {
-                        selectedIntegration === 'unsplash' ? 'photos' : 
-                        selectedIntegration === 'tenor' ? 'GIFs' : 
-                        selectedIntegration === 'stickers' ? 'stickers' : 
-                        selectedIntegration === 'icons' ? 'icons' : 
-                        'items'
-                      } from {selectedIntegration}
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
+
+                    {/* Improved Image Grid */}
+                    <div className="grid grid-cols-3 gap-3">
                       {mediaItems.map((item) => (
                         <div 
                           key={item.id} 
-                          className="relative group cursor-pointer hover:scale-105 transition-transform"
+                          className="relative group cursor-pointer bg-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
                           onClick={() => handleMediaSelect(item)}
                         >
-                          {item.type === 'gif' ? (
-                            <img
-                              src={item.thumb}
-                              alt={item.alt}
-                              className="w-full h-20 object-cover rounded-lg"
-                              loading="lazy"
-                            />
-                          ) : (
-                            <img
-                              src={item.thumb}
-                              alt={item.alt}
-                              className="w-full h-20 object-cover rounded-lg"
-                              loading="lazy"
-                            />
-                          )}
-                          <div className="absolute bottom-1 left-1 right-1 bg-black bg-opacity-70 text-white text-xs p-1 rounded">
-                            {item.credit}
+                          {/* Image Container */}
+                          <div className="aspect-square relative overflow-hidden">
+                            {item.type === 'gif' ? (
+                              <img
+                                src={item.thumb}
+                                alt={item.alt}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <img
+                                src={item.thumb}
+                                alt={item.alt}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                              />
+                            )}
+                            
+                            {/* Hover Overlay */}
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-200 flex items-center justify-center">
+                              <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                <div className="bg-white bg-opacity-90 rounded-full p-2">
+                                  <ImageIcon className="w-5 h-5 text-gray-700" />
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Quality Badge */}
+                            <div className="absolute top-2 right-2">
+                              <div className="bg-white bg-opacity-90 rounded-full px-2 py-1 text-xs font-medium text-gray-700">
+                                {imageQuality === 'high' ? 'HD' : imageQuality === 'medium' ? 'MD' : 'SD'}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Image Info */}
+                          <div className="p-3">
+                            <div className="text-xs text-gray-600 font-medium truncate mb-1">
+                              {item.credit}
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              {item.width} × {item.height}
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
+
+                    {/* Pagination Controls */}
+                    {totalPages > 1 && (
+                      <div className="flex items-center justify-center space-x-2 pt-4 border-t border-gray-200">
+                        <button
+                          onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                          disabled={currentPage === 1}
+                          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Previous
+                        </button>
+                        
+                        <div className="flex space-x-1">
+                          {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                            const pageNum = i + 1;
+                            return (
+                              <button
+                                key={pageNum}
+                                onClick={() => setCurrentPage(pageNum)}
+                                className={`px-3 py-2 text-sm font-medium rounded-lg ${
+                                  currentPage === pageNum
+                                    ? 'bg-purple-600 text-white'
+                                    : 'text-gray-500 bg-white border border-gray-300 hover:bg-gray-50'
+                                }`}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        <button
+                          onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                          disabled={currentPage === totalPages}
+                          className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="text-center text-gray-500 text-sm py-8">
-                    No {
+                  <div className="text-center text-gray-500 py-12">
+                    <ImageIcon className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+                    <p className="text-sm font-medium mb-2">No {
                       selectedIntegration === 'unsplash' ? 'photos' : 
                       selectedIntegration === 'tenor' ? 'GIFs' : 
                       selectedIntegration === 'stickers' ? 'stickers' : 
                       selectedIntegration === 'icons' ? 'icons' : 
                       'media'
-                    } found. Try a different search term.
+                    } found</p>
+                    <p className="text-xs text-gray-400">Try a different search term or browse categories</p>
                   </div>
                 )}
               </div>

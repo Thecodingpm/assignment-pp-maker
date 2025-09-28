@@ -6,7 +6,7 @@ import { MoreHorizontal, Bold, Italic, AlignLeft, AlignCenter, AlignRight, Align
 import { useEditorStore } from '../../stores/useEditorStore';
 import { TextElement as TextElementType } from '../../types/editor';
 import ResizeHandles from './ResizeHandles';
-import { snapToGuides, calculateVelocityReduction } from '../../utils/magneticSnapping';
+import SimpleColorPicker from '../SimpleColorPicker';
 
 interface TextElementProps {
   element: TextElementType;
@@ -23,22 +23,20 @@ const TextElement: React.FC<TextElementProps> = ({
   onDragStart,
   onDragEnd
 }) => {
-  const { updateElement, startTextEditing, stopTextEditing, updateTextContent, setIsDraggingElement, selectElement, triggerDesignPopup, deselectAll } = useEditorStore();
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const { updateElement, startTextEditing, stopTextEditing, updateTextContent, selectElement, triggerDesignPopup, deselectAll, slides, currentSlideIndex, deleteElement } = useEditorStore();
+  const currentSlide = slides[currentSlideIndex];
   const [showStyleDropdown, setShowStyleDropdown] = useState(false);
   const [cursorPosition, setCursorPosition] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Handle text editing
+  // Handle container click - just select the element, don't start editing
   const handleClick = useCallback((e: React.MouseEvent) => {
-    // Don't handle clicks on the textarea - let it handle its own clicks
-    if (e.target === textareaRef.current) {
+    // Don't handle clicks on the textarea or text div - let them handle their own clicks
+    if (e.target === textareaRef.current || e.target === e.currentTarget.querySelector('.text-content')) {
       return;
     }
-    
     e.preventDefault();
     e.stopPropagation();
     
@@ -46,25 +44,21 @@ const TextElement: React.FC<TextElementProps> = ({
       // Multi-select mode
       onSelect(true);
     } else {
-      // Single click - start editing if it's a text element
-      if (element.type === 'text') {
-        startTextEditing(element.id);
-      }
+      // Single click - just select the element
       onSelect(false);
     }
-  }, [element.type, element.id, startTextEditing, onSelect]);
+  }, [onSelect]);
 
-  // Handle clicking on the text element to allow deselection
+  // Handle clicking on the text content - start text editing
   const handleTextClick = useCallback((e: React.MouseEvent) => {
-    // Don't prevent default or stop propagation here
-    // This allows the canvas to receive the click for deselection
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (e.ctrlKey || e.metaKey) {
       // Multi-select mode
-      e.stopPropagation();
       onSelect(true);
     } else {
-      // Single click - start editing mode
-      e.stopPropagation();
+      // Single click - start text editing mode
       startTextEditing(element.id);
       onSelect(false);
     }
@@ -325,103 +319,20 @@ const TextElement: React.FC<TextElementProps> = ({
     e.preventDefault();
     e.stopPropagation();
     
-    // Start dragging immediately
-    setIsDragging(true);
-    setIsDraggingElement(true);
-    
-    // Calculate drag offset
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (rect) {
-      const offsetX = e.clientX - rect.left;
-      const offsetY = e.clientY - rect.top;
-      setDragOffset({ x: offsetX, y: offsetY });
-    }
-    
-    // Handle selection
+    // Handle selection first
     if (e.ctrlKey || e.metaKey) {
       // Multi-select mode
       onSelect(true);
     } else {
-      // Single click - select and potentially start editing
+      // Single click - just select, don't start editing automatically
       onSelect(false);
-      
-      // If it's a text element and not already editing, start editing
-      if (element.type === 'text' && !element.isEditing) {
-        startTextEditing(element.id);
-      }
     }
     
-    // Call onDragStart if provided
+    // Call onDragStart if provided - this will trigger the SlideCanvas dragging system
     onDragStart?.(element);
-  }, [element, onSelect, startTextEditing, onDragStart]);
+  }, [element, onSelect, onDragStart]);
 
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    if (!isDragging) return;
-    
-    // Get canvas for proper coordinate calculation
-    const canvas = document.querySelector('[data-canvas]') as HTMLElement;
-    if (!canvas) return;
-    
-    const canvasRect = canvas.getBoundingClientRect();
-    const zoom = useEditorStore.getState().zoom;
-    
-    // Calculate raw position
-    const rawX = (e.clientX - canvasRect.left) / zoom - dragOffset.x;
-    const rawY = (e.clientY - canvasRect.top) / zoom - dragOffset.y;
-    
-    // Get current slide and elements for magnetic snapping
-    const { slides, currentSlideIndex, updateElement } = useEditorStore.getState();
-    const currentSlide = slides[currentSlideIndex];
-    if (!currentSlide) return;
-    
-    // Calculate velocity to detect active dragging
-    const deltaX = e.movementX;
-    const deltaY = e.movementY;
-    const velocity = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    const isActivelyDragging = velocity > 3; // Same threshold as SlideCanvas
-    
-    let finalX = rawX;
-    let finalY = rawY;
-    
-    // Only apply magnetic snapping when not actively dragging
-    if (!isActivelyDragging) {
-      // Apply magnetic snapping with proper canvas size
-      const snappedPosition = snapToGuides(
-        { x: rawX, y: rawY },
-        element,
-        currentSlide.elements,
-        { width: 1920, height: 1080 } // Default canvas size
-      );
-      
-      // Use snapped position if available, otherwise use raw position
-      finalX = snappedPosition.isSnapped ? snappedPosition.x : rawX;
-      finalY = snappedPosition.isSnapped ? snappedPosition.y : rawY;
-    }
-    
-    // Update element position
-    updateElement(currentSlide.id, element.id, { x: finalX, y: finalY });
-  }, [isDragging, dragOffset, element]);
-
-  const handleMouseUp = useCallback(() => {
-    if (isDragging) {
-      setIsDragging(false);
-      setIsDraggingElement(false);
-      onDragEnd?.();
-    }
-  }, [isDragging, setIsDraggingElement, onDragEnd]);
-
-  // Add/remove mouse event listeners
-  useEffect(() => {
-    if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      
-      return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-      };
-    }
-  }, [isDragging, handleMouseMove, handleMouseUp]);
+  // Note: Dragging is now handled by SlideCanvas, not here
 
   // Focus textarea when editing starts
   useEffect(() => {
@@ -451,13 +362,24 @@ const TextElement: React.FC<TextElementProps> = ({
     setCursorPosition(textarea.selectionStart || 0);
   }, []);
 
-  // Handle delete key
+  // Handle delete key - only when box is selected but NOT editing text
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Delete' && isSelected) {
+      // Only delete the entire element if:
+      // 1. The element is selected
+      // 2. We're NOT currently editing text
+      // 3. The target is not a text input/textarea
+      if ((e.key === 'Delete' || e.key === 'Backspace') && 
+          isSelected && 
+          !element.isEditing &&
+          !(e.target instanceof HTMLInputElement) &&
+          !(e.target instanceof HTMLTextAreaElement)) {
         e.preventDefault();
-        // Delete element logic would go here
-        console.log('Delete element:', element.id);
+        e.stopPropagation();
+        console.log('Deleting text element:', element.id);
+        if (currentSlide) {
+          deleteElement(currentSlide.id, element.id);
+        }
       }
     };
 
@@ -465,7 +387,7 @@ const TextElement: React.FC<TextElementProps> = ({
       window.addEventListener('keydown', handleKeyDown);
       return () => window.removeEventListener('keydown', handleKeyDown);
     }
-  }, [isSelected, element.id]);
+  }, [isSelected, element.isEditing, element.id, currentSlide, deleteElement]);
 
   return (
     <motion.div
@@ -500,7 +422,10 @@ const TextElement: React.FC<TextElementProps> = ({
             fontSize: element.fontSize,
             fontFamily: element.fontFamily,
             fontWeight: element.fontWeight,
-            color: element.color,
+            color: element.color?.includes('gradient') ? 'transparent' : element.color,
+            background: element.color?.includes('gradient') ? element.color : undefined,
+            WebkitBackgroundClip: element.color?.includes('gradient') ? 'text' : undefined,
+            WebkitTextFillColor: element.color?.includes('gradient') ? 'transparent' : undefined,
             textAlign: element.textAlign,
             lineHeight: element.lineHeight,
             whiteSpace: 'pre-wrap',
@@ -518,13 +443,17 @@ const TextElement: React.FC<TextElementProps> = ({
         />
       ) : (
         <div
-          className="w-full h-full p-2 font-sans cursor-pointer"
+          className="w-full h-full p-2 font-sans cursor-text text-content"
           onClick={handleTextClick}
           style={{
+            caretColor: 'transparent',
             fontSize: element.fontSize,
             fontFamily: element.fontFamily,
             fontWeight: element.fontWeight,
-            color: element.color,
+            color: element.color?.includes('gradient') ? 'transparent' : element.color,
+            background: element.color?.includes('gradient') ? element.color : undefined,
+            WebkitBackgroundClip: element.color?.includes('gradient') ? 'text' : undefined,
+            WebkitTextFillColor: element.color?.includes('gradient') ? 'transparent' : undefined,
             textAlign: element.textAlign,
             lineHeight: element.lineHeight,
             whiteSpace: 'pre-wrap',
@@ -545,12 +474,12 @@ const TextElement: React.FC<TextElementProps> = ({
       
       {/* Floating Text Toolbar */}
       {isSelected && (
-        <div className="absolute -top-14 left-0 bg-white border border-gray-200 rounded-xl shadow-xl p-2 flex items-center space-x-2 z-20 backdrop-blur-sm">
+        <div className="absolute -top-16 left-0 bg-white border border-gray-200 rounded-lg shadow-lg p-1.5 flex items-center space-x-1.5 z-20 backdrop-blur-sm">
           {/* Text Style Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <div 
               onClick={() => setShowStyleDropdown(!showStyleDropdown)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+              className="flex items-center space-x-1.5 px-2 py-1 rounded-md hover:bg-gray-50 cursor-pointer transition-colors"
             >
               <Type className="w-4 h-4 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">
@@ -603,10 +532,10 @@ const TextElement: React.FC<TextElementProps> = ({
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-200"></div>
+          <div className="w-px h-4 bg-gray-200"></div>
 
           {/* Font Size */}
-          <div className="flex items-center space-x-2 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+          <div className="flex items-center space-x-1.5 px-2 py-1 rounded-md hover:bg-gray-50 transition-colors">
             <span className="text-sm font-medium text-gray-700">{element.fontSize}</span>
             <div className="flex flex-col">
               <button 
@@ -631,77 +560,86 @@ const TextElement: React.FC<TextElementProps> = ({
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-200"></div>
+          <div className="w-px h-4 bg-gray-200"></div>
 
           {/* Text Color */}
-          <button className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors">
-            <div className="w-5 h-5 bg-black rounded-md border border-gray-200"></div>
-          </button>
+          <div className="p-1 rounded-md hover:bg-gray-50 transition-colors">
+            <SimpleColorPicker
+              value={element.color || '#000000'}
+              onChange={(color) => {
+                console.log('TextElement color changed to:', color);
+                if (currentSlide) {
+                  updateElement(currentSlide.id, element.id, { color } as Partial<TextElementType>);
+                }
+              }}
+              className="w-6 h-6 rounded border-2 border-gray-300 hover:border-gray-400 transition-colors"
+            />
+          </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-200"></div>
+          <div className="w-px h-4 bg-gray-200"></div>
 
           {/* Alignment Buttons */}
           <div className="flex items-center space-x-1">
             <button 
               onClick={() => handleAlignmentChange('left')}
-              className={`p-1.5 rounded-lg transition-colors ${element.textAlign === 'left' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
+              className={`p-1 rounded-md transition-colors ${element.textAlign === 'left' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
             >
-              <AlignLeft className="w-4 h-4" />
+              <AlignLeft className="w-3.5 h-3.5" />
             </button>
             <button 
               onClick={() => handleAlignmentChange('center')}
-              className={`p-1.5 rounded-lg transition-colors ${element.textAlign === 'center' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
+              className={`p-1 rounded-md transition-colors ${element.textAlign === 'center' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
             >
-              <AlignCenter className="w-4 h-4" />
+              <AlignCenter className="w-3.5 h-3.5" />
             </button>
             <button 
               onClick={() => handleAlignmentChange('right')}
-              className={`p-1.5 rounded-lg transition-colors ${element.textAlign === 'right' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
+              className={`p-1 rounded-md transition-colors ${element.textAlign === 'right' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
             >
-              <AlignRight className="w-4 h-4" />
+              <AlignRight className="w-3.5 h-3.5" />
             </button>
             <button 
               onClick={() => handleAlignmentChange('justify')}
-              className={`p-1.5 rounded-lg transition-colors ${element.textAlign === 'justify' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
+              className={`p-1 rounded-md transition-colors ${element.textAlign === 'justify' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
             >
-              <AlignJustify className="w-4 h-4" />
+              <AlignJustify className="w-3.5 h-3.5" />
             </button>
           </div>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-200"></div>
+          <div className="w-px h-4 bg-gray-200"></div>
 
           {/* Bold Button */}
           <button 
             onClick={handleFontWeightToggle}
-            className={`p-1.5 rounded-lg transition-colors ${element.fontWeight === 'bold' || element.fontWeight === '700' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
+            className={`p-1 rounded-md transition-colors ${element.fontWeight === 'bold' || element.fontWeight === '700' ? 'bg-blue-50 text-blue-600 border border-blue-200' : 'hover:bg-gray-50'}`}
           >
-            <Bold className="w-4 h-4" />
+            <Bold className="w-3.5 h-3.5" />
           </button>
 
           {/* Italic Button */}
           <button 
             onClick={handleItalicToggle}
-            className={`p-1.5 rounded-lg transition-colors ${
+            className={`p-1 rounded-md transition-colors ${
               element.fontFamily.includes('italic') || element.fontFamily.includes('Italic')
                 ? 'bg-blue-50 text-blue-600 border border-blue-200' 
                 : 'hover:bg-gray-50'
             }`}
           >
-            <Italic className="w-4 h-4" />
+            <Italic className="w-3.5 h-3.5" />
           </button>
 
           {/* Divider */}
-          <div className="w-px h-6 bg-gray-200"></div>
+          <div className="w-px h-4 bg-gray-200"></div>
 
           {/* Three Dots - Design Options */}
           <button
             onClick={handleDesignClick}
-            className="p-1.5 rounded-lg hover:bg-gray-50 transition-colors"
+            className="p-1 rounded-md hover:bg-gray-50 transition-colors"
             title="More Design Options"
           >
-            <MoreHorizontal className="w-4 h-4 text-gray-600" />
+            <MoreHorizontal className="w-3.5 h-3.5 text-gray-600" />
           </button>
         </div>
       )}

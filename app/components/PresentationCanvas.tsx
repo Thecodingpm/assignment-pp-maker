@@ -2,7 +2,8 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Text, Transformer, Rect } from 'react-konva';
-import { useEditorStore } from '../store/editorStore';
+import { useEditorStore } from '../stores/useEditorStore';
+import SimpleColorPicker from './SimpleColorPicker';
 
 interface TextElement {
   id: string;
@@ -225,12 +226,14 @@ const PresentationCanvas: React.FC<PresentationCanvasProps> = ({
             
             <div className="flex items-center space-x-1">
               <span className="text-sm text-gray-600">Color:</span>
-              <input
-                type="color"
+              {console.log('Rendering SimpleColorPicker with selectedId:', selectedId, 'elements:', elements)}
+              <SimpleColorPicker
                 value={elements.find(el => el.id === selectedId)?.color || '#000000'}
-                onChange={(e) => updateElement(selectedId, { color: e.target.value })}
+                onChange={(color) => {
+                  console.log('Color changed to:', color, 'for element:', selectedId);
+                  updateElement(selectedId, { color });
+                }}
                 className="w-8 h-8 border border-gray-300 rounded cursor-pointer"
-                title="Text color"
               />
             </div>
           </div>
