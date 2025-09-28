@@ -890,7 +890,7 @@ export default function Home() {
                     <img 
                       src="/heroSection/hero.png"
                       alt="10xEditor Hero Dashboard"
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover"
                       onError={(e) => {
                         // Fallback to a gradient background if image fails to load
                         e.currentTarget.style.display = 'none';
