@@ -7,11 +7,13 @@ import {
   User as FirebaseUser 
 } from 'firebase/auth';
 import { auth } from './config';
+import { UserRole } from '../types/document';
 
 export interface User {
   id: string;
   email: string;
   name: string;
+  role: UserRole;
 }
 
 export const registerUser = async (email: string, password: string, name: string): Promise<User> => {
@@ -22,10 +24,14 @@ export const registerUser = async (email: string, password: string, name: string
     // Update profile with display name
     await updateProfile(user, { displayName: name });
     
+    // Determine role based on email (admin email check)
+    const isAdmin = email === 'ahmadmuaaz292@gmail.com';
+    
     return {
       id: user.uid,
       email: user.email || '',
-      name: name
+      name: name,
+      role: isAdmin ? 'admin' : 'user'
     };
   } catch (error: any) {
     throw new Error(error.message);
@@ -37,10 +43,14 @@ export const loginUser = async (email: string, password: string): Promise<User> 
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
+    // Determine role based on email (admin email check)
+    const isAdmin = email === 'ahmadmuaaz292@gmail.com';
+    
     return {
       id: user.uid,
       email: user.email || '',
-      name: user.displayName || 'User'
+      name: user.displayName || 'User',
+      role: isAdmin ? 'admin' : 'user'
     };
   } catch (error: any) {
     throw new Error(error.message);
@@ -59,10 +69,14 @@ export const getCurrentUser = (): User | null => {
   const user = auth.currentUser;
   if (!user) return null;
   
+  // Determine role based on email (admin email check)
+  const isAdmin = user.email === 'ahmadmuaaz292@gmail.com';
+  
   return {
     id: user.uid,
     email: user.email || '',
-    name: user.displayName || 'User'
+    name: user.displayName || 'User',
+    role: isAdmin ? 'admin' : 'user'
   };
 };
 

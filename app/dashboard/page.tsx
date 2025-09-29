@@ -562,6 +562,23 @@ export default function DashboardPage() {
             {/* Templates Section */}
             {activeTab === 'templates' && (
               <>
+                {/* Template Gallery Link */}
+                <div className="col-span-full mb-6">
+                  <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-6 text-white">
+                    <h2 className="text-2xl font-bold mb-2">🎨 Template Gallery</h2>
+                    <p className="text-blue-100 mb-4">Browse and use templates created by admins and the community</p>
+                    <Link 
+                      href="/templates-gallery"
+                      className="inline-flex items-center px-4 py-2 bg-white text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                    >
+                      Browse Templates
+                      <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                </div>
+
                 {/* CV Templates Section */}
                 <div className="col-span-full mb-6">
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">📄 CV Templates</h2>

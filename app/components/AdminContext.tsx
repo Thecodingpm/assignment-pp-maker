@@ -40,24 +40,17 @@ export function AdminProvider({ children }: { children: ReactNode }) {
   const checkAdminStatus = (): boolean => {
     if (typeof window === 'undefined') return false;
     
-    if (user && user.email === ADMIN_EMAIL) {
-      const authenticated = localStorage.getItem('admin_authenticated');
-      const sessionTime = localStorage.getItem('admin_session_time');
-      const storedEmail = localStorage.getItem('admin_email');
-      
-      if (authenticated && sessionTime && storedEmail === ADMIN_EMAIL) {
-        const now = Date.now();
-        const sessionAge = now - parseInt(sessionTime);
-        const maxSessionAge = 24 * 60 * 60 * 1000; // 24 hours
-        
-        if (sessionAge <= maxSessionAge) {
-          setIsAdmin(true);
-          setAdminEmail(user.email);
-          return true;
-        }
-      }
+    console.log('🔍 AdminContext: Checking admin status for user:', user?.email, 'role:', user?.role);
+    
+    // Use the role from AuthContext instead of separate admin authentication
+    if (user && user.role === 'admin') {
+      console.log('✅ AdminContext: User is admin, setting isAdmin to true');
+      setIsAdmin(true);
+      setAdminEmail(user.email);
+      return true;
     }
     
+    console.log('❌ AdminContext: User is not admin, setting isAdmin to false');
     setIsAdmin(false);
     setAdminEmail(null);
     return false;

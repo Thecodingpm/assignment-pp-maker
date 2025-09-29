@@ -37,6 +37,9 @@ import DesignButton from '../DesignSystem/DesignButton';
 import AddContentModal from '../AddContentModal';
 import ExportModal from '../ExportModal';
 import { useEditorStore } from '../../stores/useEditorStore';
+import { useAuth } from '../AuthContext';
+import { useAdmin } from '../AdminContext';
+import SaveTemplateModal from '../SaveTemplateModal';
 
 const MainToolbar: React.FC = () => {
   const router = useRouter();
@@ -56,6 +59,14 @@ const MainToolbar: React.FC = () => {
   const [embedPopupPosition, setEmbedPopupPosition] = useState({ x: 0, y: 0 });
   const [showSlideTransitionPanel, setShowSlideTransitionPanel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
+
+  // Auth and admin context
+  const { user } = useAuth();
+  const { isAdmin } = useAdmin();
+  
+  // Debug logging
+  console.log('🔧 MainToolbar: user:', user?.email, 'role:', user?.role, 'isAdmin:', isAdmin);
 
   // Presentation mode state
   const { 
@@ -69,7 +80,8 @@ const MainToolbar: React.FC = () => {
     addSlide,
     createTextElement,
     showAddContentModal,
-    setShowAddContentModal
+    setShowAddContentModal,
+    slides
   } = useEditorStore();
 
   // Presentation handlers
@@ -344,6 +356,45 @@ const MainToolbar: React.FC = () => {
         
         addElement(currentSlide.id, newGifElement);
         console.log('Added Tenor GIF to canvas as image:', newGifElement);
+      }
+      
+    } else if (type === 'library' && mediaData) {
+      // Handle Library image selection
+      console.log('Selected Library image:', {
+        id: mediaData.id,
+        url: mediaData.url,
+        alt: mediaData.alt,
+        credit: mediaData.credit,
+        width: mediaData.width,
+        height: mediaData.height
+      });
+      
+      // Add the image to the canvas
+      const { slides, currentSlideIndex, addElement, canvasSize } = useEditorStore.getState();
+      const currentSlide = slides[currentSlideIndex];
+      
+      if (currentSlide) {
+        // Calculate center position for new image element
+        const centerX = (canvasSize.width / 2) - 150; // Larger offset for bigger images
+        const centerY = (canvasSize.height / 2) - 112; // Larger offset for bigger images
+        
+        const newImageElement = {
+          type: 'image' as const,
+          x: centerX,
+          y: centerY,
+          width: 300, // Increased from 200 to 300
+          height: 225, // Increased from 150 to 225 (maintains aspect ratio)
+          rotation: 0,
+          zIndex: 1,
+          src: mediaData.url,
+          alt: mediaData.alt,
+          credit: mediaData.credit,
+          originalWidth: mediaData.width,
+          originalHeight: mediaData.height,
+        };
+        
+        addElement(currentSlide.id, newImageElement);
+        console.log('Added Library image to canvas:', newImageElement);
       }
     }
     
@@ -709,6 +760,57 @@ const MainToolbar: React.FC = () => {
     }
   };
 
+  // Save template functionality
+  const handleSaveTemplate = () => {
+    if (!user || !isAdmin) {
+      console.error('Unauthorized: Admin access required');
+      return;
+    }
+    setShowSaveTemplateModal(true);
+  };
+
+  const handleTemplateSave = async (templateData: {
+    title: string;
+    description: string;
+    category: string;
+    tags: string[];
+  }) => {
+    if (!user) return;
+
+    try {
+      console.log('Saving template...', templateData);
+      
+      const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          templateData: {
+            ...templateData,
+            slides: slides
+          },
+          userRole: user.role,
+          userId: user.id
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('Template saved successfully:', result.templateId);
+        alert('Template saved successfully!');
+        setShowSaveTemplateModal(false);
+      } else {
+        console.error('Failed to save template:', result.error);
+        alert('Failed to save template: ' + result.error);
+      }
+    } catch (error) {
+      console.error('Error saving template:', error);
+      alert('Error saving template');
+    }
+  };
+
   return (
     <div className="fixed top-2 left-2 right-2 z-50 bg-white rounded-lg shadow-lg">
       {/* Main Toolbar */}
@@ -891,6 +993,20 @@ const MainToolbar: React.FC = () => {
             </span>
           </button>
 
+          {/* Save as Template Button - Admin only */}
+          {isAdmin && (
+            <button 
+              onClick={handleSaveTemplate}
+              className="px-3 py-1 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium text-xs transition-colors flex items-center space-x-1"
+              title="Save current design as template"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+              <span>Save as Template</span>
+            </button>
+          )}
+
           {/* Export Button */}
           <button 
             onClick={() => setShowExportModal(true)}
@@ -988,6 +1104,13 @@ const MainToolbar: React.FC = () => {
       <ExportModal
         isVisible={showExportModal}
         onClose={() => setShowExportModal(false)}
+      />
+
+      {/* Save Template Modal */}
+      <SaveTemplateModal
+        isOpen={showSaveTemplateModal}
+        onClose={() => setShowSaveTemplateModal(false)}
+        onSave={handleTemplateSave}
       />
     </div>
   );

@@ -55,6 +55,7 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
   const [selectedIntegration, setSelectedIntegration] = useState('unsplash');
   const [searchQuery, setSearchQuery] = useState('');
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [libraryImages, setLibraryImages] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -113,6 +114,39 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
     }
   }, [isVisible, position]);
 
+  // Refresh library images when popup opens and library is selected
+  useEffect(() => {
+    if (isVisible && selectedIntegration === 'library') {
+      fetchLibraryImages();
+    }
+  }, [isVisible, selectedIntegration]);
+
+  // Fetch library images
+  const fetchLibraryImages = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/get-images');
+      const data = await response.json();
+      if (data.success) {
+        setLibraryImages(data.images);
+      }
+    } catch (error) {
+      console.error('Error fetching library images:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filter library images based on search query
+  const getFilteredLibraryImages = () => {
+    if (!searchQuery.trim()) {
+      return libraryImages;
+    }
+    return libraryImages.filter(image => 
+      image.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  };
+
   // Fetch media from APIs
   const fetchMedia = async (query: string, page: number, integrationType: string) => {
     // Clear media items immediately to prevent mixing
@@ -120,6 +154,11 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
     setLoading(true);
     
     try {
+      if (integrationType === 'library') {
+        await fetchLibraryImages();
+        return;
+      }
+      
       let endpoint = '';
       let params = '';
       
@@ -298,6 +337,8 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
           type: 'icon'
         }
       ]);
+    } else if (integrationId === 'library') {
+      fetchLibraryImages(); // Load library images
     } else {
       fetchMedia('', 1, integrationId); // Default for other integrations
     }
@@ -383,6 +424,7 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
 
   // Get placeholder text based on integration
   const getSearchPlaceholder = () => {
+    if (selectedIntegration === 'library') return 'Search your images...';
     if (selectedIntegration === 'unsplash') return 'Search Unsplash';
     if (selectedIntegration === 'tenor') return 'Search Tenor';
     if (selectedIntegration === 'stickers') return 'Search Stickers';
@@ -423,11 +465,44 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
               <div className="mb-6">
                 <h3 className="text-xs font-bold text-gray-800 mb-3 uppercase tracking-wide">Library</h3>
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2 p-2 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                    <div className="w-6 h-6 bg-gradient-to-br from-red-400 to-red-600 rounded-md flex items-center justify-center">
-                      <ImageIcon className="w-3 h-3 text-white" />
-                    </div>
-                    <span className="text-xs font-medium text-gray-700">Images</span>
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => {
+                        setSelectedIntegration('library');
+                        fetchLibraryImages();
+                      }}
+                      className={`flex-1 flex items-center space-x-2 p-2 rounded-lg border transition-all ${
+                        selectedIntegration === 'library' 
+                          ? 'bg-purple-100 border-purple-300 shadow-md' 
+                          : 'bg-white border-gray-200 shadow-sm hover:shadow-md'
+                      }`}
+                    >
+                      <div className="w-6 h-6 bg-gradient-to-br from-purple-400 to-purple-600 rounded-md flex items-center justify-center">
+                        <ImageIcon className="w-3 h-3 text-white" />
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">Images</span>
+                      {libraryImages.length > 0 && (
+                        <span className="ml-auto text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                          {libraryImages.length}
+                        </span>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => fetchLibraryImages()}
+                      disabled={loading}
+                      className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      title="Refresh library images"
+                    >
+                      {loading ? (
+                        <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                      )}
+                    </button>
                   </div>
                   <div className="flex items-center space-x-2 p-2 bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                     <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-md flex items-center justify-center">
@@ -547,6 +622,76 @@ const MediaPopup: React.FC<MediaPopupProps> = ({
                       <p className="text-sm text-gray-500">Loading images...</p>
                     </div>
                   </div>
+                ) : selectedIntegration === 'library' ? (
+                  // Library Images Section
+                  (() => {
+                    const filteredImages = getFilteredLibraryImages();
+                    return filteredImages.length > 0 ? (
+                      <div className="space-y-2">
+                        <div className="grid grid-cols-3 gap-3">
+                          {filteredImages.map((image) => (
+                          <div 
+                            key={image.id} 
+                            className="relative group cursor-pointer bg-gray-100 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-200 hover:scale-[1.02]"
+                            onClick={() => handleMediaSelect({
+                              id: image.id,
+                              url: image.url,
+                              thumb: image.url,
+                              alt: image.name,
+                              credit: 'Your Library',
+                              downloadUrl: image.url,
+                              width: 800,
+                              height: 600
+                            })}
+                          >
+                            <div className="aspect-square relative overflow-hidden">
+                              <img
+                                src={image.url}
+                                alt={image.name}
+                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                                loading="lazy"
+                                onError={(e) => {
+                                  e.currentTarget.src = '/placeholder-image.png';
+                                }}
+                              />
+                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200" />
+                            </div>
+                            <div className="p-2 bg-white">
+                              <p className="text-xs text-gray-600 truncate font-medium" title={image.name}>
+                                {image.name}
+                              </p>
+                              <p className="text-xs text-gray-400">
+                                {(image.size / 1024).toFixed(1)} KB
+                              </p>
+                            </div>
+                          </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full">
+                        <div className="text-center">
+                          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <ImageIcon className="w-8 h-8 text-gray-400" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                            {searchQuery.trim() ? 'No matching images' : 'No images in library'}
+                          </h3>
+                          <p className="text-sm text-gray-500 mb-4">
+                            {searchQuery.trim() ? 'Try a different search term.' : 'Upload some images to your library first.'}
+                          </p>
+                          {!searchQuery.trim() && (
+                            <button
+                              onClick={() => window.open('/library', '_blank')}
+                              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-700 transition-colors"
+                            >
+                              Go to Library
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })()
                 ) : mediaItems.length > 0 ? (
                   <div className="space-y-2">
 

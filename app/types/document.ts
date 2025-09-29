@@ -1,5 +1,18 @@
 // ===== STRUCTURED DOCUMENT EDITOR TYPES =====
 
+// User role types
+export type UserRole = 'user' | 'admin';
+
+// User interface with role
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  createdAt: string;
+  lastLogin: string;
+}
+
 // Base styling interface for document blocks
 export interface BlockStyling {
   fontSize?: string;
@@ -130,6 +143,33 @@ export interface DocumentTemplate {
   isPublic: boolean;
   createdAt: string;
   usageCount: number;
+}
+
+// Editor template interface for presentation templates
+export interface EditorTemplate {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnail?: string;
+  slides: any[]; // Editor slides from useEditorStore
+  createdBy: string;
+  createdByRole: UserRole;
+  createdAt: string;
+  updatedAt: string;
+  isPublic: boolean;
+  usageCount: number;
+  tags: string[];
+}
+
+// Template creation data
+export interface TemplateCreationData {
+  title: string;
+  description: string;
+  category: string;
+  thumbnail?: string;
+  slides: any[];
+  tags?: string[];
 }
 
 // Collaboration types

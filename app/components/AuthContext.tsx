@@ -137,10 +137,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       console.log('🔄 AuthContext: Auth state changed:', firebaseUser ? 'User logged in' : 'User logged out');
       if (firebaseUser) {
+        // Determine role based on email (admin email check)
+        const isAdmin = firebaseUser.email === 'ahmadmuaaz292@gmail.com';
+        
         const userData: User = {
           id: firebaseUser.uid,
           email: firebaseUser.email || '',
-          name: firebaseUser.displayName || 'User'
+          name: firebaseUser.displayName || 'User',
+          role: isAdmin ? 'admin' : 'user'
         };
         console.log('🔄 AuthContext: Setting user data:', userData);
         setUser(userData);
