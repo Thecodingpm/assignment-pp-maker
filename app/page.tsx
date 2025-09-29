@@ -14,6 +14,7 @@ import TrueFocus from './components/TrueFocus';
 import { LayoutTextFlip } from './components/ui/layout-text-flip';
 import VariableProximity from './components/VariableProximity';
 import RotatingText from './components/RotatingText';
+import ShinyText from './components/ShinyText';
 
 export default function Home() {
   const { user } = useAuth();
@@ -763,14 +764,15 @@ export default function Home() {
                         rotationInterval={4000}
                       />
                 </motion.span>
-                    <motion.span 
-                      className="text-gray-900 inline-block ml-2 whitespace-nowrap"
+                <br />
+                <motion.span 
+                      className="text-gray-900 inline-block"
                       initial={{ opacity: 0, x: 20 }}
-                      animate={{ opacity: 1, x: 0 }}
+                  animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.8, delay: 0.7 }}
-                    >
+                >
                       in minutes
-                    </motion.span>
+                </motion.span>
                   </motion.h1>
 
             <motion.div 
@@ -792,7 +794,7 @@ export default function Home() {
                 </motion.div>
 
                 {/* CTA Buttons */}
-              <motion.div
+            <motion.div 
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, delay: 1.1 }}
@@ -865,7 +867,28 @@ export default function Home() {
                     <span className="text-sm text-gray-600 ml-2">4.9/5 rating</span>
               </motion.div>
             </motion.div>
-              </div>
+
+            {/* Made by Ahmad */}
+            <motion.div 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.2 }}
+              className="mt-6 text-left"
+            >
+              <p className="text-gray-500 text-sm">
+                Crafted by{' '}
+                <a 
+                  href="https://www.linkedin.com/in/muhammad-ahmad-b71483261?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-indigo-600 hover:text-indigo-800 font-medium transition-colors duration-200 hover:underline"
+                >
+                  Muhammad Ahmad
+                </a>
+              </p>
+            </motion.div>
+
+                  </div>
 
               {/* Right Content - Hero Image */}
             <motion.div 
@@ -878,7 +901,7 @@ export default function Home() {
                   maxWidth: 'none'
                 }}
               >
-                <motion.div
+                <motion.div 
                   className="bg-white rounded-3xl shadow-2xl border border-gray-200 overflow-hidden w-full"
                   whileHover={{ y: -8, scale: 1.03 }}
                   transition={{ duration: 0.4 }}
@@ -895,9 +918,9 @@ export default function Home() {
                         const nextElement = e.currentTarget.nextElementSibling as HTMLElement;
                         if (nextElement) {
                           nextElement.style.display = 'flex';
-                        }
-                      }}
-                    />
+                      }
+                    }}
+                  />
                     {/* Fallback gradient background */}
                     <div className="hidden w-full h-full bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 items-center justify-center">
                       <div className="text-center">
@@ -965,9 +988,9 @@ export default function Home() {
               <motion.div 
                 style={{ x: x1 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
-            >
+              >
                 {templates.slice(0, 10).map((template, index) => (
-                <motion.div 
+                  <motion.div
                     key={template.id}
                     initial={{ opacity: 0, y: 50 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -981,13 +1004,13 @@ export default function Home() {
                         alt={template.title}
                         className="w-full h-full object-cover"
                       />
-            </div>
-              </motion.div>
+                    </div>
+                  </motion.div>
                 ))}
               </motion.div>
 
               {/* Row 2 - Moving Right */}
-                  <motion.div
+              <motion.div 
                 style={{ x: x2 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1007,12 +1030,12 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                   </div>
-              </motion.div>
+                  </motion.div>
                 ))}
               </motion.div>
 
               {/* Row 3 - Moving Left */}
-                  <motion.div
+              <motion.div 
                 style={{ x: x3 }}
                 className="flex gap-2 mb-3 overflow-visible w-full"
               >
@@ -1032,11 +1055,11 @@ export default function Home() {
                         className="w-full h-full object-cover"
                       />
                     </div>
-                </motion.div>
+                  </motion.div>
                 ))}
               </motion.div>
 
-        </div>
+            </div>
           </div>
         </section>
 
@@ -1053,12 +1076,12 @@ export default function Home() {
                   animationDuration={2}
                   pauseBetweenAnimations={1}
                 />
-              </div>
+            </div>
               <p className="text-xl text-gray-600 max-w-2xl">
                 Use the controls below to manually scroll through our template collection
               </p>
-            </div>
-
+              </div>
+              
             {/* CardSwap Container */}
             <div className="flex justify-center items-center min-h-[600px] relative">
               <div className="relative">
@@ -1119,16 +1142,232 @@ export default function Home() {
                   />
                 </Card>
               </CardSwap>
-              </div>
                       </div>
-                      
+                    </div>
+                    
             {/* Call to Action */}
             <div className="text-center mt-12">
               <button className="bg-indigo-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-indigo-700 transition-colors shadow-lg">
                 Explore All Templates
               </button>
-                        </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing Section */}
+        <section className="py-24 bg-white relative overflow-hidden">
+          {/* Background Elements */}
+          <div className="absolute inset-0">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-50 transform translate-x-1/2 -translate-y-1/2"></div>
+            <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50 transform -translate-x-1/2 translate-y-1/2"></div>
+          </div>
+          
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <div className="text-center mb-20">
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+              >
+                <h2 className="text-5xl font-bold text-gray-900 mb-6">Simple, transparent pricing</h2>
+                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                  Choose the plan that's right for you. No hidden fees, no surprises. 
+                  <span className="text-indigo-600 font-semibold"> Start free, upgrade anytime.</span>
+                </p>
+              </motion.div>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {/* Free Plan */}
+              <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-200 transition-colors">
+                    <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+            </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-gray-900">$0</span>
+                    <span className="text-gray-500 text-lg">/month</span>
+                  </div>
+                  <p className="text-gray-600 mb-8 text-lg">Perfect for individuals getting started</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
                       </div>
+                      <span className="text-gray-700 font-medium">3 presentations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Basic templates</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Standard support</span>
+                    </li>
+                  </ul>
+                  
+                  <button 
+                    onClick={() => router.push('/login?redirect=/dashboard')}
+                    className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105"
+                  >
+                    Get started free
+                  </button>
+                </div>
+              </motion.div>
+
+              {/* Pro Plan */}
+                <motion.div 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 relative group scale-105"
+              >
+                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
+                  <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
+                    Most Popular
+                  </span>
+                      </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-white/30 transition-colors">
+                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-white">$20</span>
+                    <span className="text-white/80 text-lg">/month</span>
+                  </div>
+                  <p className="text-white/90 mb-8 text-lg">Perfect for growing teams</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        </div>
+                      <span className="text-white font-medium">Unlimited presentations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-white font-medium">Premium templates</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                      <span className="text-white font-medium">Team collaboration</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                    </div>
+                      <span className="text-white font-medium">Priority support</span>
+                    </li>
+                  </ul>
+                  
+                  <button 
+                    onClick={() => router.push('/login?redirect=/dashboard')}
+                    className="w-full bg-white text-indigo-600 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg"
+                  >
+                    Start free trial
+                  </button>
+                      </div>
+              </motion.div>
+
+              {/* Enterprise Plan */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
+                    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+                    </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
+                  <div className="mb-6">
+                    <span className="text-6xl font-bold text-gray-900">Custom</span>
+                  </div>
+                  <p className="text-gray-600 mb-8 text-lg">For large organizations</p>
+                  
+                  <ul className="space-y-5 mb-10 text-left">
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+            </div>
+                      <span className="text-gray-700 font-medium">Everything in Pro</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Advanced analytics</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Custom integrations</span>
+                    </li>
+                    <li className="flex items-center">
+                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      </div>
+                      <span className="text-gray-700 font-medium">Dedicated support</span>
+                    </li>
+                  </ul>
+                  
+                  <button className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105">
+                    Contact sales
+                  </button>
+                        </div>
+              </motion.div>
+            </div>
+          </div>
         </section>
 
         {/* Dashboard Preview Section */}
@@ -1142,30 +1381,30 @@ export default function Home() {
               >
                 Sign up for free
               </button>
-                    </div>
+            </div>
 
             {/* Features List */}
             <div className="flex justify-center space-x-12 mb-16">
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                </svg>
                 <span className="text-lg">Unlimited presentations</span>
               </div>
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                </svg>
                 <span className="text-lg">Unlimited sharing links</span>
               </div>
               <div className="flex items-center text-white">
                 <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
+                </svg>
                 <span className="text-lg">Custom templates</span>
               </div>
-                    </div>
-                    
+            </div>
+
             {/* Dashboard Mockup */}
             <div className="relative">
               {/* Main Dashboard */}
@@ -1177,23 +1416,23 @@ export default function Home() {
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                       <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                      </div>
+                    </div>
                     <div className="flex items-center space-x-2">
                       <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center">
                         <span className="text-white text-xs font-bold">P</span>
-                    </div>
+                      </div>
                       <span className="font-semibold text-gray-900">SW SpaceWork</span>
                       <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
+                      </svg>
+                    </div>
                   </div>
-            </div>
                   <div className="flex items-center space-x-4">
                     <div className="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
                       <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-5 5-5-5h5v-5a7.5 7.5 0 0 0-15 0v5h5l-5 5-5-5h5v-5a7.5 7.5 0 0 1 15 0v5z" />
                       </svg>
-              </div>
+                    </div>
                     <span className="text-gray-600 font-medium">Recents</span>
                   </div>
                 </div>
@@ -1454,8 +1693,9 @@ export default function Home() {
               </div>
             </div>
 
+
             {/* Stats */}
-            <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div>
                 <div className="text-4xl font-bold text-indigo-600 mb-2">50K+</div>
                 <div className="text-gray-600">Active users</div>
@@ -1473,224 +1713,10 @@ export default function Home() {
                 <div className="text-gray-600">User rating</div>
               </div>
             </div>
+
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section className="py-24 bg-white relative overflow-hidden">
-          {/* Background Elements */}
-          <div className="absolute inset-0">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-indigo-100 rounded-full blur-3xl opacity-50 transform translate-x-1/2 -translate-y-1/2"></div>
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-100 rounded-full blur-3xl opacity-50 transform -translate-x-1/2 translate-y-1/2"></div>
-          </div>
-          
-          <div className="max-w-7xl mx-auto px-6 relative z-10">
-            <div className="text-center mb-20">
-            <motion.div 
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-              >
-                <h2 className="text-5xl font-bold text-gray-900 mb-6">Simple, transparent pricing</h2>
-                <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                  Choose the plan that's right for you. No hidden fees, no surprises. 
-                  <span className="text-indigo-600 font-semibold"> Start free, upgrade anytime.</span>
-                </p>
-              </motion.div>
-            </div>
-
-            <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {/* Free Plan */}
-              <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-gray-200 transition-colors">
-                    <svg className="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-            </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Free</h3>
-                  <div className="mb-6">
-                    <span className="text-6xl font-bold text-gray-900">$0</span>
-                    <span className="text-gray-500 text-lg">/month</span>
-                  </div>
-                  <p className="text-gray-600 mb-8 text-lg">Perfect for individuals getting started</p>
-                  
-                  <ul className="space-y-5 mb-10 text-left">
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">3 presentations</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">Basic templates</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">Standard support</span>
-                    </li>
-                  </ul>
-                  
-                  <button 
-                    onClick={() => router.push('/login?redirect=/dashboard')}
-                    className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105"
-                  >
-                    Get started free
-                  </button>
-                </div>
-              </motion.div>
-
-              {/* Pro Plan */}
-                <motion.div 
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 relative group scale-105"
-              >
-                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg">
-                    Most Popular
-                  </span>
-                      </div>
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-white/30 transition-colors">
-                    <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Pro</h3>
-                  <div className="mb-6">
-                    <span className="text-6xl font-bold text-white">$20</span>
-                    <span className="text-white/80 text-lg">/month</span>
-                  </div>
-                  <p className="text-white/90 mb-8 text-lg">Perfect for growing teams</p>
-                  
-                  <ul className="space-y-5 mb-10 text-left">
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                        </div>
-                      <span className="text-white font-medium">Unlimited presentations</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-white font-medium">Premium templates</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                      <span className="text-white font-medium">Team collaboration</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                    </div>
-                      <span className="text-white font-medium">Priority support</span>
-                    </li>
-                  </ul>
-                  
-                  <button 
-                    onClick={() => router.push('/login?redirect=/dashboard')}
-                    className="w-full bg-white text-indigo-600 py-4 px-8 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all duration-300 hover:scale-105 shadow-lg"
-                  >
-                    Start free trial
-                  </button>
-                      </div>
-              </motion.div>
-
-              {/* Enterprise Plan */}
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 group"
-              >
-                <div className="text-center">
-                  <div className="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-colors">
-                    <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                </svg>
-                    </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Enterprise</h3>
-                  <div className="mb-6">
-                    <span className="text-6xl font-bold text-gray-900">Custom</span>
-                  </div>
-                  <p className="text-gray-600 mb-8 text-lg">For large organizations</p>
-                  
-                  <ul className="space-y-5 mb-10 text-left">
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-            </div>
-                      <span className="text-gray-700 font-medium">Everything in Pro</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">Advanced analytics</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">Custom integrations</span>
-                    </li>
-                    <li className="flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                        <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-gray-700 font-medium">Dedicated support</span>
-                    </li>
-                  </ul>
-                  
-                  <button className="w-full bg-gray-900 text-white py-4 px-8 rounded-xl font-semibold text-lg hover:bg-gray-800 transition-all duration-300 hover:scale-105">
-                    Contact sales
-                  </button>
-                        </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
 
         {/* CTA Section */}
         <section className="py-20 bg-blue-600">
@@ -1709,7 +1735,7 @@ export default function Home() {
               <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white hover:text-blue-600 transition-colors">
                 Schedule a demo
               </button>
-                    </div>
+            </div>
           </div>
         </section>
 
@@ -1721,9 +1747,9 @@ export default function Home() {
                 <div className="flex items-center space-x-2 mb-4">
                   <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
                     <span className="text-blue-600 font-bold text-lg">10</span>
-                      </div>
+                  </div>
                   <span className="text-white font-semibold text-xl">10xEditor</span>
-                    </div>
+                </div>
                 <p className="text-gray-400 mb-4">
                   The modern way to create, collaborate, and present with confidence.
                 </p>
@@ -1743,8 +1769,8 @@ export default function Home() {
                       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                     </svg>
                   </a>
-                  </div>
-            </div>
+                </div>
+              </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Product</h3>
@@ -1754,7 +1780,7 @@ export default function Home() {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Integrations</a></li>
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">API</a></li>
                 </ul>
-            </div>
+              </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Company</h3>
@@ -1764,7 +1790,7 @@ export default function Home() {
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Careers</a></li>
                   <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact</a></li>
                 </ul>
-          </div>
+              </div>
               
               <div>
                 <h3 className="font-semibold text-lg mb-4">Support</h3>

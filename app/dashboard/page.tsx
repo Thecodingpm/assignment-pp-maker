@@ -10,7 +10,6 @@ import DashboardSidebar from '../components/DashboardSidebar';
 import AIGenerationModal from '../components/AIGenerationModal';
 import UploadModal from '../components/UploadModal';
 import { moveToTrash, restoreDocument, getUserTrashDocuments, createDocument, deleteDocument } from '../firebase/documents';
-import { checkBackendHealth } from '../lib/pptxApi';
 import professionalTemplates from '../data/professionalDesignTemplates.json';
 import cvTemplatesIndex from '../data/cv-templates/index.json';
 import rickTangCV from '../data/cv-templates/professional/rick-tang-cv.json';
@@ -34,7 +33,6 @@ export default function DashboardPage() {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
   const [isAIGenerationModalOpen, setIsAIGenerationModalOpen] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [backendStatus, setBackendStatus] = useState<'checking' | 'online' | 'offline'>('checking');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<any>(null);
 
@@ -63,14 +61,6 @@ export default function DashboardPage() {
     }
   }, [user, activeTab]);
 
-  // Check backend status
-  useEffect(() => {
-    const checkBackend = async () => {
-      const isOnline = await checkBackendHealth();
-      setBackendStatus(isOnline ? 'online' : 'offline');
-    };
-    checkBackend();
-  }, []);
 
   const getFilteredDocuments = () => {
     if (activeTab === 'recently-deleted') return recentlyDeletedDocs;
@@ -385,39 +375,6 @@ export default function DashboardPage() {
       {/* Main Content Area */}
       <div className="flex-1 bg-gray-50 overflow-y-auto">
         <div className="p-8">
-          {/* Backend Status */}
-          <div className="mb-6">
-            <div className="bg-white border border-gray-200 rounded-lg p-4">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Backend Status</h3>
-              <div className="flex items-center space-x-2">
-                <div className={`w-3 h-3 rounded-full ${
-                  backendStatus === 'online' ? 'bg-green-500' : 
-                  backendStatus === 'offline' ? 'bg-red-500' : 
-                  'bg-yellow-500'
-                }`}></div>
-                <span className="text-sm text-gray-600">
-                  {backendStatus === 'online' ? '✅ Backend Online - PPTX parsing available' :
-                   backendStatus === 'offline' ? '❌ Backend Offline - Start backend server' :
-                   '🔄 Checking backend status...'}
-                </span>
-                <button
-                  onClick={async () => {
-                    setBackendStatus('checking');
-                    const isOnline = await checkBackendHealth();
-                    setBackendStatus(isOnline ? 'online' : 'offline');
-                  }}
-                  className="ml-2 px-2 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600"
-                >
-                  🔄 Refresh
-                </button>
-              </div>
-              {backendStatus === 'offline' && (
-                <div className="mt-2 text-xs text-gray-500">
-                  Run: <code className="bg-gray-100 px-1 rounded">cd backend && ./start.sh</code>
-                </div>
-              )}
-            </div>
-          </div>
           
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-gray-900">
@@ -429,31 +386,10 @@ export default function DashboardPage() {
                activeTab === 'analytics' ? 'Analytics' : 'Recents'}
             </h1>
             
-            {/* Quick AI Generate Button */}
-            <button
-              onClick={() => setIsAIGenerationModalOpen(true)}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-pink-600 transition-all duration-300 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              AI Generate
-            </button>
           </div>
           
           {/* Action Buttons - Pitch.com Style */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-            <Link href="/presentation-canvas" className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
-              <div className="flex items-center space-x-3 mb-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
-                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-              </div>
-              <h3 className="font-semibold text-gray-900 mb-1">New Presentation Editor</h3>
-              <p className="text-sm text-gray-600">Drag-and-drop text elements with formatting</p>
-            </Link>
 
             <Link href="/presentation-editor" className="bg-white border border-gray-200 rounded-xl p-6 text-left hover:border-gray-300 transition-colors group">
               <div className="flex items-center space-x-3 mb-3">
