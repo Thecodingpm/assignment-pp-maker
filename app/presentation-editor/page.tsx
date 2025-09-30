@@ -6,6 +6,8 @@ import { useEditorStore } from '../stores/useEditorStore';
 import { getDocument } from '../firebase/documents';
 import { convertToEditorFormat } from '../lib/pptxApi';
 import { mapAIToEditorFormat } from '../utils/aiTemplateMapper';
+import EnhancedPptxUploader from '../components/EnhancedPptxUploader';
+import { EnhancedParsedPresentation } from '../lib/enhancedPptxParser';
 
 // Import components individually to debug
 import SlideList from '../components/Sidebar/SlideList';
