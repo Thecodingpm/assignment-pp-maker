@@ -10,6 +10,7 @@ import { FontManager } from '../lib/fontManager';
 import { ImageProcessor } from '../lib/imageProcessor';
 import { ShapeRenderer } from '../lib/shapeRenderer';
 import { HighFidelityRenderer, RenderOptions } from '../lib/highFidelityRenderer';
+import { useEditorStore } from '../stores/useEditorStore';
 
 interface EnhancedPptxUploadModalProps {
   isOpen: boolean;
@@ -49,6 +50,9 @@ export default function EnhancedPptxUploadModal({
   const imageProcessor = new ImageProcessor();
   const shapeRenderer = new ShapeRenderer();
   const highFidelityRenderer = new HighFidelityRenderer();
+  
+  // Get editor store functions
+  const { setSlides, setCanvasSize } = useEditorStore();
 
   const processPptxFile = async (file: File) => {
     try {
@@ -101,7 +105,22 @@ export default function EnhancedPptxUploadModal({
         warnings: renderResult.warnings || []
       });
 
-      // Step 6: Complete upload
+      // Step 6: Load presentation into editor
+      const editorSlides = convertPptxToEditorFormat(presentation);
+      
+      // Set canvas size based on first slide
+      if (presentation.slides.length > 0) {
+        const firstSlide = presentation.slides[0];
+        setCanvasSize({
+          width: firstSlide.width || 1920,
+          height: firstSlide.height || 1080
+        });
+      }
+      
+      // Load slides into editor
+      setSlides(editorSlides as any);
+      
+      // Step 7: Complete upload
       setTimeout(() => {
         setIsUploading(false);
         setUploadProgress(null);
@@ -190,6 +209,87 @@ export default function EnhancedPptxUploadModal({
       }
     }
     return images;
+  };
+
+  // Convert PPTX presentation to editor format
+  const convertPptxToEditorFormat = (presentation: PptxDocument) => {
+    console.log('🔄 Converting PPTX to editor format...', presentation);
+    
+    const editorSlides = presentation.slides.map((slide, index) => {
+      console.log(`Processing slide ${index + 1}:`, slide);
+      
+      const editorSlide = {
+        id: slide.id || `slide-${index + 1}`,
+        backgroundColor: slide.background?.color || '#ffffff',
+        elements: []
+      };
+      
+      if (slide.elements && Array.isArray(slide.elements)) {
+        editorSlide.elements = slide.elements.map((element, elemIndex) => {
+          console.log(`Converting element ${elemIndex}:`, element);
+          
+          // Base element properties
+          const baseElement = {
+            id: element.id || `element-${elemIndex + 1}`,
+            type: element.type,
+            x: Math.max(element.x || 50, 50),
+            y: Math.max(element.y || 50, 50),
+            width: Math.max(element.width || 100, 100),
+            height: Math.max(element.height || 50, 50),
+            rotation: element.rotation || 0,
+            zIndex: element.zIndex || (elemIndex + 1),
+            selected: false,
+            isEditing: false
+          };
+          
+          // Convert based on element type
+          switch (element.type) {
+            case 'text':
+              return {
+                ...baseElement,
+                type: 'text' as const,
+                content: (element as any).content || 'Text content',
+                fontSize: Math.max((element as any).fontSize || 24, 16),
+                fontFamily: (element as any).fontFamily || 'Inter',
+                fontWeight: (element as any).fontWeight || '600',
+                color: (element as any).color || '#1f2937',
+                textAlign: (element as any).textAlign || 'left',
+                lineHeight: (element as any).lineHeight || 1.2
+              };
+              
+            case 'image':
+              return {
+                ...baseElement,
+                type: 'image' as const,
+                src: (element as any).src || '',
+                alt: (element as any).alt || 'Image'
+              };
+              
+            case 'shape':
+              return {
+                ...baseElement,
+                type: 'shape' as const,
+                shapeType: (element as any).shapeType || 'rectangle',
+                fillColor: (element as any).fill?.color || '#3B82F6',
+                strokeColor: (element as any).stroke?.color || '#1E40AF',
+                strokeWidth: (element as any).stroke?.width || 3
+              };
+              
+            default:
+              return {
+                ...baseElement,
+                type: 'text' as const,
+                content: 'Unknown element'
+              };
+          }
+        });
+      }
+      
+      return editorSlide;
+    });
+    
+    console.log('✅ Converted to editor format:', editorSlides);
+    return editorSlides;
   };
 
   if (!isOpen) return null;

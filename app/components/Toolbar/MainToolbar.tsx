@@ -1133,6 +1133,14 @@ const MainToolbar: React.FC = () => {
       <EnhancedPptxUploadModal
         isOpen={showEnhancedPptxUploadModal}
         onClose={() => setShowEnhancedPptxUploadModal(false)}
+        onUploadComplete={(presentation) => {
+          console.log('✅ PPTX upload completed:', presentation);
+          setShowEnhancedPptxUploadModal(false);
+        }}
+        onError={(error) => {
+          console.error('❌ PPTX upload error:', error);
+          alert(`Upload failed: ${error}`);
+        }}
       />
     </div>
   );
