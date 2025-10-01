@@ -145,7 +145,7 @@ export class EnhancedPptxParser {
       const formData = new FormData();
       formData.append('file', file);
       
-      const response = await fetch('http://localhost:5001/parse-pptx', {
+      const response = await fetch('http://localhost:5001/api/parse-pptx', {
         method: 'POST',
         body: formData,
       });

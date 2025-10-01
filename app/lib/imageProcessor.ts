@@ -271,7 +271,7 @@ export class ImageProcessor {
    * Create mask element for SVG
    */
   private createMaskElement(
-    mask: ImageProcessingOptions['mask']!, 
+    mask: NonNullable<ImageProcessingOptions['mask']>, 
     dimensions: { width: number; height: number }
   ): SVGElement {
     let maskElement: SVGElement;

@@ -11,6 +11,7 @@ import { ImageProcessor } from '../lib/imageProcessor';
 import { ShapeRenderer } from '../lib/shapeRenderer';
 import { HighFidelityRenderer, RenderOptions } from '../lib/highFidelityRenderer';
 import { useEditorStore } from '../stores/useEditorStore';
+import { useRouter } from 'next/navigation';
 
 interface EnhancedPptxUploadModalProps {
   isOpen: boolean;
@@ -51,8 +52,9 @@ export default function EnhancedPptxUploadModal({
   const shapeRenderer = new ShapeRenderer();
   const highFidelityRenderer = new HighFidelityRenderer();
   
-  // Get editor store functions
+  // Get editor store functions and router
   const { setSlides, setCanvasSize } = useEditorStore();
+  const router = useRouter();
 
   const processPptxFile = async (file: File) => {
     try {
@@ -60,7 +62,9 @@ export default function EnhancedPptxUploadModal({
       setUploadProgress({ stage: 'parsing', progress: 0, message: 'Parsing PPTX file...' });
 
       // Step 1: Parse PPTX file
+      console.log('🚀 Starting PPTX parsing...');
       const presentation = await parser.parsePptxFile(file);
+      console.log('✅ PPTX parsed successfully:', presentation);
       setParsedPresentation(presentation);
       
       setUploadProgress({ stage: 'fonts', progress: 25, message: 'Loading fonts...' });
@@ -106,11 +110,14 @@ export default function EnhancedPptxUploadModal({
       });
 
       // Step 6: Load presentation into editor
+      console.log('🔄 Converting PPTX to editor format...');
       const editorSlides = convertPptxToEditorFormat(presentation);
+      console.log('✅ Converted to editor format:', editorSlides);
       
       // Set canvas size based on first slide
       if (presentation.slides.length > 0) {
         const firstSlide = presentation.slides[0];
+        console.log('📐 Setting canvas size:', { width: firstSlide.width, height: firstSlide.height });
         setCanvasSize({
           width: firstSlide.width || 1920,
           height: firstSlide.height || 1080
@@ -118,14 +125,19 @@ export default function EnhancedPptxUploadModal({
       }
       
       // Load slides into editor
+      console.log('📝 Loading slides into editor...');
       setSlides(editorSlides as any);
+      console.log('✅ Slides loaded into editor');
       
-      // Step 7: Complete upload
+      // Step 7: Complete upload and redirect to editor
       setTimeout(() => {
         setIsUploading(false);
         setUploadProgress(null);
         onUploadComplete(presentation);
         onClose();
+        
+        // Redirect to presentation editor
+        router.push('/presentation-editor');
       }, 1000);
 
     } catch (error) {
