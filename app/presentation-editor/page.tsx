@@ -377,6 +377,27 @@ function PresentationEditorContent() {
         const parsedData = JSON.parse(aiData);
         console.log('Raw AI presentation data from localStorage:', parsedData);
         
+        // Check if this is a PPTX template (has slides array and metadata)
+        if (parsedData.slides && Array.isArray(parsedData.slides)) {
+          console.log('🎯 Detected PPTX template, loading with proper conversion');
+          
+          // Set dynamic canvas size based on presentation dimensions
+          if (parsedData.dimensions) {
+            setCanvasSize({
+              width: parsedData.dimensions.width,
+              height: parsedData.dimensions.height
+            });
+            console.log('📐 Set canvas size from PPTX template:', parsedData.dimensions);
+          }
+          
+          setSlides(parsedData.slides);
+          console.log('✅ Loaded PPTX template slides');
+          
+          // Clear the localStorage after loading
+          localStorage.removeItem('aiGeneratedPresentation');
+          return;
+        }
+        
         // Create slides from AI-generated presentation data
         if (parsedData && parsedData.presentation && parsedData.presentation.slides) {
           console.log('Creating presentation slides from AI data:', parsedData.presentation.slides);

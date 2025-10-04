@@ -127,8 +127,73 @@ export default function TemplateUploadPage() {
           structuredDocument = null;
         }
         
+      } else if (fileName.toLowerCase().endsWith('.pptx')) {
+        console.log('🔄 Processing PPTX file as template...');
+        
+        // Process PPTX file through the backend parser
+        try {
+          const formDataForBackend = new FormData();
+          formDataForBackend.append('file', formData.file);
+          
+          const response = await fetch('/api/parse-pptx', {
+            method: 'POST',
+            body: formDataForBackend,
+          });
+          
+          if (!response.ok) {
+            throw new Error(`Failed to parse PPTX: ${response.statusText}`);
+          }
+          
+          const parsedPresentation = await response.json();
+          console.log('✅ PPTX parsed successfully:', parsedPresentation);
+          
+          // Debug image elements in the parsed presentation
+          if (parsedPresentation.slides) {
+            parsedPresentation.slides.forEach((slide: any, slideIndex: number) => {
+              if (slide.elements) {
+                const imageElements = slide.elements.filter((el: any) => el.type === 'image');
+                console.log(`🔍 Slide ${slideIndex + 1} has ${imageElements.length} image elements:`, imageElements.map((img: any) => ({
+                  id: img.id,
+                  hasSrc: !!img.src,
+                  srcLength: img.src?.length,
+                  srcPreview: img.src?.substring(0, 100)
+                })));
+              }
+            });
+          }
+          
+          // Convert to editor format
+          const { convertToEditorFormat } = await import('../../lib/pptxApi');
+          const editorFormat = convertToEditorFormat(parsedPresentation);
+          console.log('✅ Converted to editor format:', editorFormat);
+          
+          // Debug image elements in the converted format
+          if (editorFormat.slides) {
+            editorFormat.slides.forEach((slide: any, slideIndex: number) => {
+              if (slide.elements) {
+                const imageElements = slide.elements.filter((el: any) => el.type === 'image');
+                console.log(`🎯 Converted slide ${slideIndex + 1} has ${imageElements.length} image elements:`, imageElements.map((img: any) => ({
+                  id: img.id,
+                  hasSrc: !!img.src,
+                  srcLength: img.src?.length,
+                  srcPreview: img.src?.substring(0, 100),
+                  isPlaceholder: img.isPlaceholder
+                })));
+              }
+            });
+          }
+          
+          // Store the parsed presentation as content
+          content = JSON.stringify(editorFormat);
+          console.log('✅ PPTX content stored as JSON');
+          
+        } catch (pptxError) {
+          console.error('❌ Error parsing PPTX file:', pptxError);
+          throw new Error(`Failed to parse PPTX file: ${pptxError.message}`);
+        }
+        
       } else {
-        throw new Error('Unsupported file type. Please upload .docx or .html files only.');
+        throw new Error('Unsupported file type. Please upload .docx, .html, or .pptx files only.');
       }
 
       // For now, let's just use formatted type to avoid structured document issues

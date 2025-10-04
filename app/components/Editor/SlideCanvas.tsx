@@ -1003,13 +1003,16 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                   srcLength: element.src?.length,
                   position: `${element.x}, ${element.y}`,
                   size: `${element.width}x${element.height}`,
-                  srcPreview: element.src?.substring(0, 50)
+                  srcPreview: element.src?.substring(0, 50),
+                  isPlaceholder: (element as any).isPlaceholder
                 });
                 
-                // Only render image elements that have a valid src
-                if (!element.src || element.src.trim() === '') {
-                  console.log('⚠️ Skipping image element - no src:', element.id);
-                  return null; // Don't render image elements without src
+                // Handle missing images with placeholder
+                const imageSrc = element.src || (element as any).src || '';
+                const isPlaceholder = !imageSrc || imageSrc.trim() === '' || (element as any).isPlaceholder;
+                
+                if (isPlaceholder) {
+                  console.log('⚠️ Rendering placeholder for missing image:', element.id);
                 }
                 
                 return (
@@ -1053,12 +1056,38 @@ const SlideCanvas: React.FC<SlideCanvasProps> = ({
                         setDraggingElement(element);
                       }}
                     >
-                      <img
-                        src={element.src}
-                        alt={element.alt || 'Image'}
-                        className="w-full h-full object-contain pointer-events-none"
-                        draggable={false}
-                      />
+                      {isPlaceholder ? (
+                        <div className="w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center">
+                          <div className="text-center text-gray-500">
+                            <div className="text-4xl mb-2">🖼️</div>
+                            <div className="text-sm">Image</div>
+                            <div className="text-xs text-gray-400 mt-1">Click to replace</div>
+                          </div>
+                        </div>
+                      ) : (
+                        <img
+                          src={imageSrc}
+                          alt={element.alt || 'Image'}
+                          className="w-full h-full object-contain pointer-events-none"
+                          draggable={false}
+                          onError={(e) => {
+                            console.error('❌ Image failed to load:', imageSrc);
+                            // Replace with placeholder on error
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            const placeholder = document.createElement('div');
+                            placeholder.className = 'w-full h-full bg-gray-100 border-2 border-dashed border-gray-300 flex items-center justify-center';
+                            placeholder.innerHTML = `
+                              <div class="text-center text-gray-500">
+                                <div class="text-4xl mb-2">🖼️</div>
+                                <div class="text-sm">Image</div>
+                                <div class="text-xs text-gray-400 mt-1">Failed to load</div>
+                              </div>
+                            `;
+                            target.parentNode?.appendChild(placeholder);
+                          }}
+                        />
+                      )}
                     
                     {/* Resize handles for selected images */}
                     {selectedElementIds.includes(element.id) && (

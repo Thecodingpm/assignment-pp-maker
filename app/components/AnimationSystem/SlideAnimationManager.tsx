@@ -26,33 +26,45 @@ export const SlideAnimationManager: React.FC<SlideAnimationManagerProps> = ({
     const { animation } = element;
     const elementNode = elementRef.current;
 
+    // Ensure animation properties exist with defaults
+    const animationProps = {
+      duration: animation.duration || 500,
+      easing: animation.easing || 'ease-in-out',
+      properties: {
+        opacity: animation.properties?.opacity !== undefined ? animation.properties.opacity : 1,
+        scale: animation.properties?.scale !== undefined ? animation.properties.scale : 1,
+        translateX: animation.properties?.translateX !== undefined ? animation.properties.translateX : 0,
+        translateY: animation.properties?.translateY !== undefined ? animation.properties.translateY : 0,
+        rotate: animation.properties?.rotate !== undefined ? animation.properties.rotate : 0,
+        transform: animation.properties?.transform || ''
+      }
+    };
+
     // Set transition properties
-    elementNode.style.transition = `all ${animation.duration}ms ${animation.easing}`;
+    elementNode.style.transition = `all ${animationProps.duration}ms ${animationProps.easing}`;
 
     if (animation.type === 'entrance') {
       if (isSlideEntering) {
         // For entrance animations, start from the properties defined in the preset (hidden state)
-        if (animation.properties.opacity !== undefined) {
-          elementNode.style.opacity = animation.properties.opacity.toString();
-        }
+        elementNode.style.opacity = animationProps.properties.opacity.toString();
         
         let initialTransform = '';
-        if (animation.properties.scale !== undefined) {
-          initialTransform += `scale(${animation.properties.scale})`;
+        if (animationProps.properties.scale !== 1) {
+          initialTransform += `scale(${animationProps.properties.scale})`;
         }
-        if (animation.properties.translateX !== undefined) {
-          initialTransform += ` translateX(${animation.properties.translateX}px)`;
+        if (animationProps.properties.translateX !== 0) {
+          initialTransform += ` translateX(${animationProps.properties.translateX}px)`;
         }
-        if (animation.properties.translateY !== undefined) {
-          initialTransform += ` translateY(${animation.properties.translateY}px)`;
+        if (animationProps.properties.translateY !== 0) {
+          initialTransform += ` translateY(${animationProps.properties.translateY}px)`;
         }
-        if (animation.properties.rotate !== undefined) {
-          initialTransform += ` rotate(${animation.properties.rotate}deg)`;
+        if (animationProps.properties.rotate !== 0) {
+          initialTransform += ` rotate(${animationProps.properties.rotate}deg)`;
         }
-        if (animation.properties.transform) {
-          initialTransform += ` ${animation.properties.transform}`;
+        if (animationProps.properties.transform) {
+          initialTransform += ` ${animationProps.properties.transform}`;
         }
-        elementNode.style.transform = initialTransform;
+        elementNode.style.transform = initialTransform || 'scale(1) translateX(0) translateY(0) rotate(0)';
 
         // Trigger entrance animation to visible state
         setTimeout(() => {
@@ -72,27 +84,25 @@ export const SlideAnimationManager: React.FC<SlideAnimationManagerProps> = ({
       } else if (isSlideExiting) {
         // For exit animations, animate to the properties defined in the preset (hidden state)
         setTimeout(() => {
-          if (animation.properties.opacity !== undefined) {
-            elementNode.style.opacity = animation.properties.opacity.toString();
-          }
+          elementNode.style.opacity = animationProps.properties.opacity.toString();
           
           let exitTransform = '';
-          if (animation.properties.scale !== undefined) {
-            exitTransform += `scale(${animation.properties.scale})`;
+          if (animationProps.properties.scale !== 1) {
+            exitTransform += `scale(${animationProps.properties.scale})`;
           }
-          if (animation.properties.translateX !== undefined) {
-            exitTransform += ` translateX(${animation.properties.translateX}px)`;
+          if (animationProps.properties.translateX !== 0) {
+            exitTransform += ` translateX(${animationProps.properties.translateX}px)`;
           }
-          if (animation.properties.translateY !== undefined) {
-            exitTransform += ` translateY(${animation.properties.translateY}px)`;
+          if (animationProps.properties.translateY !== 0) {
+            exitTransform += ` translateY(${animationProps.properties.translateY}px)`;
           }
-          if (animation.properties.rotate !== undefined) {
-            exitTransform += ` rotate(${animation.properties.rotate}deg)`;
+          if (animationProps.properties.rotate !== 0) {
+            exitTransform += ` rotate(${animationProps.properties.rotate}deg)`;
           }
-          if (animation.properties.transform) {
-            exitTransform += ` ${animation.properties.transform}`;
+          if (animationProps.properties.transform) {
+            exitTransform += ` ${animationProps.properties.transform}`;
           }
-          elementNode.style.transform = exitTransform;
+          elementNode.style.transform = exitTransform || 'scale(1) translateX(0) translateY(0) rotate(0)';
         }, 100);
       }
     } else if (animation.type === 'emphasis') {

@@ -73,7 +73,7 @@ def compress_image(image_data, max_size_kb=100, quality=85):
         print(f"❌ Error compressing image: {e}")
         return image_data, len(image_data) / 1024
 
-def optimize_content_for_firebase(content, max_size_mb=0.9):
+def optimize_content_for_firebase(content, max_size_mb=1.5):
     """
     Optimize content size to fit within Firebase's 1MB limit
     """
@@ -89,7 +89,7 @@ def optimize_content_for_firebase(content, max_size_mb=0.9):
         
         print(f"⚠️ Content too large ({current_size_mb:.2f} MB), optimizing...")
         
-        # If too large, try to reduce image quality further
+        # If too large, try to reduce image quality more gradually
         if 'slides' in content:
             for slide in content['slides']:
                 if 'elements' in slide:
@@ -102,7 +102,8 @@ def optimize_content_for_firebase(content, max_size_mb=0.9):
                                 try:
                                     # Decode, compress more aggressively, re-encode
                                     image_data = base64.b64decode(base64_data)
-                                    compressed_data, _ = compress_image(image_data, max_size_kb=50, quality=60)
+                                    # Use less aggressive compression to preserve more images
+                                    compressed_data, _ = compress_image(image_data, max_size_kb=100, quality=70)
                                     new_base64 = base64.b64encode(compressed_data).decode('utf-8')
                                     element['src'] = f"data:image/jpeg;base64,{new_base64}"
                                     print(f"🔄 Further compressed image: {len(image_data)/1024:.1f}KB → {len(compressed_data)/1024:.1f}KB")

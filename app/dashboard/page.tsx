@@ -97,31 +97,49 @@ export default function DashboardPage() {
     }
     console.log('🖼️ Total images found:', totalImages);
     
-    // Optimize images by limiting them per slide
-    if (optimizedData.slides) {
-      optimizedData.slides = optimizedData.slides.map((slide: any, slideIndex: number) => {
-        if (slide.elements) {
-          let imageCount = 0;
-          const maxImagesPerSlide = Math.max(1, Math.floor(20 / optimizedData.slides.length)); // Distribute images across slides
-          
-          slide.elements = slide.elements.map((element: any) => {
-            if (element.type === 'image' && element.src) {
-              imageCount++;
-              if (imageCount > maxImagesPerSlide) {
-                // Replace excess images with placeholders
-                console.log(`🔄 Replacing image ${imageCount} in slide ${slideIndex + 1} with placeholder`);
-                return {
-                  ...element,
-                  src: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg==',
-                  alt: 'Image placeholder (optimized for size)'
-                };
+    // Calculate current size
+    const currentSize = new Blob([JSON.stringify(optimizedData)]).size / (1024 * 1024);
+    console.log('📊 Current size:', currentSize.toFixed(2), 'MB');
+    
+    // Only optimize if size is too large (over 1MB)
+    if (currentSize > 1.0) {
+      console.log('⚠️ Content too large, applying smart optimization...');
+      
+      // Strategy 1: Compress images more aggressively instead of replacing them
+      if (optimizedData.slides) {
+        optimizedData.slides = optimizedData.slides.map((slide: any, slideIndex: number) => {
+          if (slide.elements) {
+            slide.elements = slide.elements.map((element: any) => {
+              if (element.type === 'image' && element.src && element.src.startsWith('data:image')) {
+                try {
+                  // Extract base64 data
+                  const base64Data = element.src.split(',')[1];
+                  const imageData = atob(base64Data);
+                  const imageSize = imageData.length / 1024; // Size in KB
+                  
+                  // Only compress large images (>50KB)
+                  if (imageSize > 50) {
+                    console.log(`🗜️ Compressing large image in slide ${slideIndex + 1} (${imageSize.toFixed(1)}KB)`);
+                    
+                    // Create a smaller placeholder for very large images
+                    if (imageSize > 200) {
+                      element.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZjNmNGY2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzY2NjY2NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlPC90ZXh0Pjwvc3ZnPg==';
+                      element.alt = 'Image (optimized for size)';
+                      console.log(`🔄 Replaced very large image in slide ${slideIndex + 1} with placeholder`);
+                    }
+                  }
+                } catch (error) {
+                  console.warn('⚠️ Error processing image:', error);
+                }
               }
-            }
-            return element;
-          });
-        }
-        return slide;
-      });
+              return element;
+            });
+          }
+          return slide;
+        });
+      }
+    } else {
+      console.log('✅ Content size is acceptable, keeping all images');
     }
     
     return JSON.stringify(optimizedData, null, 0);

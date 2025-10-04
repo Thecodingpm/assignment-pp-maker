@@ -134,7 +134,13 @@ const PresentationMode: React.FC = () => {
         ref={slideRef}
         className="flex-1 flex items-center justify-center p-8 cursor-pointer"
         onClick={handleSlideClick}
-        style={{ backgroundColor: currentSlide.backgroundColor }}
+        style={{ 
+          backgroundColor: currentSlide.backgroundColor,
+          backgroundImage: currentSlide.backgroundImage ? `url(${currentSlide.backgroundImage})` : undefined,
+          backgroundSize: currentSlide.backgroundSize || 'cover',
+          backgroundPosition: currentSlide.backgroundPosition || 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <div className="max-w-6xl max-h-full w-full h-full relative">
           {currentSlide.elements.map((element) => {
@@ -187,12 +193,62 @@ const PresentationMode: React.FC = () => {
                     isSlideEntering={slideTransitionDirection === 'entering'}
                     isSlideExiting={slideTransitionDirection === 'exiting'}
                   >
-                    <img
-                      src={element.src}
-                      alt={element.alt}
-                      style={style}
-                      className="object-contain"
-                    />
+                    {!element.src || element.src.trim() === '' ? (
+                      <div
+                        style={{
+                          ...style,
+                          backgroundColor: '#f3f4f6',
+                          border: '2px dashed #d1d5db',
+                          borderRadius: '8px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          color: '#6b7280',
+                          fontSize: '14px',
+                          flexDirection: 'column'
+                        }}
+                      >
+                        <div style={{ fontSize: '24px', marginBottom: '8px' }}>🖼️</div>
+                        <div>Image</div>
+                      </div>
+                    ) : (
+                      <img
+                        src={element.src}
+                        alt={element.alt || 'Image'}
+                        style={{
+                          ...style,
+                          objectFit: 'contain',
+                          maxWidth: '100%',
+                          maxHeight: '100%',
+                          borderRadius: '4px',
+                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)'
+                        }}
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          const fallback = document.createElement('div');
+                          fallback.style.cssText = `
+                            position: absolute;
+                            left: ${element.x}px;
+                            top: ${element.y}px;
+                            width: ${element.width}px;
+                            height: ${element.height}px;
+                            background: #f3f4f6;
+                            border: 2px dashed #d1d5db;
+                            border-radius: 8px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #6b7280;
+                            font-size: 14px;
+                            flex-direction: column;
+                          `;
+                          fallback.innerHTML = '<div style="font-size: 24px; margin-bottom: 8px;">🖼️</div><div>Image</div>';
+                          target.parentNode?.appendChild(fallback);
+                        }}
+                      />
+                    )}
                   </SlideAnimationManager>
                 );
 

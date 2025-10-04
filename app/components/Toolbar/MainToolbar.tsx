@@ -20,7 +20,6 @@ import {
   Circle,
   Mic,
   Settings,
-  Diamond,
   Download
 } from 'lucide-react';
 import MediaPopup from '../Editor/MediaPopup';
@@ -40,7 +39,6 @@ import { useEditorStore } from '../../stores/useEditorStore';
 import { useAuth } from '../AuthContext';
 import { useAdmin } from '../AdminContext';
 import SaveTemplateModal from '../SaveTemplateModal';
-import EnhancedPptxUploadModal from '../EnhancedPptxUploadModal';
 
 const MainToolbar: React.FC = () => {
   const router = useRouter();
@@ -58,10 +56,8 @@ const MainToolbar: React.FC = () => {
   const [tablePopupPosition, setTablePopupPosition] = useState({ x: 0, y: 0 });
   const [showEmbedPopup, setShowEmbedPopup] = useState(false);
   const [embedPopupPosition, setEmbedPopupPosition] = useState({ x: 0, y: 0 });
-  const [showSlideTransitionPanel, setShowSlideTransitionPanel] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showSaveTemplateModal, setShowSaveTemplateModal] = useState(false);
-  const [showEnhancedPptxUploadModal, setShowEnhancedPptxUploadModal] = useState(false);
 
   // Auth and admin context
   const { user } = useAuth();
@@ -924,30 +920,7 @@ const MainToolbar: React.FC = () => {
             <span className="text-xs text-gray-700 font-medium">Record</span>
           </div>
 
-          {/* Slide Transition Tool */}
-          <div 
-            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
-            onClick={() => setShowSlideTransitionPanel(true)}
-          >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Diamond className="w-4 h-4 text-gray-700" />
-            </div>
-            <span className="text-xs text-gray-700 font-medium">Transitions</span>
-          </div>
 
-          {/* Enhanced PPTX Upload Tool */}
-          <div 
-            className="flex flex-col items-center space-y-0.5 cursor-pointer hover:bg-gray-100 p-1 rounded-lg transition-colors"
-            onClick={() => setShowEnhancedPptxUploadModal(true)}
-            title="Upload PPTX with high-fidelity rendering"
-          >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
-              </svg>
-            </div>
-            <span className="text-xs text-gray-700 font-medium">Upload PPTX</span>
-          </div>
         </div>
 
         {/* Right Section - User Actions */}
@@ -1129,19 +1102,6 @@ const MainToolbar: React.FC = () => {
         onSave={handleTemplateSave}
       />
 
-      {/* Enhanced PPTX Upload Modal */}
-      <EnhancedPptxUploadModal
-        isOpen={showEnhancedPptxUploadModal}
-        onClose={() => setShowEnhancedPptxUploadModal(false)}
-        onUploadComplete={(presentation) => {
-          console.log('✅ PPTX upload completed:', presentation);
-          setShowEnhancedPptxUploadModal(false);
-        }}
-        onError={(error) => {
-          console.error('❌ PPTX upload error:', error);
-          alert(`Upload failed: ${error}`);
-        }}
-      />
     </div>
   );
 };

@@ -40,11 +40,23 @@ export default function TemplatesGalleryPage() {
       const data = await response.json();
       
       if (data.success) {
-        // Set the template slides in the editor
-        setSlides(data.template.slides);
+        const template = data.template;
+        console.log('🎨 Loading template:', template);
         
-        // Navigate to the editor
-        router.push('/presentation-editor?id=new');
+        // Check if this is a PPTX template (has slides array and metadata)
+        if (template.slides && Array.isArray(template.slides)) {
+          console.log('🎯 Detected PPTX template, loading with proper conversion');
+          
+          // Store the template data in localStorage for the editor to pick up
+          localStorage.setItem('aiGeneratedPresentation', JSON.stringify(template));
+          
+          // Navigate to the editor
+          router.push('/presentation-editor?id=new');
+        } else {
+          // Regular template
+          setSlides(template.slides || []);
+          router.push('/presentation-editor?id=new');
+        }
       } else {
         console.error('Failed to load template:', data.error);
         alert('Failed to load template');
